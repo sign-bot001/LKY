@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>NexaTrade DEMO</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#07111f;--panel:#101f32;--panel2:#091624;--line:#1b3149;
+  --text:#fff;--muted:#8799ae;--blue:#1976ff;--green:#18d894;
+  --red:#ff5964;--gold:#ffbe3d;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh}
+button,input,select{font:inherit}.hidden{display:none!important}.muted{color:var(--muted);font-size:13px}
+.green{color:var(--green)}.red{color:var(--red)}.center{text-align:center}
+.auth-screen{min-height:100vh;padding:24px;display:flex;align-items:center;justify-content:center}
+.auth-box{width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px}
+.brand{font-size:28px;font-weight:900;text-align:center}.demo-badge{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:18px;background:var(--gold);color:#111;font-size:11px;font-weight:900}
+label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13px}
+.input{width:100%;border:1px solid #294158;background:var(--panel2);border-radius:11px;padding:13px;color:#fff;outline:none}
+.primary,.secondary,.danger{border:0;width:100%;margin-top:12px;padding:13px;border-radius:11px;font-weight:800;color:white}
+.primary{background:var(--blue)}.secondary{background:#182d44}.danger{background:#a73c47}
+.auth-switch{text-align:center;margin-top:18px;color:#8ea1b7;font-size:14px}.auth-switch span{color:#4da3ff;font-weight:700;cursor:pointer}
+.message{display:none;margin-top:12px;padding:11px;border-radius:9px;font-size:13px}.message.error{display:block;background:#38171e;color:#ff929b}.message.success{display:block;background:#133024;color:#74e3b1}
+.app{max-width:560px;margin:auto;min-height:100vh;background:var(--panel2);padding-bottom:90px}
+.header{padding:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.logo{font-size:21px;font-weight:900}.clock{margin-top:5px;font-size:12px;color:#8fa2b8}
+.user-area{text-align:right;max-width:230px}.user-email{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.logout{margin-top:5px;color:#ff6975;font-size:12px;cursor:pointer}
+.warning{margin:0 16px 12px;padding:11px;border-radius:10px;background:#372e17;color:#ffd97b;font-size:12px}
+.page{display:none}.page.active{display:block}.section-title{padding:10px 16px 0;font-size:20px;font-weight:900}
+.card{margin:12px 16px;padding:17px;background:var(--panel);border:1px solid var(--line);border-radius:17px}.balance{font-size:31px;font-weight:900;margin-top:6px}
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:18px}.action{text-align:center;cursor:pointer}.action-circle{width:46px;height:46px;display:flex;align-items:center;justify-content:center;margin:auto auto 7px;border-radius:14px;background:#172d46;font-size:20px}
+.asset-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid #1b3045}.asset-row:last-child{border-bottom:0}.coin{display:flex;gap:12px;align-items:center}.coin-icon{width:42px;height:42px;border-radius:50%;background:#172d46;display:flex;align-items:center;justify-content:center;font-weight:900}.price{text-align:right}
+.chart{height:190px;margin-top:16px;border-radius:12px;overflow:hidden;background:linear-gradient(#17293d 1px,transparent 1px),linear-gradient(90deg,#17293d 1px,transparent 1px);background-size:40px 40px}.chart svg{width:100%;height:100%}
+.code-row{display:flex;gap:8px}.code-row input{flex:1}.code-input{text-transform:uppercase;font-size:19px;font-weight:900;letter-spacing:3px}.code-btn{border:0;border-radius:10px;padding:0 15px;background:var(--blue);color:#fff;font-weight:800}
+.position{border:1px solid #29445e}.position-header,.history-header,.row-between{display:flex;justify-content:space-between;align-items:center;gap:10px}.position-title{font-size:18px;font-weight:900}.direction{padding:5px 9px;border-radius:7px;font-size:12px;font-weight:900}.direction.call{background:#153b31;color:#25e1a0}.direction.put{background:#3c1d23;color:#ff7d88}
+.countdown{text-align:center;margin:20px 0;font-size:44px;font-weight:900}.progress{height:7px;background:#1b3045;border-radius:10px;overflow:hidden}.progress-inner{height:100%;background:var(--blue);width:100%}
+.trade-grid,.history-details,.admin-grid,.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.trade-detail,.history-details div,.stat{background:#0a1726;border-radius:10px;padding:10px}.trade-detail strong,.history-details strong{display:block;margin-top:4px}.history-item{padding:16px 0;border-bottom:1px solid #1c3046}.history-item:last-child{border-bottom:0}.history-details span{display:block;color:#8295aa;font-size:11px;margin-bottom:4px}
+.generated-code{font-size:31px;font-weight:900;letter-spacing:5px;text-align:center;margin:12px 0}.admin-code,.admin-user,.admin-trade{background:#091624;padding:14px;margin-top:10px;border-radius:12px}.admin-user-email{word-break:break-all;font-weight:800}
+.inline{display:flex;gap:8px;align-items:center}.inline>*{flex:1}.mini{border:0;border-radius:8px;padding:9px 11px;color:#fff;background:var(--blue);font-weight:700}.mini.redbtn{background:#b9404c}.mini.gray{background:#25384c}
+.search{margin-top:10px}.status{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px}.status.on{background:#153b31;color:#25e1a0}.status.off{background:#3c1d23;color:#ff7d88}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;padding:9px 4px calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel2);border-top:1px solid #20364c}.nav button{border:0;background:none;color:#71859d;font-size:10px}.nav button.active{color:#4ba2ff}.nav-icon{display:block;font-size:20px;margin-bottom:4px}
+@media(max-width:380px){.trade-grid,.history-details,.admin-grid,.stats-grid{grid-template-columns:1fr}.balance{font-size:27px}}
+</style>
+</head>
+<body>
+
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="brand">NexaTrade</div>
+    <div class="center"><span class="demo-badge">DEMO ONLY</span></div>
+    <p class="muted center" style="margin-top:12px">Tous les fonds, trades et rendements sont fictifs.</p>
+
+    <div id="loginForm">
+      <h2 style="margin-top:24px">Connexion</h2>
+      <label>Email</label><input id="loginEmail" class="input" type="email">
+      <label>Mot de passe</label><input id="loginPassword" class="input" type="password">
+      <button class="primary" onclick="login()">Se connecter</button>
+      <div id="loginMessage" class="message"></div>
+      <div class="auth-switch">Pas encore de compte ? <span onclick="showSignup()">Créer un compte</span></div>
+    </div>
+
+    <div id="signupForm" class="hidden">
+      <h2 style="margin-top:24px">Créer un compte</h2>
+      <label>Email</label><input id="signupEmail" class="input" type="email">
+      <label>Mot de passe</label><input id="signupPassword" class="input" type="password">
+      <label>Confirmer</label><input id="signupPassword2" class="input" type="password">
+      <button class="primary" onclick="signup()">Créer mon compte</button>
+      <div id="signupMessage" class="message"></div>
+      <div class="auth-switch">Déjà inscrit ? <span onclick="showLogin()">Connexion</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <header class="header">
+    <div>
+      <div class="logo">NexaTrade</div>
+      <span class="demo-badge">DEMO</span>
+      <div id="liveClock" class="clock">--</div>
+    </div>
+    <div class="user-area">
+      <div id="userEmail" class="user-email">-</div>
+      <div class="logout" onclick="logout()">Déconnexion</div>
+    </div>
+  </header>
+
+  <div class="warning">⚠️ Simulation uniquement — aucun dépôt, retrait ou rendement réel.</div>
+
+  <section id="home" class="page active">
+    <div class="card">
+      <div class="muted">Total Assets · DEMO</div>
+      <div class="balance">$<span id="homeBalance">0.00</span></div>
+      <div class="actions">
+        <div class="action" onclick="demoRecharge()"><div class="action-circle">＋</div><small>Recharge</small></div>
+        <div class="action" onclick="demoWithdraw()"><div class="action-circle">↑</div><small>Withdraw</small></div>
+        <div class="action" onclick="showPage('trade')"><div class="action-circle">⇅</div><small>Trade</small></div>
+        <div class="action" onclick="showPage('assets')"><div class="action-circle">◈</div><small>Assets</small></div>
+      </div>
+    </div>
+
+    <div class="section-title">Market</div>
+    <div class="card">
+      <div class="asset-row">
+        <div class="coin"><div class="coin-icon">₿</div><div><strong>BTC / USDT</strong><div class="muted">Bitcoin</div></div></div>
+        <div class="price"><strong id="btcHome">-</strong><div class="green">SIM</div></div>
+      </div>
+      <div class="asset-row">
+        <div class="coin"><div class="coin-icon">Ξ</div><div><strong>ETH / USDT</strong><div class="muted">Ethereum</div></div></div>
+        <div class="price"><strong id="ethHome">-</strong><div class="green">SIM</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="quotes" class="page">
+    <div class="section-title">Quotes</div>
+    <div class="card">
+      <div class="asset-row"><div><strong>BTC / USDT</strong><div class="muted">Simulated market</div></div><div class="price"><strong id="btcQuote">-</strong></div></div>
+      <div class="asset-row"><div><strong>ETH / USDT</strong><div class="muted">Simulated market</div></div><div class="price"><strong id="ethQuote">-</strong></div></div>
+    </div>
+  </section>
+
+  <section id="trade" class="page">
+    <div class="section-title">BTC / USDT</div>
+    <div class="card">
+      <div class="muted">Current simulated price</div>
+      <div class="balance">$<span id="btcTrade">-</span></div>
+      <div class="chart">
+        <svg viewBox="0 0 500 180" preserveAspectRatio="none">
+          <polyline id="chartLine" fill="none" stroke="#18d896" stroke-width="3" points=""></polyline>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Copy Trading DEMO</strong>
+      <div class="muted" style="margin-top:5px">Code 6 caractères · position 60S · 1 % du capital fictif.</div>
+      <label>Code</label>
+      <div class="code-row">
+        <input id="userCode" class="input code-input" maxlength="6" placeholder="10FHGV">
+        <button class="code-btn" onclick="useCode()">TRADE</button>
+      </div>
+      <div id="tradeMessage" class="message"></div>
+    </div>
+
+    <div class="section-title">Active Position</div>
+    <div id="activePositions"><div class="card center muted">Aucune position active.</div></div>
+
+    <div class="section-title">Historical Orders</div>
+    <div id="tradeHistory" class="card"><div class="center muted">Aucun ordre terminé.</div></div>
+  </section>
+
+  <section id="assets" class="page">
+    <div class="section-title">My Assets</div>
+    <div class="card">
+      <div class="muted">Asset valuation · DEMO</div>
+      <div class="balance green"><span id="assetBalance">0.00</span> USD</div>
+      <div class="actions">
+        <div class="action" onclick="demoWithdraw()"><div class="action-circle">↑</div><small>Withdraw</small></div>
+        <div class="action" onclick="demoRecharge()"><div class="action-circle">↓</div><small>Recharge</small></div>
+        <div class="action" onclick="demoOnly()"><div class="action-circle">⇄</div><small>Transfer</small></div>
+        <div class="action" onclick="demoOnly()"><div class="action-circle">↻</div><small>Exchange</small></div>
+      </div>
+    </div>
+    <div class="card"><div class="asset-row"><div><strong>USDT DEMO</strong><div class="muted">Available Balance</div></div><strong id="usdtBalance">0.00</strong></div></div>
+  </section>
+
+  <section id="admin" class="page">
+    <div class="section-title">Admin Dashboard</div>
+    <div class="warning">Administration de la simulation uniquement.</div>
+
+    <div class="card">
+      <strong>Overview</strong>
+      <div class="stats-grid">
+        <div class="stat"><div class="muted">Users</div><strong id="statUsers">0</strong></div>
+        <div class="stat"><div class="muted">Active Codes</div><strong id="statCodes">0</strong></div>
+        <div class="stat"><div class="muted">Pending Trades</div><strong id="statPending">0</strong></div>
+        <div class="stat"><div class="muted">Settled Trades</div><strong id="statSettled">0</strong></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Generate Code</strong>
+      <label>Direction</label>
+      <select id="adminDirection" class="input">
+        <option value="">Random</option><option value="CALL">CALL</option><option value="PUT">PUT</option>
+      </select>
+      <label>Rendement DEMO</label>
+      <input id="adminYield" class="input" type="number" min="50" max="57" step="0.01" placeholder="Automatique 50–57">
+      <label>Expiration</label>
+      <select id="adminExpiry" class="input">
+        <option value="60">1 heure</option><option value="360">6 heures</option><option value="1440" selected>24 heures</option><option value="10080">7 jours</option>
+      </select>
+      <button class="primary" onclick="generateCode()">Generate Code</button>
+      <div id="generatedBox" class="admin-code hidden">
+        <div class="muted center">Nouveau code</div>
+        <div id="generatedCode" class="generated-code">------</div>
+        <div id="generatedDetails" class="center muted">-</div>
+        <button class="secondary" onclick="copyGeneratedCode()">Copier le code</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Default Balance</strong>
+      <div class="muted" style="margin-top:5px">Solde fictif attribué aux nouveaux comptes.</div>
+      <div class="inline" style="margin-top:10px">
+        <input id="initialBalanceInput" class="input" type="number" min="0" step="100" value="10000">
+        <button class="mini" onclick="updateInitialBalance()">Save</button>
+      </div>
+    </div>
+
+    <div class="section-title">Codes</div>
+    <div id="adminCodes" class="card"><div class="muted center">Chargement...</div></div>
+
+    <div class="section-title">Users</div>
+    <div class="card">
+      <input id="userSearch" class="input search" placeholder="Rechercher par email..." oninput="renderAdminUsers()">
+      <div id="adminUsers"><div class="muted center">Chargement...</div></div>
+    </div>
+
+    <div class="section-title">Recent Trades</div>
+    <div id="adminTrades" class="card"><div class="muted center">Chargement...</div></div>
+  </section>
+
+  <nav class="nav">
+    <button class="active" onclick="showPage('home',this)"><span class="nav-icon">⌂</span>Home</button>
+    <button onclick="showPage('quotes',this)"><span class="nav-icon">≋</span>Quotes</button>
+    <button onclick="showPage('trade',this)"><span class="nav-icon">⇅</span>Trade</button>
+    <button onclick="showPage('assets',this)"><span class="nav-icon">◈</span>Assets</button>
+    <button id="adminNav" class="hidden" onclick="showPage('admin',this)"><span class="nav-icon">⚙</span>Admin</button>
+  </nav>
+</div>
+
+<script>
+const SUPABASE_URL = "https://khhexjfvwvfoehaqybzm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_iGxqDljv0d0t0nYgQVyyFQ_CXXdKpOu";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false;
+let adminUsers=[], adminCodes=[], adminTrades=[];
+let btcPrice=112840.00, ethPrice=4410.00, settlingTrades=new Set();
+let chartValues=Array.from({length:28},(_,i)=>112600+i*8+Math.random()*90);
+
+function money(n){return Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function price(n){return Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function formatDate(d){if(!d)return"-";return new Intl.DateTimeFormat("fr-CA",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date(d))}
+function showMessage(id,text,type){const e=document.getElementById(id);e.className="message "+type;e.textContent=text}
+function clearMessage(id){const e=document.getElementById(id);e.className="message";e.textContent=""}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+function updateClock(){
+  const el=document.getElementById("liveClock"); if(!el)return;
+  el.textContent=new Intl.DateTimeFormat("fr-CA",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date());
+}
+setInterval(updateClock,1000); updateClock();
+
+function showSignup(){loginForm.classList.add("hidden");signupForm.classList.remove("hidden")}
+function showLogin(){signupForm.classList.add("hidden");loginForm.classList.remove("hidden")}
+
+async function signup(){
+  clearMessage("signupMessage");
+  const email=signupEmail.value.trim(), password=signupPassword.value, p2=signupPassword2.value;
+  if(!email)return showMessage("signupMessage","Entre ton adresse email.","error");
+  if(password.length<6)return showMessage("signupMessage","Mot de passe: minimum 6 caractères.","error");
+  if(password!==p2)return showMessage("signupMessage","Les mots de passe ne correspondent pas.","error");
+  const {data,error}=await sb.auth.signUp({email,password});
+  if(error)return showMessage("signupMessage",error.message,"error");
+  if(data.session) await enterApp(data.user);
+  else showMessage("signupMessage","Compte créé. Vérifie ton email si la confirmation est activée.","success");
+}
+
+async function login(){
+  clearMessage("loginMessage");
+  const {data,error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});
+  if(error)return showMessage("loginMessage","Connexion impossible : "+error.message,"error");
+  await enterApp(data.user);
+}
+
+async function logout(){
+  await sb.auth.signOut();
+  currentUser=null;profile=null;trades=[];isCurrentUserAdmin=false;
+  app.classList.add("hidden");authScreen.classList.remove("hidden");
+}
+
+async function enterApp(user){
+  currentUser=user;userEmail.textContent=user.email||"Utilisateur";
+  authScreen.classList.add("hidden");app.classList.remove("hidden");
+  await checkAdmin();
+  await settleExpiredTrades(false);
+  await refreshEverything();
+}
+
+async function checkAdmin(){
+  const {data,error}=await sb.rpc("is_admin");
+  isCurrentUserAdmin=!error && data===true;
+  adminNav.classList.toggle("hidden",!isCurrentUserAdmin);
+}
+
+async function loadProfile(){
+  const {data,error}=await sb.from("profiles").select("*").eq("user_id",currentUser.id).single();
+  if(error){console.error(error);return}
+  profile=data;updateUI();
+}
+
+async function loadTrades(){
+  const {data,error}=await sb.from("trades").select("*").eq("user_id",currentUser.id).order("opened_at",{ascending:false});
+  if(error){console.error(error);return}
+  trades=data||[];renderPositions();renderHistory();
+}
+
+async function refreshEverything(){
+  await loadProfile(); await loadTrades();
+  if(isCurrentUserAdmin) await loadAdminAll();
+}
+
+function updateUI(){
+  const b=Number(profile?.balance||0);
+  homeBalance.textContent=money(b);assetBalance.textContent=money(b);usdtBalance.textContent=money(b);
+  btcHome.textContent="$"+price(btcPrice);btcQuote.textContent="$"+price(btcPrice);btcTrade.textContent=price(btcPrice);
+  ethHome.textContent="$"+price(ethPrice);ethQuote.textContent="$"+price(ethPrice);
+}
+
+function showPage(pageId,button){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(pageId).classList.add("active");
+  if(button){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));button.classList.add("active")}
+  if(pageId==="admin"&&isCurrentUserAdmin) loadAdminAll();
+}
+
+async function useCode(){
+  clearMessage("tradeMessage");
+  const code=userCode.value.trim().toUpperCase();
+  if(code.length!==6)return showMessage("tradeMessage","Le code doit contenir exactement 6 caractères.","error");
+  const {error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
+  if(error)return showMessage("tradeMessage",error.message,"error");
+  userCode.value="";
+  showMessage("tradeMessage","Position DEMO ouverte pour 60 secondes.","success");
+  await refreshEverything();
+}
+
+function activePositionHTML(t){
+  return `<div class="card position" data-trade-id="${t.id}">
+    <div class="position-header">
+      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${esc(t.code)}</div></div>
+      <div class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</div>
+    </div>
+    <div class="countdown" id="countdown-${t.id}">60S</div>
+    <div class="progress"><div id="progress-${t.id}" class="progress-inner"></div></div>
+    <div class="trade-grid">
+      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>60S</strong></div>
+      <div class="trade-detail"><span class="muted">Capital Used</span><strong>1%</strong></div>
+      <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
+      <div class="trade-detail"><span class="muted">Yield</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
+      <div class="trade-detail"><span class="muted">Opening Price</span><strong>${price(t.open_price)}</strong></div>
+      <div class="trade-detail"><span class="muted">Order Time</span><strong>${formatDate(t.opened_at)}</strong></div>
+    </div>
+  </div>`;
+}
+
+function renderPositions(){
+  const pending=trades.filter(t=>t.status==="PENDING");
+  activePositions.innerHTML=pending.length?pending.map(activePositionHTML).join(""):`<div class="card center muted">Aucune position active.</div>`;
+}
+
+async function updateCountdowns(){
+  for(const t of trades.filter(x=>x.status==="PENDING")){
+    const ms=new Date(t.settle_at).getTime()-Date.now();
+    const remaining=Math.max(0,Math.ceil(ms/1000));
+    const c=document.getElementById("countdown-"+t.id), p=document.getElementById("progress-"+t.id);
+    if(c)c.textContent=remaining+"S";
+    if(p)p.style.width=Math.max(0,Math.min(100,remaining/60*100))+"%";
+    if(remaining<=0&&!settlingTrades.has(t.id)){
+      settlingTrades.add(t.id);
+      await settleTrade(t.id);
+    }
+  }
+}
+setInterval(updateCountdowns,500);
+
+async function settleTrade(id){
+  const {data,error}=await sb.rpc("settle_demo_trade",{p_trade_id:id});
+  settlingTrades.delete(id);
+  if(error){console.error(error);return}
+  await refreshEverything();
+  if(data) showMessage("tradeMessage","Position DEMO réglée : +"+money(data.profit)+" USDT fictifs.","success");
+}
+
+async function settleExpiredTrades(refresh=true){
+  if(!currentUser)return;
+  const {data,error}=await sb.rpc("settle_expired_demo_trades");
+  if(error){console.error(error);return}
+  if(refresh&&Number(data)>0) await refreshEverything();
+}
+setInterval(()=>settleExpiredTrades(true),5000);
+
+function renderHistory(){
+  const settled=trades.filter(t=>t.status==="SETTLED");
+  if(!settled.length){tradeHistory.innerHTML=`<div class="center muted">Aucun ordre terminé.</div>`;return}
+  tradeHistory.innerHTML=settled.map(t=>`
+    <div class="history-item">
+      <div class="history-header">
+        <div><strong>${esc(t.symbol)}</strong><div class="muted">${esc(t.code)}</div></div>
+        <span class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span>
+      </div>
+      <div class="history-details">
+        <div><span>Product Cycle</span><strong>60S</strong></div>
+        <div><span>Capital</span><strong>1%</strong></div>
+        <div><span>Opening Price</span><strong>${price(t.open_price)}</strong></div>
+        <div><span>Settlement Price</span><strong>${price(t.close_price)}</strong></div>
+        <div><span>Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
+        <div><span>Yield</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
+        <div><span>Profit</span><strong class="green">+${money(t.profit)} USDT</strong></div>
+        <div><span>Status</span><strong class="green">Settled</strong></div>
+        <div><span>Opening Time</span><strong>${formatDate(t.opened_at)}</strong></div>
+        <div><span>Settlement Time</span><strong>${formatDate(t.settled_at)}</strong></div>
+      </div>
+    </div>`).join("");
+}
+
+async function generateCode(){
+  if(!isCurrentUserAdmin)return;
+  const y=adminYield.value.trim();
+  const {data,error}=await sb.rpc("generate_demo_code",{
+    p_direction:adminDirection.value||null,
+    p_yield_pct:y===""?null:Number(y),
+    p_expires_minutes:Number(adminExpiry.value)
+  });
+  if(error)return alert(error.message);
+  const r=Array.isArray(data)?data[0]:data;
+  generatedBox.classList.remove("hidden");
+  generatedCode.textContent=r.generated_code;
+  generatedDetails.textContent=`${r.generated_direction} · 60S · 1% capital · +${Number(r.generated_yield).toFixed(2)}% DEMO`;
+  await loadAdminAll();
+}
+
+async function copyGeneratedCode(){
+  const code=generatedCode.textContent;
+  try{await navigator.clipboard.writeText(code);alert("Code copié : "+code)}catch{alert("Code : "+code)}
+}
+
+async function loadAdminAll(){
+  await Promise.all([loadAdminUsers(),loadAdminCodes(),loadAdminTrades(),loadSettings()]);
+  updateAdminStats();
+}
+
+async function loadAdminUsers(){
+  const {data,error}=await sb.from("profiles").select("user_id,email,balance,suspended,created_at").order("created_at",{ascending:false});
+  if(error){console.error(error);return}
+  adminUsers=data||[];renderAdminUsers();
+}
+
+function renderAdminUsers(){
+  const q=(userSearch?.value||"").trim().toLowerCase();
+  const list=adminUsers.filter(u=>(u.email||"").toLowerCase().includes(q));
+  adminUsersEl=document.getElementById("adminUsers");
+  if(!list.length){adminUsersEl.innerHTML=`<div class="muted center" style="padding-top:12px">Aucun utilisateur.</div>`;return}
+  adminUsersEl.innerHTML=list.map(u=>`
+    <div class="admin-user">
+      <div class="row-between">
+        <div class="admin-user-email">${esc(u.email||"No email")}</div>
+        <span class="status ${u.suspended?"off":"on"}">${u.suspended?"SUSPENDED":"ACTIVE"}</span>
+      </div>
+      <div class="muted" style="margin-top:7px">Balance DEMO</div>
+      <strong>${money(u.balance)} USDT</strong>
+      <div class="inline" style="margin-top:10px">
+        <input id="adjust-${u.user_id}" class="input" type="number" min="0" step="100" value="1000">
+        <button class="mini" onclick="adjustBalance('${u.user_id}',1)">+</button>
+        <button class="mini redbtn" onclick="adjustBalance('${u.user_id}',-1)">−</button>
+      </div>
+      <div class="inline" style="margin-top:8px">
+        <button class="mini gray" onclick="setExactBalance('${u.user_id}')">Set exact</button>
+        <button class="mini ${u.suspended?"":"redbtn"}" onclick="toggleSuspend('${u.user_id}',${!u.suspended})">${u.suspended?"Reactivate":"Suspend"}</button>
+      </div>
+    </div>`).join("");
+}
+
+async function adjustBalance(userId,sign){
+  const n=Number(document.getElementById("adjust-"+userId).value);
+  if(!n||n<=0)return;
+  const {error}=await sb.rpc("admin_adjust_balance",{p_user_id:userId,p_delta:n*sign});
+  if(error)return alert(error.message);
+  await loadAdminAll(); if(currentUser.id===userId)await loadProfile();
+}
+
+async function setExactBalance(userId){
+  const n=Number(document.getElementById("adjust-"+userId).value);
+  if(Number.isNaN(n)||n<0)return;
+  const {error}=await sb.rpc("admin_set_balance",{p_user_id:userId,p_balance:n});
+  if(error)return alert(error.message);
+  await loadAdminAll(); if(currentUser.id===userId)await loadProfile();
+}
+
+async function toggleSuspend(userId,suspended){
+  const {error}=await sb.rpc("admin_set_suspended",{p_user_id:userId,p_suspended:suspended});
+  if(error)return alert(error.message);
+  await loadAdminAll();
+}
+
+async function loadAdminCodes(){
+  const [{data:codes,error},{data:uses,error:usesErr}]=await Promise.all([
+    sb.from("demo_codes").select("*").order("created_at",{ascending:false}).limit(100),
+    sb.from("code_uses").select("code_id")
+  ]);
+  if(error||usesErr){console.error(error||usesErr);return}
+  const counts={};(uses||[]).forEach(x=>counts[x.code_id]=(counts[x.code_id]||0)+1);
+  adminCodes=(codes||[]).map(c=>({...c,use_count:counts[c.id]||0}));
+  renderAdminCodes();
+}
+
+function renderAdminCodes(){
+  const el=document.getElementById("adminCodes");
+  if(!adminCodes.length){el.innerHTML=`<div class="muted center">Aucun code.</div>`;return}
+  el.innerHTML=adminCodes.map(c=>{
+    const expired=c.expires_at&&new Date(c.expires_at)<=new Date();
+    return `<div class="admin-code">
+      <div class="row-between">
+        <strong style="font-size:20px;letter-spacing:3px">${esc(c.code)}</strong>
+        <span class="direction ${c.direction==="CALL"?"call":"put"}">${esc(c.direction)}</span>
+      </div>
+      <div class="muted" style="margin-top:7px">60S · 1% capital · +${money(c.yield_pct)}% · ${c.use_count} utilisation(s)</div>
+      <div class="muted">Expiration : ${formatDate(c.expires_at)}</div>
+      <div class="muted">Statut : ${expired?"EXPIRÉ":(c.active?"ACTIVE":"DISABLED")}</div>
+      <div class="inline" style="margin-top:9px">
+        <button class="mini ${c.active?"redbtn":""}" onclick="toggleCode(${c.id},${!c.active})">${c.active?"Disable":"Enable"}</button>
+        <button class="mini gray" onclick="deleteCode(${c.id})">Delete unused</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function toggleCode(id,active){
+  const {error}=await sb.rpc("admin_toggle_code",{p_code_id:id,p_active:active});
+  if(error)return alert(error.message);
+  await loadAdminAll();
+}
+
+async function deleteCode(id){
+  if(!confirm("Supprimer ce code s'il n'a jamais été utilisé ?"))return;
+  const {error}=await sb.rpc("admin_delete_unused_code",{p_code_id:id});
+  if(error)return alert(error.message);
+  await loadAdminAll();
+}
+
+async function loadAdminTrades(){
+  const {data,error}=await sb.from("trades").select("*").order("opened_at",{ascending:false}).limit(50);
+  if(error){console.error(error);return}
+  adminTrades=data||[];
+  const el=document.getElementById("adminTrades");
+  if(!adminTrades.length){el.innerHTML=`<div class="muted center">Aucun trade.</div>`;return}
+  el.innerHTML=adminTrades.map(t=>`
+    <div class="admin-trade">
+      <div class="row-between"><strong>${esc(t.code)} · ${esc(t.direction)}</strong><span class="status ${t.status==="SETTLED"?"on":"off"}">${esc(t.status)}</span></div>
+      <div class="muted" style="margin-top:6px">User: ${esc(t.user_id)}</div>
+      <div class="muted">${money(t.amount)} USDT · +${money(t.yield_pct)}% · Profit ${money(t.profit)}</div>
+      <div class="muted">${formatDate(t.opened_at)}</div>
+    </div>`).join("");
+}
+
+async function loadSettings(){
+  const {data,error}=await sb.from("app_settings").select("*").eq("id",1).single();
+  if(!error&&data) initialBalanceInput.value=Number(data.initial_balance);
+}
+
+async function updateInitialBalance(){
+  const n=Number(initialBalanceInput.value);
+  if(Number.isNaN(n)||n<0)return;
+  const {error}=await sb.rpc("admin_update_initial_balance",{p_balance:n});
+  if(error)return alert(error.message);
+  alert("Nouveau solde initial DEMO enregistré.");
+}
+
+function updateAdminStats(){
+  statUsers.textContent=adminUsers.length;
+  statCodes.textContent=adminCodes.filter(c=>c.active&&(!c.expires_at||new Date(c.expires_at)>new Date())).length;
+  statPending.textContent=adminTrades.filter(t=>t.status==="PENDING").length;
+  statSettled.textContent=adminTrades.filter(t=>t.status==="SETTLED").length;
+}
+
+function demoRecharge(){alert("Recharge DEMO uniquement. Aucun argent réel n'est accepté.")}
+function demoWithdraw(){alert("Withdraw DEMO uniquement. Aucun argent ou crypto réel n'est envoyé.")}
+function demoOnly(){alert("Fonction de simulation uniquement.")}
+
+function drawChart(){
+  chartValues.push(btcPrice); if(chartValues.length>28)chartValues.shift();
+  const min=Math.min(...chartValues), max=Math.max(...chartValues), span=Math.max(1,max-min);
+  const pts=chartValues.map((v,i)=>{
+    const x=i/(chartValues.length-1)*500;
+    const y=165-((v-min)/span)*145;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  chartLine.setAttribute("points",pts);
+}
+function simulateMarket(){
+  btcPrice+=(Math.random()-.5)*55; ethPrice+=(Math.random()-.5)*5;
+  updateUI();drawChart();
+}
+setInterval(simulateMarket,2200);drawChart();
+
+async function checkSession(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user)await enterApp(session.user);
+}
+sb.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")currentUser=null});
+checkSession();
+</script>
+</body>
+</html>
