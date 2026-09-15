@@ -42,192 +42,118 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .search{margin-top:10px}.status{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px}.status.on{background:#153b31;color:#25e1a0}.status.off{background:#3c1d23;color:#ff7d88}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;padding:9px 4px calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel2);border-top:1px solid #20364c}.nav button{border:0;background:none;color:#71859d;font-size:10px}.nav button.active{color:#4ba2ff}.nav-icon{display:block;font-size:20px;margin-bottom:4px}
 @media(max-width:380px){.trade-grid,.history-details,.admin-grid,.stats-grid{grid-template-columns:1fr}.balance{font-size:27px}}
-/* ===== NEW HOME ===== */
 
-.home-new{
-  min-height:calc(100vh - 75px);
-  padding:18px 14px 35px;
-  background:
-    radial-gradient(circle at 80% 5%,rgba(57,232,178,.25),transparent 28%),
-    linear-gradient(180deg,#eafff7 0%,#f4fffb 55%,#ffffff 100%);
-  color:#15231f;
+/* ===== HOME REFERENCE — ISOLATED ===== */
+.app:has(#home.active){
+  max-width:560px;
+  background:#f6fff2;
+  padding-bottom:120px;
 }
+.app:has(#home.active)>.header,
+.app:has(#home.active)>.warning{display:none}
 
+#home{
+  min-height:100vh;
+  padding:64px 24px 145px;
+  background:#f6fff2;
+  color:#111;
+}
 .home-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:4px 2px 18px;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:42px;
 }
-
-.home-round-btn,
-.home-profile-btn{
-  width:46px;
-  height:46px;
-  border:0;
-  border-radius:50%;
-  background:#fff;
-  box-shadow:0 4px 18px rgba(17,91,68,.09);
-  color:#1d9f78;
+.home-icon-btn{
+  width:48px;height:48px;border:0;border-radius:13px;
+  background:#303236;color:#82ff72;font-size:25px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
 }
-
-.home-round-btn{
-  font-size:27px;
-  font-weight:700;
-}
-
-.home-profile-btn{
-  position:relative;
-}
-
-.profile-head{
-  position:absolute;
-  width:11px;
-  height:11px;
-  border-radius:50%;
-  background:#20b889;
-  left:18px;
-  top:10px;
-}
-
-.profile-body{
-  position:absolute;
-  width:21px;
-  height:11px;
-  border-radius:12px 12px 5px 5px;
-  background:#20b889;
-  left:13px;
-  bottom:10px;
-}
-
+.home-profile-emoji{font-size:23px}
 .currency-banner{
-  height:58px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  border-radius:13px;
-  background:linear-gradient(90deg,#a7f0dc,#c8f8e9);
-  color:#126c56;
-  font-size:18px;
-  font-weight:800;
-  letter-spacing:.2px;
-  box-shadow:0 7px 22px rgba(39,181,139,.12);
+  height:76px;border-radius:30px;background:#303236;color:#c9c9c9;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:24px;
 }
-
 .hot-panel{
-  margin-top:16px;
-  padding:18px 13px 15px;
-  border-radius:17px;
-  background:linear-gradient(135deg,#2fcf9b,#139e77);
-  box-shadow:0 13px 30px rgba(23,165,123,.22);
+  border-radius:28px;padding:24px 14px 22px;
+  background:linear-gradient(180deg,#80fa75 0%,#dcff6a 100%);
+  margin-bottom:54px;
+}
+.hot-title{text-align:center;font-size:31px;font-weight:800;margin-bottom:10px}
+.hot-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hot-card{
+  background:#fff;border-radius:28px;padding:16px 13px 13px;min-height:190px;
   overflow:hidden;
 }
+.hot-card:nth-child(3){grid-column:1}
+.hot-symbol{font-size:23px;line-height:1.05}
+.hot-price{font-size:21px;color:#e53b5c;margin-top:5px}
+.hot-usd{font-size:14px;color:#9298a2;margin-top:2px}
+.home-spark{width:100%;height:90px;display:block;margin-top:5px}
+.home-spark path.line{fill:none;stroke:#ef3158;stroke-width:3}
+.home-spark path.area{fill:url(#homePinkFade)}
+.hot-dot{width:14px;height:7px;border-radius:10px;background:#47d93b;margin:11px auto 0}
 
-.hot-title{
-  color:#fff;
-  font-size:22px;
-  font-weight:900;
-  margin-bottom:15px;
+.home-section-title{
+  font-size:34px;font-weight:800;margin:0 0 26px;
+}
+.news-card{
+  min-height:420px;border-radius:28px;background:#e6eee4;overflow:hidden;
+  margin-bottom:52px;display:flex;flex-direction:column;justify-content:flex-end;
+}
+.news-empty{flex:1}
+.news-copy{background:#dce5d9;padding:18px 28px 28px}
+.news-date{color:#8b948d;font-size:18px;margin-bottom:5px}
+.news-copy strong{display:block;font-size:18px;line-height:1.25;font-weight:500}
+.news-more{height:74px;background:#cfd8cc;display:flex;align-items:center;justify-content:center;font-size:25px}
+
+.crypto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:54px}
+.crypto-card{background:#fff;border-radius:26px;padding:14px 12px 10px;min-width:0}
+.crypto-symbol{font-size:18px;white-space:nowrap}
+.crypto-price{font-size:17px;color:#ef3158;margin-top:2px}
+.crypto-usd{font-size:12px;color:#9298a2}
+.crypto-card .home-spark{height:75px}
+
+.service-hero,.adv-hero{
+  border-radius:28px;background:linear-gradient(180deg,#78fa76,#dfff68);
+  padding:28px 20px;text-align:center;margin-bottom:26px;
+}
+.service-robot{font-size:90px;line-height:1.1}
+.service-hero strong{display:block;font-size:23px;line-height:1.15;margin-top:14px}
+.service-grid,.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:52px}
+.service-card,.adv-card{
+  min-height:310px;border-radius:28px;background:#fff;padding:24px 15px;
+  text-align:center;display:flex;flex-direction:column;align-items:center;
+}
+.service-emoji,.adv-emoji{font-size:72px;margin:5px 0 18px}
+.service-card h3,.adv-card h3{font-size:29px;font-weight:500;margin-bottom:18px}
+.service-card p,.adv-card p{font-size:17px;color:#929292;line-height:1.18}
+.adv-hero{padding:34px 16px}
+.adv-hero .adv-emoji{font-size:80px}
+.adv-hero strong{display:block;font-size:22px;margin-top:12px}
+.adv-hero p{font-size:14px;line-height:1.25;margin-top:4px}
+.adv-card.buy{background:linear-gradient(180deg,#6ef183,#73d8f5)}
+.adv-card.safety{background:linear-gradient(180deg,#ffb575,#ffdc45)}
+.lang-menu{
+  position:fixed;z-index:50;top:118px;left:50%;transform:translateX(-50%);
+  width:min(300px,calc(100% - 48px));background:#303236;color:#fff;
+  border-radius:18px;padding:8px;box-shadow:0 12px 35px rgba(0,0,0,.25)
+}
+.lang-menu button{width:100%;border:0;background:transparent;color:#fff;padding:13px;border-radius:12px;text-align:left;font-size:16px}
+.lang-menu button:hover{background:#44474b}
+.app:has(#home.active) .nav{
+  max-width:560px;background:#2d2f32;border:0;border-radius:28px 28px 0 0;
+  padding:15px 8px calc(16px + env(safe-area-inset-bottom));
+  box-shadow:0 -5px 18px rgba(0,0,0,.08)
+}
+.app:has(#home.active) .nav button{color:#aaa;font-size:12px}
+.app:has(#home.active) .nav button.active{color:#91ff75}
+.app:has(#home.active) .nav-icon{font-size:25px;margin-bottom:5px}
+@media(max-width:380px){
+  #home{padding-left:16px;padding-right:16px}
+  .hot-symbol{font-size:20px}.home-section-title{font-size:31px}
+  .service-grid,.adv-grid{gap:14px}.service-card,.adv-card{min-height:280px}
 }
 
-.hot-cards{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-}
-
-.hot-card{
-  min-width:0;
-  padding:13px 10px;
-  border-radius:13px;
-  background:rgba(255,255,255,.13);
-  color:#fff;
-  backdrop-filter:blur(4px);
-}
-
-.hot-symbol{
-  font-size:12px;
-  font-weight:800;
-}
-
-.mini-chart{
-  width:100%;
-  height:44px;
-  display:block;
-  margin:7px 0;
-  opacity:.95;
-}
-
-.hot-price{
-  font-size:13px;
-  font-weight:800;
-  white-space:nowrap;
-}
-
-.hot-change{
-  margin-top:3px;
-  font-size:11px;
-  color:#eafff7;
-}
-
-.news-panel{
-  margin-top:18px;
-  padding:18px;
-  border-radius:17px;
-  background:#fff;
-  box-shadow:0 8px 26px rgba(28,91,72,.08);
-}
-
-.news-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:19px;
-  margin-bottom:7px;
-}
-
-.news-header span{
-  color:#8aa69e;
-  font-size:26px;
-}
-
-.news-item{
-  display:grid;
-  grid-template-columns:52px 1fr;
-  gap:10px;
-  padding:14px 0;
-  border-bottom:1px solid #edf3f1;
-}
-
-.news-item:last-child{
-  border-bottom:0;
-}
-
-.news-time{
-  color:#159b75;
-  font-size:13px;
-  font-weight:800;
-}
-
-.news-item strong{
-  font-size:14px;
-}
-
-.news-item p{
-  margin-top:4px;
-  color:#8a9a95;
-  font-size:12px;
-  line-height:1.4;
-}
-
-.home-demo-note{
-  text-align:center;
-  color:#78958c;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1px;
-  margin:16px 0 5px;
-}
 /* ===== QUOTES REFERENCE ===== */
 .app:has(#quotes.active){max-width:560px;background:#f6fff2;padding-bottom:120px}
 .app:has(#quotes.active)>.header,.app:has(#quotes.active)>.warning{display:none}
@@ -294,110 +220,104 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 
   <div class="warning">⚠️ Simulation uniquement — aucun dépôt, retrait ou rendement réel.</div>
 
-  <section id="home" class="page active home-new">
+  <section id="home" class="page active">
 
-  <!-- TOP -->
   <div class="home-top">
-    <button class="home-round-btn">◎</button>
-
-    <button class="home-profile-btn">
-      <span class="profile-head"></span>
-      <span class="profile-body"></span>
-    </button>
+    <button class="home-icon-btn" onclick="toggleLanguageMenu()" aria-label="Language">🌐</button>
+    <button class="home-icon-btn home-profile-emoji" aria-label="Profile">👨🏻‍💼</button>
   </div>
 
-  <!-- DIGITAL CURRENCY -->
-  <div class="currency-banner">
-    Digital Currency
-  </div>
+  <div class="currency-banner" data-i18n="digitalCurrency">Digital Currency</div>
 
-  <!-- HOT -->
   <div class="hot-panel">
-    <div class="hot-title">
-      Hot <span>🔥</span>
-    </div>
-
+    <div class="hot-title">Hot</div>
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <linearGradient id="homePinkFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ef3158" stop-opacity=".45"/>
+          <stop offset="100%" stop-color="#ef3158" stop-opacity=".08"/>
+        </linearGradient>
+      </defs>
+    </svg>
     <div class="hot-cards">
-
       <div class="hot-card">
         <div class="hot-symbol">BTCUSDT</div>
-
-        <svg class="mini-chart" viewBox="0 0 120 48">
-          <polyline
-            points="0,38 12,32 23,34 35,25 46,27 58,17 70,20 82,13 94,16 106,8 120,12"
-            fill="none"
-            stroke="#ffffff"
-            stroke-width="2.5"
-          />
+        <div id="btcHot" class="hot-price">75422.32</div>
+        <div class="hot-usd">≈$<span id="btcHotUsd">75422.32</span></div>
+        <svg class="home-spark" viewBox="0 0 150 80" preserveAspectRatio="none">
+          <path class="area" d="M0 22 L15 28 L30 18 L45 33 L58 55 L70 44 L84 63 L97 47 L110 42 L124 51 L138 43 L150 58 L150 80 L0 80 Z"/>
+          <path class="line" d="M0 22 L15 28 L30 18 L45 33 L58 55 L70 44 L84 63 L97 47 L110 42 L124 51 L138 43 L150 58"/>
         </svg>
-
-        <div id="btcHot" class="hot-price">112,840.00</div>
-        <div class="hot-change">+2.36%</div>
       </div>
-
       <div class="hot-card">
         <div class="hot-symbol">ETHUSDT</div>
-
-        <svg class="mini-chart" viewBox="0 0 120 48">
-          <polyline
-            points="0,35 12,31 24,33 36,24 48,28 60,20 72,22 84,15 96,17 108,11 120,14"
-            fill="none"
-            stroke="#ffffff"
-            stroke-width="2.5"
-          />
+        <div id="ethHot" class="hot-price">2379.07</div>
+        <div class="hot-usd">≈$<span id="ethHotUsd">2379.07</span></div>
+        <svg class="home-spark" viewBox="0 0 150 80" preserveAspectRatio="none">
+          <path class="area" d="M0 18 L16 25 L32 21 L46 38 L58 31 L73 55 L88 45 L103 50 L118 43 L135 48 L150 58 L150 80 L0 80 Z"/>
+          <path class="line" d="M0 18 L16 25 L32 21 L46 38 L58 31 L73 55 L88 45 L103 50 L118 43 L135 48 L150 58"/>
         </svg>
-
-        <div id="ethHot" class="hot-price">4,410.00</div>
-        <div class="hot-change">+1.82%</div>
       </div>
-
       <div class="hot-card">
         <div class="hot-symbol">XRPUSDT</div>
-
-        <svg class="mini-chart" viewBox="0 0 120 48">
-          <polyline
-            points="0,39 12,35 24,37 36,29 48,31 60,23 72,25 84,18 96,20 108,14 120,16"
-            fill="none"
-            stroke="#ffffff"
-            stroke-width="2.5"
-          />
+        <div class="hot-price">1.3126</div>
+        <div class="hot-usd">≈$1.31</div>
+        <svg class="home-spark" viewBox="0 0 150 80" preserveAspectRatio="none">
+          <path class="area" d="M0 45 L18 48 L35 42 L50 12 L61 39 L77 31 L94 50 L109 47 L124 54 L139 49 L150 55 L150 80 L0 80 Z"/>
+          <path class="line" d="M0 45 L18 48 L35 42 L50 12 L61 39 L77 31 L94 50 L109 47 L124 54 L139 49 L150 55"/>
         </svg>
-
-        <div class="hot-price">3.02</div>
-        <div class="hot-change">+3.41%</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- NEWS -->
-  <div class="news-panel">
-    <div class="news-header">
-      <strong>News Flash</strong>
-      <span>›</span>
-    </div>
-
-    <div class="news-item">
-      <div class="news-time">12:40</div>
-      <div>
-        <strong>Digital asset market</strong>
-        <p>Latest market information and digital currency updates.</p>
       </div>
     </div>
+    <div class="hot-dot"></div>
+  </div>
 
-    <div class="news-item">
-      <div class="news-time">11:25</div>
-      <div>
-        <strong>Market Update</strong>
-        <p>BTC, ETH and other digital assets remain active.</p>
-      </div>
+  <h2 class="home-section-title" data-i18n="newsFlash">News Flash</h2>
+  <div class="news-card">
+    <div class="news-empty"></div>
+    <div class="news-copy">
+      <div class="news-date">2024-05-20</div>
+      <strong data-i18n="newsText">NexaTrade demo presents simulated digital-asset market information.</strong>
     </div>
+    <div class="news-more">⊙</div>
   </div>
 
-  <div class="home-demo-note">
-    DEMO · Simulated market
+  <h2 class="home-section-title" data-i18n="cryptocurrency">Cryptocurrency</h2>
+  <div class="crypto-grid">
+    <div class="crypto-card"><div class="crypto-symbol">BTCUSDT</div><div class="crypto-price" id="btcHomeGrid">75422.32</div><div class="crypto-usd">≈$75422.32</div><svg class="home-spark" viewBox="0 0 120 70"><path class="line" d="M0 15 L12 20 L24 45 L36 35 L48 55 L60 42 L72 46 L84 31 L96 37 L108 25 L120 52"/></svg></div>
+    <div class="crypto-card"><div class="crypto-symbol">ETHUSDT</div><div class="crypto-price" id="ethHomeGrid">2379.07</div><div class="crypto-usd">≈$2379.07</div><svg class="home-spark" viewBox="0 0 120 70"><path class="line" d="M0 13 L15 18 L30 36 L44 29 L58 54 L72 43 L87 47 L102 35 L120 53"/></svg></div>
+    <div class="crypto-card"><div class="crypto-symbol">BCHUSDT</div><div class="crypto-price">215.81</div><div class="crypto-usd">≈$215.81</div><svg class="home-spark" viewBox="0 0 120 70"><path class="line" d="M0 22 L15 10 L30 44 L45 31 L60 52 L75 40 L90 43 L105 30 L120 55"/></svg></div>
+    <div class="crypto-card"><div class="crypto-symbol">DASHUSDT</div><div class="crypto-price">50.51</div><div class="crypto-usd">≈$50.51</div><svg class="home-spark" viewBox="0 0 120 70"><path class="line" d="M0 18 L15 24 L30 43 L45 55 L60 39 L75 44 L90 34 L105 18 L120 52"/></svg></div>
+    <div class="crypto-card"><div class="crypto-symbol">DOGEUSDT</div><div class="crypto-price">0.07921</div><div class="crypto-usd">≈$0.08</div><svg class="home-spark" viewBox="0 0 120 70"><path class="line" d="M0 21 L15 15 L30 35 L45 47 L60 36 L75 41 L90 32 L105 26 L120 50"/></svg></div>
+    <div class="crypto-card"><div class="crypto-symbol">DOTUSDT</div><div class="crypto-price">0.945</div><div class="crypto-usd">≈$0.95</div><svg class="home-spark" viewBox="0 0 120 70"><path class="line" d="M0 14 L15 18 L30 27 L45 43 L60 31 L75 38 L90 29 L105 36 L120 54"/></svg></div>
   </div>
 
+  <h2 class="home-section-title" data-i18n="service">service</h2>
+  <div class="service-hero">
+    <div class="service-robot">🤖</div>
+    <strong data-i18n="aiService">AI Service for You<br>More Comprehensive Trading Products</strong>
+  </div>
+  <div class="service-grid">
+    <div class="service-card"><div class="service-emoji">👛</div><h3 data-i18n="purchase">Purchase</h3><p data-i18n="purchaseText">Explore simulated cryptocurrency purchasing features.</p></div>
+    <div class="service-card"><div class="service-emoji">🛡️</div><h3 data-i18n="security">Security</h3><p data-i18n="securityText">Demo interface designed with clear account controls.</p></div>
+    <div class="service-card"><div class="service-emoji">📊</div><h3 data-i18n="trading">Trading</h3><p data-i18n="tradingText">Simulated digital-asset trading pairs.</p></div>
+    <div class="service-card"><div class="service-emoji">🏧</div><h3 data-i18n="rate">Rate</h3><p data-i18n="rateText">Illustrative transaction-rate display.</p></div>
+  </div>
+
+  <h2 class="home-section-title" data-i18n="advantages">Advantages</h2>
+  <div class="adv-hero">
+    <div class="adv-emoji">💠</div>
+    <strong data-i18n="experience">Digital asset simulation experience</strong>
+    <p data-i18n="experienceText">Explore a demo interface for digital-asset market features. No real funds or returns.</p>
+  </div>
+  <div class="adv-grid">
+    <div class="adv-card buy"><div class="adv-emoji">🪙</div><h3 data-i18n="buy">Buy</h3><p data-i18n="buyText">Choose a cryptocurrency in the simulation.</p></div>
+    <div class="adv-card safety"><div class="adv-emoji">🛡️</div><h3 data-i18n="safety">Safety</h3><p data-i18n="safetyText">Demo-only environment with no real deposits or withdrawals.</p></div>
+  </div>
+
+  <div id="languageMenu" class="lang-menu hidden">
+    <button onclick="setLanguage('en')">🇬🇧 English</button>
+    <button onclick="setLanguage('fr')">🇫🇷 Français</button>
+  </div>
 </section>
 
   <section id="quotes" class="page">
@@ -675,6 +595,12 @@ function updateUI(){
 
   if(btcHotEl) btcHotEl.textContent = price(btcPrice);
   if(ethHotEl) ethHotEl.textContent = price(ethPrice);
+  const btcHotUsdEl=document.getElementById("btcHotUsd"), ethHotUsdEl=document.getElementById("ethHotUsd");
+  const btcHomeGridEl=document.getElementById("btcHomeGrid"), ethHomeGridEl=document.getElementById("ethHomeGrid");
+  if(btcHotUsdEl) btcHotUsdEl.textContent=price(btcPrice);
+  if(ethHotUsdEl) ethHotUsdEl.textContent=price(ethPrice);
+  if(btcHomeGridEl) btcHomeGridEl.textContent=price(btcPrice);
+  if(ethHomeGridEl) ethHomeGridEl.textContent=price(ethPrice);
 
   if(btcQuoteEl) btcQuoteEl.textContent = "$" + price(btcPrice);
   if(ethQuoteEl) ethQuoteEl.textContent = "$" + price(ethPrice);
@@ -964,11 +890,52 @@ function simulateMarket(){
 }
 setInterval(simulateMarket,2200);drawChart();
 
+
+const homeTranslations={
+  en:{
+    digitalCurrency:"Digital Currency",newsFlash:"News Flash",cryptocurrency:"Cryptocurrency",
+    newsText:"NexaTrade demo presents simulated digital-asset market information.",
+    service:"service",aiService:"AI Service for You<br>More Comprehensive Trading Products",
+    purchase:"Purchase",purchaseText:"Explore simulated cryptocurrency purchasing features.",
+    security:"Security",securityText:"Demo interface designed with clear account controls.",
+    trading:"Trading",tradingText:"Simulated digital-asset trading pairs.",
+    rate:"Rate",rateText:"Illustrative transaction-rate display.",
+    advantages:"Advantages",experience:"Digital asset simulation experience",
+    experienceText:"Explore a demo interface for digital-asset market features. No real funds or returns.",
+    buy:"Buy",buyText:"Choose a cryptocurrency in the simulation.",
+    safety:"Safety",safetyText:"Demo-only environment with no real deposits or withdrawals."
+  },
+  fr:{
+    digitalCurrency:"Monnaie numérique",newsFlash:"Actualités",cryptocurrency:"Cryptomonnaies",
+    newsText:"La démo NexaTrade présente des informations simulées sur le marché des actifs numériques.",
+    service:"services",aiService:"Service IA pour vous<br>Des produits de trading plus complets",
+    purchase:"Achat",purchaseText:"Explorez les fonctions simulées d'achat de cryptomonnaies.",
+    security:"Sécurité",securityText:"Interface de démonstration avec des contrôles de compte clairs.",
+    trading:"Trading",tradingText:"Paires de trading d'actifs numériques simulées.",
+    rate:"Tarifs",rateText:"Affichage illustratif des taux de transaction.",
+    advantages:"Avantages",experience:"Expérience simulée sur les actifs numériques",
+    experienceText:"Explorez une interface de démonstration. Aucun fonds ni rendement réel.",
+    buy:"Acheter",buyText:"Choisissez une cryptomonnaie dans la simulation.",
+    safety:"Sécurité",safetyText:"Environnement de démonstration sans dépôt ni retrait réel."
+  }
+};
+function toggleLanguageMenu(){document.getElementById("languageMenu")?.classList.toggle("hidden")}
+function setLanguage(lang){
+  const dict=homeTranslations[lang]||homeTranslations.en;
+  document.querySelectorAll("#home [data-i18n]").forEach(el=>{
+    const v=dict[el.dataset.i18n]; if(v!==undefined) el.innerHTML=v;
+  });
+  document.documentElement.lang=lang;
+  localStorage.setItem("nexaLanguage",lang);
+  document.getElementById("languageMenu")?.classList.add("hidden");
+}
+
 async function checkSession(){
   const {data:{session}}=await sb.auth.getSession();
   if(session?.user)await enterApp(session.user);
 }
 sb.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")currentUser=null});
+setLanguage(localStorage.getItem("nexaLanguage")||"en");
 checkSession();
 </script>
 </body>
