@@ -174,6 +174,18 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .app:has(#quotes.active) .nav button{color:#aaa;font-size:12px}.app:has(#quotes.active) .nav button.active{color:#91ff75}.app:has(#quotes.active) .nav-icon{font-size:25px;margin-bottom:5px}
 @media(max-width:380px){#quotes{padding-left:16px;padding-right:16px}.quotes-title{font-size:28px}.quotes-search-wrap{width:57%}.quote-name,.quote-price{font-size:19px}.quote-vol{font-size:12px}.quote-change{min-width:72px;font-size:14px}}
 
+/* ===== TRADE REFERENCE — ISOLATED ===== */
+.app:has(#trade.active){max-width:560px;background:#fff;padding-bottom:120px}
+.app:has(#trade.active)>.header,.app:has(#trade.active)>.warning{display:none}
+#trade{min-height:100vh;background:#fff;color:#151515;padding:28px 0 130px}
+.trade-topbar{margin:0 16px 18px;padding:26px 24px;border-radius:28px;background:#303236;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.trade-pair{display:flex;align-items:center;gap:15px;font-size:27px}.trade-pair-icon{width:38px;height:38px;border-radius:50%;background:#7cff72;color:#202226;display:grid;place-items:center;font-weight:900}
+.trade-delivery{border:0;border-radius:13px;background:#7cff72;padding:11px 17px;font-size:16px;color:#202226}
+.trade-market{padding:22px 24px 0}.trade-price-row{display:flex;justify-content:space-between;align-items:flex-start}.trade-live-price{font-size:39px;font-weight:500;color:#20d62c}.trade-change{margin-top:8px;color:#ff1534;font-size:20px;font-weight:700}.trade-count{text-align:right;color:#747b86;font-weight:700}.trade-count strong{display:block;color:#111;font-size:22px}.trade-window{margin-top:14px;background:#f1f1f1;color:#ee2e60;padding:8px 13px;font-size:17px}
+.trade-tabs{display:flex;gap:22px;overflow-x:auto;white-space:nowrap;border-top:1px solid #ddd;border-bottom:1px solid #ddd;margin-top:28px;padding:15px 24px;font-size:17px;font-weight:600}.trade-tabs .active{color:#22d82e}.trade-chart-wrap{height:315px;padding:18px 10px 0;border-bottom:1px solid #ddd}.trade-canvas{width:100%;height:100%}
+.trade-controls{padding:20px 24px}.trade-select-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.trade-select,.trade-amount{height:60px;border:1px solid #c9ced5;border-radius:15px;background:#fff;padding:0 18px;font-size:17px}.trade-amount-wrap{position:relative;margin-top:14px}.trade-amount{width:100%;padding-right:75px}.trade-unit{position:absolute;right:18px;top:18px;font-size:19px}.trade-available{display:flex;justify-content:space-between;margin:16px 0;font-size:16px}.trade-pcts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.trade-pcts button{height:40px;border:1px solid #1788ff;background:#fff;color:#1788ff;border-radius:8px;font-size:16px}.trade-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}.trade-actions button{height:64px;border:0;border-radius:14px;color:#fff;font-size:20px;font-weight:800}.trade-call{background:#89e88b}.trade-put{background:#f47fa1}.trade-order-tabs{display:grid;grid-template-columns:repeat(4,1fr);align-items:end;margin-top:54px;border-bottom:1px solid #ccc;text-align:center;color:#555}.trade-order-tab{padding:13px 4px;font-size:16px}.trade-order-tab.active{font-weight:800;color:#222;border-bottom:4px solid #2bd63c}.trade-empty{text-align:center;color:#aaa;padding:110px 20px 80px;font-size:20px}.trade-empty-icon{font-size:70px;opacity:.18;margin-bottom:25px}
+.app:has(#trade.active) .nav{max-width:560px;background:#2d2f32;border:0;border-radius:28px 28px 0 0;padding:15px 8px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -5px 18px rgba(0,0,0,.08)}.app:has(#trade.active) .nav button{color:#aaa;font-size:12px}.app:has(#trade.active) .nav button.active{color:#91ff75}.app:has(#trade.active) .nav-icon{font-size:25px;margin-bottom:5px}
+
 </style>
 </head>
 <body>
@@ -387,33 +399,23 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
   </section>
 
   <section id="trade" class="page">
-    <div class="section-title">BTC / USDT</div>
-    <div class="card">
-      <div class="muted">Current simulated price</div>
-      <div class="balance">$<span id="btcTrade">-</span></div>
-      <div class="chart">
-        <svg viewBox="0 0 500 180" preserveAspectRatio="none">
-          <polyline id="chartLine" fill="none" stroke="#18d896" stroke-width="3" points=""></polyline>
-        </svg>
-      </div>
+    <div class="trade-topbar"><div class="trade-pair"><span class="trade-pair-icon">⇄</span><span>BTC/USDT</span></div><button class="trade-delivery">delivery ▼</button></div>
+    <div class="trade-market">
+      <div class="trade-price-row"><div><div id="btcTrade" class="trade-live-price">-</div><div id="trade24Change" class="trade-change">--%</div></div><div><div class="trade-count">countdown<strong id="tradeCountdownTop">00:00:60</strong></div><div id="tradeWindow" class="trade-window">↘ --:-- ~ --:--</div></div></div>
     </div>
-
-    <div class="card">
-      <strong>Copy Trading DEMO</strong>
-      <div class="muted" style="margin-top:5px">Code 6 caractères · position 60S · 1 % du capital fictif.</div>
-      <label>Code</label>
-      <div class="code-row">
-        <input id="userCode" class="input code-input" maxlength="6" placeholder="10FHGV">
-        <button class="code-btn" onclick="useCode()">TRADE</button>
-      </div>
-      <div id="tradeMessage" class="message"></div>
+    <div class="trade-tabs"><span>time sharing</span><span class="active">1 min</span><span>5 min</span><span>15 min</span><span>30 min</span><span>1d</span><span>1week</span><span>month</span></div>
+    <div class="trade-chart-wrap"><canvas id="tradeCandleCanvas" class="trade-canvas"></canvas></div>
+    <div class="trade-controls">
+      <div class="trade-select-row"><select class="trade-select"><option>60s</option></select><select id="tradeTimeSelect" class="trade-select"><option>Next 60s</option></select></div>
+      <div class="trade-amount-wrap"><input id="tradeAmount" class="trade-amount" type="number" min="0" value="0"><span class="trade-unit">USDT</span></div>
+      <div class="trade-available"><span>available&nbsp;&nbsp; <strong id="tradeAvailable">0.00</strong></span><span>USDT</span></div>
+      <div class="trade-pcts"><button onclick="setTradePercent(1)">1%</button><button onclick="setTradePercent(50)">50%</button><button onclick="setTradePercent(75)">75%</button><button onclick="setTradePercent(100)">100%</button></div>
+      <div class="trade-actions"><button class="trade-call" onclick="prepareDirection('CALL')">CALL <span id="callPct">53.12%</span></button><button class="trade-put" onclick="prepareDirection('PUT')">PUT <span id="putPct">56.88%</span></button></div>
+      <div class="card" style="margin:24px 0 0;background:#fff;color:#111;border-color:#ddd"><strong>Copy Trading DEMO</strong><div class="muted" style="margin-top:5px">Code 6 caractères · position 60S · simulation uniquement.</div><label>Code</label><div class="code-row"><input id="userCode" class="input code-input" maxlength="6" placeholder="10FHGV" style="background:#fff;color:#111;border-color:#ccc"><button class="code-btn" onclick="useCode()">TRADE</button></div><div id="tradeMessage" class="message"></div></div>
     </div>
-
-    <div class="section-title">Active Position</div>
-    <div id="activePositions"><div class="card center muted">Aucune position active.</div></div>
-
-    <div class="section-title">Historical Orders</div>
-    <div id="tradeHistory" class="card"><div class="center muted">Aucun ordre terminé.</div></div>
+    <div class="trade-order-tabs"><div class="trade-order-tab active">delivery order</div><div class="trade-order-tab">historical<br>orders</div><div class="trade-order-tab">Invited me</div><div class="trade-order-tab">Invited</div></div>
+    <div id="activePositions"><div class="trade-empty"><div class="trade-empty-icon">▤</div>No data</div></div>
+    <div id="tradeHistory" class="hidden"></div>
   </section>
 
   <section id="assets" class="page">
@@ -605,6 +607,8 @@ function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== 
   if(btcQuoteEl) btcQuoteEl.textContent = "$" + price(btcPrice);
   if(ethQuoteEl) ethQuoteEl.textContent = "$" + price(ethPrice);
   if(btcTradeEl) btcTradeEl.textContent = price(btcPrice);
+  const ta=document.getElementById("tradeAvailable"); if(ta) ta.textContent=money(b);
+  drawTradeChart();
 }
 
 function filterQuotes(){
@@ -620,6 +624,13 @@ function showPage(pageId,button){
   if(button){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));button.classList.add("active")}
   if(pageId==="admin"&&isCurrentUserAdmin) loadAdminAll();
 }
+
+function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2)}
+function prepareDirection(d){const msg=document.getElementById("tradeMessage");if(msg)showMessage("tradeMessage",d+" sélectionné. Entre ton code DEMO puis appuie sur TRADE.","success")}
+function updateTradeTimeUI(){const now=new Date(),next=new Date(now.getTime()+60000);const f=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");const w=document.getElementById("tradeWindow"),s=document.getElementById("tradeTimeSelect");if(w)w.textContent="↘ "+f(now)+" ~ "+f(next);if(s)s.innerHTML=`<option>${f(now)} - ${f(next)}</option>`;}
+setInterval(updateTradeTimeUI,1000);updateTradeTimeUI();
+function drawTradeChart(){const c=document.getElementById("tradeCandleCanvas");if(!c)return;const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);const x=c.getContext("2d");x.scale(d,d);const W=r.width,H=r.height;x.clearRect(0,0,W,H);x.strokeStyle="#edf0f2";x.lineWidth=1;for(let i=1;i<6;i++){x.beginPath();x.moveTo(0,H*i/6);x.lineTo(W,H*i/6);x.stroke()}const vals=chartValues.slice(-24);if(!vals.length)return;const min=Math.min(...vals)*.9995,max=Math.max(...vals)*1.0005,bw=W/vals.length*.55;vals.forEach((v,i)=>{const prev=vals[Math.max(0,i-1)],open=prev,close=v,hi=Math.max(open,close)*(1+Math.random()*.0005),lo=Math.min(open,close)*(1-Math.random()*.0005),yy=z=>20+(max-z)/(max-min)*(H-55),cx=(i+.5)*W/vals.length,up=close>=open;x.strokeStyle=up?"#28bd89":"#f33762";x.fillStyle=x.strokeStyle;x.beginPath();x.moveTo(cx,yy(hi));x.lineTo(cx,yy(lo));x.stroke();x.fillRect(cx-bw/2,Math.min(yy(open),yy(close)),bw,Math.max(2,Math.abs(yy(open)-yy(close))))});}
+window.addEventListener("resize",drawTradeChart);setInterval(drawTradeChart,2000);
 
 async function useCode(){
   clearMessage("tradeMessage");
