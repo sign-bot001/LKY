@@ -88,30 +88,111 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 
   <div class="warning">⚠️ Simulation uniquement — aucun dépôt, retrait ou rendement réel.</div>
 
-  <section id="home" class="page active">
-    <div class="card">
-      <div class="muted">Total Assets · DEMO</div>
-      <div class="balance">$<span id="homeBalance">0.00</span></div>
-      <div class="actions">
-        <div class="action" onclick="demoRecharge()"><div class="action-circle">＋</div><small>Recharge</small></div>
-        <div class="action" onclick="demoWithdraw()"><div class="action-circle">↑</div><small>Withdraw</small></div>
-        <div class="action" onclick="showPage('trade')"><div class="action-circle">⇅</div><small>Trade</small></div>
-        <div class="action" onclick="showPage('assets')"><div class="action-circle">◈</div><small>Assets</small></div>
+  <section id="home" class="page active home-new">
+
+  <!-- TOP -->
+  <div class="home-top">
+    <button class="home-round-btn">◎</button>
+
+    <button class="home-profile-btn">
+      <span class="profile-head"></span>
+      <span class="profile-body"></span>
+    </button>
+  </div>
+
+  <!-- DIGITAL CURRENCY -->
+  <div class="currency-banner">
+    Digital Currency
+  </div>
+
+  <!-- HOT -->
+  <div class="hot-panel">
+    <div class="hot-title">
+      Hot <span>🔥</span>
+    </div>
+
+    <div class="hot-cards">
+
+      <div class="hot-card">
+        <div class="hot-symbol">BTCUSDT</div>
+
+        <svg class="mini-chart" viewBox="0 0 120 48">
+          <polyline
+            points="0,38 12,32 23,34 35,25 46,27 58,17 70,20 82,13 94,16 106,8 120,12"
+            fill="none"
+            stroke="#ffffff"
+            stroke-width="2.5"
+          />
+        </svg>
+
+        <div id="btcHot" class="hot-price">112,840.00</div>
+        <div class="hot-change">+2.36%</div>
+      </div>
+
+      <div class="hot-card">
+        <div class="hot-symbol">ETHUSDT</div>
+
+        <svg class="mini-chart" viewBox="0 0 120 48">
+          <polyline
+            points="0,35 12,31 24,33 36,24 48,28 60,20 72,22 84,15 96,17 108,11 120,14"
+            fill="none"
+            stroke="#ffffff"
+            stroke-width="2.5"
+          />
+        </svg>
+
+        <div id="ethHot" class="hot-price">4,410.00</div>
+        <div class="hot-change">+1.82%</div>
+      </div>
+
+      <div class="hot-card">
+        <div class="hot-symbol">XRPUSDT</div>
+
+        <svg class="mini-chart" viewBox="0 0 120 48">
+          <polyline
+            points="0,39 12,35 24,37 36,29 48,31 60,23 72,25 84,18 96,20 108,14 120,16"
+            fill="none"
+            stroke="#ffffff"
+            stroke-width="2.5"
+          />
+        </svg>
+
+        <div class="hot-price">3.02</div>
+        <div class="hot-change">+3.41%</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="news-panel">
+    <div class="news-header">
+      <strong>News Flash</strong>
+      <span>›</span>
+    </div>
+
+    <div class="news-item">
+      <div class="news-time">12:40</div>
+      <div>
+        <strong>Digital asset market</strong>
+        <p>Latest market information and digital currency updates.</p>
       </div>
     </div>
 
-    <div class="section-title">Market</div>
-    <div class="card">
-      <div class="asset-row">
-        <div class="coin"><div class="coin-icon">₿</div><div><strong>BTC / USDT</strong><div class="muted">Bitcoin</div></div></div>
-        <div class="price"><strong id="btcHome">-</strong><div class="green">SIM</div></div>
-      </div>
-      <div class="asset-row">
-        <div class="coin"><div class="coin-icon">Ξ</div><div><strong>ETH / USDT</strong><div class="muted">Ethereum</div></div></div>
-        <div class="price"><strong id="ethHome">-</strong><div class="green">SIM</div></div>
+    <div class="news-item">
+      <div class="news-time">11:25</div>
+      <div>
+        <strong>Market Update</strong>
+        <p>BTC, ETH and other digital assets remain active.</p>
       </div>
     </div>
-  </section>
+  </div>
+
+  <div class="home-demo-note">
+    DEMO · Simulated market
+  </div>
+
+</section>
 
   <section id="quotes" class="page">
     <div class="section-title">Quotes</div>
