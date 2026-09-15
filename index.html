@@ -579,7 +579,7 @@ async function refreshEverything(){
   if(isCurrentUserAdmin) await loadAdminAll();
 }
 
-function updateUI(){
+function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== */
   const b=Number(profile?.balance||0);
 
   const assetBalanceEl = document.getElementById("assetBalance");
@@ -931,59 +931,316 @@ function setLanguage(lang){
 }
 
 
-/* ===== LIVE MARKET DATA — Binance public Spot API ===== */
-const LIVE_SYMBOLS=["BTCUSDT","ETHUSDT","BCHUSDT","DASHUSDT","DOGEUSDT","DOTUSDT","FILUSDT","LINKUSDT","LTCUSDT","XRPUSDT","ZECUSDT"];
+/* =====================================================
+   CENTRAL LIVE MARKET — BINANCE WEBSOCKET
+   Une seule source pour HOME + QUOTES + TRADE
+===================================================== */
+
+const LIVE_SYMBOLS = [
+  "BTCUSDT",
+  "ETHUSDT",
+  "BCHUSDT",
+  "DASHUSDT",
+  "DOGEUSDT",
+  "DOTUSDT",
+  "FILUSDT",
+  "LINKUSDT",
+  "LTCUSDT",
+  "XRPUSDT",
+  "ZECUSDT"
+];
+
+/* Source centrale */
+const LIVE_MARKET = {};
+
+
+/* ---------- FORMAT PRIX ---------- */
 
 function livePriceFormat(value){
-  const n=Number(value);
+
+  const n = Number(value);
+
   if(!Number.isFinite(n)) return "-";
-  if(n>=1000) return n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-  if(n>=1) return n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:4});
-  return n.toLocaleString("en-US",{minimumFractionDigits:4,maximumFractionDigits:8});
-}
-function liveVolumeFormat(value){
-  const n=Number(value);
-  if(!Number.isFinite(n)) return "-";
-  return n.toLocaleString("en-US",{maximumFractionDigits:2});
-}
-async function refreshLiveQuotes(){
-  try{
-    const requests=LIVE_SYMBOLS.map(symbol=>
-      fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+encodeURIComponent(symbol))
-        .then(r=>{if(!r.ok) throw new Error(symbol+" HTTP "+r.status); return r.json();})
-    );
-    const results=await Promise.allSettled(requests);
 
-    results.forEach((result,index)=>{
-      if(result.status!=="fulfilled") return;
-      const d=result.value, symbol=LIVE_SYMBOLS[index];
-      const row=document.getElementById("quote-"+symbol);
-      if(!row) return;
-
-      const priceEl=row.querySelector(".quote-price");
-      const volEl=row.querySelector(".quote-vol");
-      const changeEl=row.querySelector(".quote-change");
-      const last=Number(d.lastPrice);
-      const pct=Number(d.priceChangePercent);
-
-      if(priceEl) priceEl.textContent=livePriceFormat(last);
-      if(volEl) volEl.textContent="VOL "+liveVolumeFormat(d.quoteVolume);
-      if(changeEl){
-        changeEl.textContent=(pct>=0?"+":"")+pct.toFixed(2)+"%";
-        changeEl.style.background=pct>=0?"#35c979":"#ff0d55";
-      }
-
-      if(symbol==="BTCUSDT" && Number.isFinite(last)) btcPrice=last;
-      if(symbol==="ETHUSDT" && Number.isFinite(last)) ethPrice=last;
+  if(n >= 1000){
+    return n.toLocaleString("en-US",{
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
     });
+  }
 
-    updateUI();
-  }catch(err){
-    console.warn("Live market update unavailable:",err);
+  if(n >= 1){
+    return n.toLocaleString("en-US",{
+      minimumFractionDigits:2,
+      maximumFractionDigits:4
+    });
+  }
+
+  return n.toLocaleString("en-US",{
+    minimumFractionDigits:4,
+    maximumFractionDigits:8
+  });
+}
+
+
+/* ---------- FORMAT VOLUME ---------- */
+
+function liveVolumeFormat(value){
+
+  const n = Number(value);
+
+  if(!Number.isFinite(n)) return "-";
+
+  return n.toLocaleString("en-US",{
+    maximumFractionDigits:2
+  });
+}
+
+
+/* =====================================================
+   UPDATE QUOTES
+===================================================== */
+
+function updateQuotesFromMarket(symbol){
+
+  const market = LIVE_MARKET[symbol];
+
+  if(!market) return;
+
+  const row = document.getElementById("quote-" + symbol);
+
+  if(!row) return;
+
+  const priceEl  = row.querySelector(".quote-price");
+  const volEl    = row.querySelector(".quote-vol");
+  const changeEl = row.querySelector(".quote-change");
+
+  if(priceEl){
+    priceEl.textContent = livePriceFormat(market.price);
+  }
+
+  if(volEl){
+    volEl.textContent =
+      "VOL " + liveVolumeFormat(market.volume);
+  }
+
+  if(changeEl){
+
+    const pct = market.change;
+
+    changeEl.textContent =
+      (pct >= 0 ? "+" : "") +
+      pct.toFixed(2) +
+      "%";
+
+    changeEl.style.background =
+      pct >= 0 ? "#35c979" : "#ff0d55";
   }
 }
-refreshLiveQuotes();
-setInterval(refreshLiveQuotes,10000);
+
+
+/* =====================================================
+   UPDATE HOME
+===================================================== */
+
+function updateHomeFromMarket(symbol){
+
+  const market = LIVE_MARKET[symbol];
+
+  if(!market) return;
+
+  /*
+     On cherche automatiquement les cartes HOME
+     possédant data-symbol="BTCUSDT" etc.
+  */
+
+  const cards =
+    document.querySelectorAll(
+      '#home [data-symbol="' + symbol + '"]'
+    );
+
+  cards.forEach(card => {
+
+    const price =
+      card.querySelector(".hot-price, .crypto-price");
+
+    const usd =
+      card.querySelector(".hot-usd, .crypto-usd");
+
+    if(price){
+      price.textContent =
+        livePriceFormat(market.price);
+    }
+
+    if(usd){
+      usd.textContent =
+        "≈$" + livePriceFormat(market.price);
+    }
+
+  });
+
+}
+
+
+/* =====================================================
+   UPDATE GLOBAL MARKET
+===================================================== */
+
+function updateMarket(symbol,data){
+
+  const price  = Number(data.c);
+  const change = Number(data.P);
+  const volume = Number(data.q);
+
+  if(!Number.isFinite(price)) return;
+
+  LIVE_MARKET[symbol] = {
+    price,
+    change,
+    volume,
+    updatedAt: Date.now()
+  };
+
+
+  /* Quotes */
+
+  updateQuotesFromMarket(symbol);
+
+
+  /* Home */
+
+  updateHomeFromMarket(symbol);
+
+
+  /* Compatibilité ancien code */
+
+  if(symbol === "BTCUSDT"){
+    btcPrice = price;
+  }
+
+  if(symbol === "ETHUSDT"){
+    ethPrice = price;
+  }
+
+}
+
+
+/* =====================================================
+   BINANCE WEBSOCKET
+===================================================== */
+
+let marketSocket = null;
+
+function connectLiveMarket(){
+
+  if(marketSocket){
+
+    try{
+      marketSocket.close();
+    }catch(e){}
+
+  }
+
+
+  const streams = LIVE_SYMBOLS
+    .map(symbol =>
+      symbol.toLowerCase() + "@ticker"
+    )
+    .join("/");
+
+
+  const url =
+    "wss://stream.binance.com:9443/stream?streams=" +
+    streams;
+
+
+  console.log("Connecting live market...");
+
+
+  marketSocket = new WebSocket(url);
+
+
+  marketSocket.onopen = function(){
+
+    console.log(
+      "✅ LIVE MARKET CONNECTED"
+    );
+
+  };
+
+
+  marketSocket.onmessage = function(event){
+
+    try{
+
+      const message =
+        JSON.parse(event.data);
+
+      const data =
+        message.data;
+
+      if(!data) return;
+
+
+      const symbol =
+        data.s;
+
+
+      if(!LIVE_SYMBOLS.includes(symbol)){
+        return;
+      }
+
+
+      updateMarket(
+        symbol,
+        data
+      );
+
+
+    }catch(error){
+
+      console.error(
+        "Market message error:",
+        error
+      );
+
+    }
+
+  };
+
+
+  marketSocket.onerror = function(error){
+
+    console.error(
+      "❌ LIVE MARKET ERROR",
+      error
+    );
+
+  };
+
+
+  marketSocket.onclose = function(){
+
+    console.warn(
+      "⚠️ Market disconnected — reconnecting..."
+    );
+
+
+    setTimeout(
+      connectLiveMarket,
+      3000
+    );
+
+  };
+
+}
+
+
+/* =====================================================
+   START LIVE MARKET
+===================================================== */
+
+connectLiveMarket();
 
 async function checkSession(){
   const {data:{session}}=await sb.auth.getSession();
