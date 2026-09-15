@@ -42,7 +42,192 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .search{margin-top:10px}.status{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px}.status.on{background:#153b31;color:#25e1a0}.status.off{background:#3c1d23;color:#ff7d88}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;padding:9px 4px calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel2);border-top:1px solid #20364c}.nav button{border:0;background:none;color:#71859d;font-size:10px}.nav button.active{color:#4ba2ff}.nav-icon{display:block;font-size:20px;margin-bottom:4px}
 @media(max-width:380px){.trade-grid,.history-details,.admin-grid,.stats-grid{grid-template-columns:1fr}.balance{font-size:27px}}
-</style>
+/* ===== NEW HOME ===== */
+
+.home-new{
+  min-height:calc(100vh - 75px);
+  padding:18px 14px 35px;
+  background:
+    radial-gradient(circle at 80% 5%,rgba(57,232,178,.25),transparent 28%),
+    linear-gradient(180deg,#eafff7 0%,#f4fffb 55%,#ffffff 100%);
+  color:#15231f;
+}
+
+.home-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:4px 2px 18px;
+}
+
+.home-round-btn,
+.home-profile-btn{
+  width:46px;
+  height:46px;
+  border:0;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 4px 18px rgba(17,91,68,.09);
+  color:#1d9f78;
+}
+
+.home-round-btn{
+  font-size:27px;
+  font-weight:700;
+}
+
+.home-profile-btn{
+  position:relative;
+}
+
+.profile-head{
+  position:absolute;
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#20b889;
+  left:18px;
+  top:10px;
+}
+
+.profile-body{
+  position:absolute;
+  width:21px;
+  height:11px;
+  border-radius:12px 12px 5px 5px;
+  background:#20b889;
+  left:13px;
+  bottom:10px;
+}
+
+.currency-banner{
+  height:58px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:13px;
+  background:linear-gradient(90deg,#a7f0dc,#c8f8e9);
+  color:#126c56;
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:.2px;
+  box-shadow:0 7px 22px rgba(39,181,139,.12);
+}
+
+.hot-panel{
+  margin-top:16px;
+  padding:18px 13px 15px;
+  border-radius:17px;
+  background:linear-gradient(135deg,#2fcf9b,#139e77);
+  box-shadow:0 13px 30px rgba(23,165,123,.22);
+  overflow:hidden;
+}
+
+.hot-title{
+  color:#fff;
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:15px;
+}
+
+.hot-cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.hot-card{
+  min-width:0;
+  padding:13px 10px;
+  border-radius:13px;
+  background:rgba(255,255,255,.13);
+  color:#fff;
+  backdrop-filter:blur(4px);
+}
+
+.hot-symbol{
+  font-size:12px;
+  font-weight:800;
+}
+
+.mini-chart{
+  width:100%;
+  height:44px;
+  display:block;
+  margin:7px 0;
+  opacity:.95;
+}
+
+.hot-price{
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.hot-change{
+  margin-top:3px;
+  font-size:11px;
+  color:#eafff7;
+}
+
+.news-panel{
+  margin-top:18px;
+  padding:18px;
+  border-radius:17px;
+  background:#fff;
+  box-shadow:0 8px 26px rgba(28,91,72,.08);
+}
+
+.news-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:19px;
+  margin-bottom:7px;
+}
+
+.news-header span{
+  color:#8aa69e;
+  font-size:26px;
+}
+
+.news-item{
+  display:grid;
+  grid-template-columns:52px 1fr;
+  gap:10px;
+  padding:14px 0;
+  border-bottom:1px solid #edf3f1;
+}
+
+.news-item:last-child{
+  border-bottom:0;
+}
+
+.news-time{
+  color:#159b75;
+  font-size:13px;
+  font-weight:800;
+}
+
+.news-item strong{
+  font-size:14px;
+}
+
+.news-item p{
+  margin-top:4px;
+  color:#8a9a95;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.home-demo-note{
+  text-align:center;
+  color:#78958c;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1px;
+  margin:16px 0 5px;
+}</style>
 </head>
 <body>
 
@@ -397,11 +582,25 @@ async function refreshEverything(){
 
 function updateUI(){
   const b=Number(profile?.balance||0);
-  homeBalance.textContent=money(b);assetBalance.textContent=money(b);usdtBalance.textContent=money(b);
-  btcHome.textContent="$"+price(btcPrice);btcQuote.textContent="$"+price(btcPrice);btcTrade.textContent=price(btcPrice);
-  ethHome.textContent="$"+price(ethPrice);ethQuote.textContent="$"+price(ethPrice);
-}
 
+  const assetBalanceEl = document.getElementById("assetBalance");
+  const usdtBalanceEl = document.getElementById("usdtBalance");
+  const btcHotEl = document.getElementById("btcHot");
+  const ethHotEl = document.getElementById("ethHot");
+  const btcQuoteEl = document.getElementById("btcQuote");
+  const ethQuoteEl = document.getElementById("ethQuote");
+  const btcTradeEl = document.getElementById("btcTrade");
+
+  if(assetBalanceEl) assetBalanceEl.textContent = money(b);
+  if(usdtBalanceEl) usdtBalanceEl.textContent = money(b);
+
+  if(btcHotEl) btcHotEl.textContent = price(btcPrice);
+  if(ethHotEl) ethHotEl.textContent = price(ethPrice);
+
+  if(btcQuoteEl) btcQuoteEl.textContent = "$" + price(btcPrice);
+  if(ethQuoteEl) ethQuoteEl.textContent = "$" + price(ethPrice);
+  if(btcTradeEl) btcTradeEl.textContent = price(btcPrice);
+}
 function showPage(pageId,button){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(pageId).classList.add("active");
