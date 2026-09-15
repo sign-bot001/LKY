@@ -261,6 +261,30 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .app:has(#home.active) .nav button.active{color:#91ff75;}
 .app:has(#home.active) .nav-icon{font-size:25px;margin-bottom:5px;}
 @media(max-width:380px){.home-new{padding-left:16px;padding-right:16px}.hot-card{min-height:170px}.hot-symbol{font-size:18px}}
+
+/* ===== QUOTES REFERENCE UI — ONLY QUOTES ===== */
+.app:has(#quotes.active){max-width:560px;background:#f6fff2;padding-bottom:110px;}
+.app:has(#quotes.active) > .header,.app:has(#quotes.active) > .warning{display:none;}
+#quotes.quotes-ref{min-height:100vh;padding:54px 24px 125px;background:#f6fff2;color:#202124;}
+.quotes-ref .quotes-title{font-size:31px;font-weight:800;line-height:1;margin:3px 0 28px;}
+.quotes-ref .quotes-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.quotes-ref .quote-coin-card{min-width:0;min-height:190px;padding:16px 14px 14px;border-radius:27px;background:#fff;box-shadow:none;overflow:hidden;}
+.quotes-ref .quote-symbol{font-size:20px;font-weight:500;line-height:1.15;color:#111;}
+.quotes-ref .quote-price-main{margin-top:8px;font-size:18px;font-weight:500;color:#e33b5a;white-space:nowrap;}
+.quotes-ref .quote-approx{margin-top:2px;font-size:13px;color:#89909a;}
+.quotes-ref .quote-change-pill{display:inline-block;margin-top:7px;padding:4px 8px;border-radius:9px;background:#ffe8ed;color:#e33b5a;font-size:12px;font-weight:700;}
+.quotes-ref .quote-mini-chart{display:block;width:100%;height:66px;margin-top:7px;}
+.quotes-ref .quote-mini-chart .area{fill:rgba(227,59,90,.10);}
+.quotes-ref .quote-mini-chart .line{fill:none;stroke:#e33b5a;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.quotes-ref .quotes-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:22px;}
+.quotes-ref .quotes-dots span{width:7px;height:7px;border-radius:50%;background:#d7ddd8;}
+.quotes-ref .quotes-dots span.active{width:22px;border-radius:999px;background:#91ff75;}
+.app:has(#quotes.active) .nav{max-width:560px;background:#2d2f32;border:0;border-radius:28px 28px 0 0;padding:15px 8px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -5px 18px rgba(0,0,0,.08);}
+.app:has(#quotes.active) .nav button{color:#aaa;font-size:12px;}
+.app:has(#quotes.active) .nav button.active{color:#91ff75;}
+.app:has(#quotes.active) .nav-icon{font-size:25px;margin-bottom:5px;}
+@media(max-width:380px){#quotes.quotes-ref{padding-left:16px;padding-right:16px}.quotes-ref .quote-coin-card{min-height:180px}.quotes-ref .quote-symbol{font-size:18px}.quotes-ref .quote-price-main{font-size:16px}}
+
 </style>
 </head>
 <body>
@@ -413,12 +437,39 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 
 </section>
 
-  <section id="quotes" class="page">
-    <div class="section-title">Quotes</div>
-    <div class="card">
-      <div class="asset-row"><div><strong>BTC / USDT</strong><div class="muted">Simulated market</div></div><div class="price"><strong id="btcQuote">-</strong></div></div>
-      <div class="asset-row"><div><strong>ETH / USDT</strong><div class="muted">Simulated market</div></div><div class="price"><strong id="ethQuote">-</strong></div></div>
+  <section id="quotes" class="page quotes-ref">
+    <div class="quotes-title">Quotes</div>
+    <div class="quotes-grid">
+      <div class="quote-coin-card">
+        <div class="quote-symbol">BTCUSDT</div>
+        <div id="btcQuote" class="quote-price-main">-</div>
+        <div class="quote-approx">≈$112,840.00</div>
+        <div class="quote-change-pill">-2.36%</div>
+        <svg class="quote-mini-chart" viewBox="0 0 140 66" preserveAspectRatio="none"><path class="area" d="M0 18 L14 24 L28 20 L42 31 L56 27 L70 39 L84 35 L98 48 L112 43 L126 55 L140 50 L140 66 L0 66 Z"/><polyline class="line" points="0,18 14,24 28,20 42,31 56,27 70,39 84,35 98,48 112,43 126,55 140,50"/></svg>
+      </div>
+      <div class="quote-coin-card">
+        <div class="quote-symbol">ETHUSDT</div>
+        <div id="ethQuote" class="quote-price-main">-</div>
+        <div class="quote-approx">≈$4,410.00</div>
+        <div class="quote-change-pill">-1.82%</div>
+        <svg class="quote-mini-chart" viewBox="0 0 140 66" preserveAspectRatio="none"><path class="area" d="M0 15 L14 20 L28 18 L42 29 L56 25 L70 36 L84 33 L98 45 L112 41 L126 53 L140 47 L140 66 L0 66 Z"/><polyline class="line" points="0,15 14,20 28,18 42,29 56,25 70,36 84,33 98,45 112,41 126,53 140,47"/></svg>
+      </div>
+      <div class="quote-coin-card">
+        <div class="quote-symbol">XRPUSDT</div>
+        <div class="quote-price-main">$3.02</div>
+        <div class="quote-approx">≈$3.02</div>
+        <div class="quote-change-pill">-3.41%</div>
+        <svg class="quote-mini-chart" viewBox="0 0 140 66" preserveAspectRatio="none"><path class="area" d="M0 17 L14 23 L28 21 L42 34 L56 30 L70 42 L84 37 L98 51 L112 46 L126 57 L140 52 L140 66 L0 66 Z"/><polyline class="line" points="0,17 14,23 28,21 42,34 56,30 70,42 84,37 98,51 112,46 126,57 140,52"/></svg>
+      </div>
+      <div class="quote-coin-card">
+        <div class="quote-symbol">SOLUSDT</div>
+        <div class="quote-price-main">$238.40</div>
+        <div class="quote-approx">≈$238.40</div>
+        <div class="quote-change-pill">-2.14%</div>
+        <svg class="quote-mini-chart" viewBox="0 0 140 66" preserveAspectRatio="none"><path class="area" d="M0 14 L14 19 L28 16 L42 27 L56 24 L70 35 L84 31 L98 44 L112 40 L126 52 L140 48 L140 66 L0 66 Z"/><polyline class="line" points="0,14 14,19 28,16 42,27 56,24 70,35 84,31 98,44 112,40 126,52 140,48"/></svg>
+      </div>
     </div>
+    <div class="quotes-dots"><span class="active"></span><span></span><span></span></div>
   </section>
 
   <section id="trade" class="page">
