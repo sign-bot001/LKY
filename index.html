@@ -328,57 +328,57 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
     <div class="quotes-category">Digital Currency</div>
     <div class="quotes-head"><div>name</div><div>latest price</div><div>24h change</div></div>
     <div id="quotesList">
-      <div class="quote-row" data-symbol="BTCUSDT">
+      <div class="quote-row" data-symbol="BTCUSDT" id="quote-BTCUSDT">
         <div><div class="quote-name">BTC/USDT</div><div class="quote-vol">VOL 1266227702.87</div></div>
         <div class="quote-price" id="btcQuote">75422.32</div>
         <div class="quote-change">-3.55%</div>
       </div>
-      <div class="quote-row" data-symbol="ETHUSDT">
+      <div class="quote-row" data-symbol="ETHUSDT" id="quote-ETHUSDT">
         <div><div class="quote-name">ETH/USDT</div><div class="quote-vol">VOL 806723295.14</div></div>
         <div class="quote-price" id="ethQuote">2379.07</div>
         <div class="quote-change">-5.44%</div>
       </div>
-      <div class="quote-row" data-symbol="BCHUSDT">
+      <div class="quote-row" data-symbol="BCHUSDT" id="quote-BCHUSDT">
         <div><div class="quote-name">BCH/USDT</div><div class="quote-vol">VOL 5838086.79</div></div>
         <div class="quote-price">215.81</div>
         <div class="quote-change">-3.42%</div>
       </div>
-      <div class="quote-row" data-symbol="DASHUSDT">
+      <div class="quote-row" data-symbol="DASHUSDT" id="quote-DASHUSDT">
         <div><div class="quote-name">DASH/USDT</div><div class="quote-vol">VOL 4177786.27</div></div>
         <div class="quote-price">50.51</div>
         <div class="quote-change">-6.12%</div>
       </div>
-      <div class="quote-row" data-symbol="DOGEUSDT">
+      <div class="quote-row" data-symbol="DOGEUSDT" id="quote-DOGEUSDT">
         <div><div class="quote-name">DOGE/USDT</div><div class="quote-vol">VOL 45454205.2</div></div>
         <div class="quote-price">0.07921</div>
         <div class="quote-change">-5.42%</div>
       </div>
-      <div class="quote-row" data-symbol="DOTUSDT">
+      <div class="quote-row" data-symbol="DOTUSDT" id="quote-DOTUSDT">
         <div><div class="quote-name">DOT/USDT</div><div class="quote-vol">VOL 3966026.73</div></div>
         <div class="quote-price">0.945</div>
         <div class="quote-change">-5.88%</div>
       </div>
-      <div class="quote-row" data-symbol="FILUSDT">
+      <div class="quote-row" data-symbol="FILUSDT" id="quote-FILUSDT">
         <div><div class="quote-name">FIL/USDT</div><div class="quote-vol">VOL 11787322.81</div></div>
         <div class="quote-price">0.8161</div>
         <div class="quote-change">-12.76%</div>
       </div>
-      <div class="quote-row" data-symbol="LINKUSDT">
+      <div class="quote-row" data-symbol="LINKUSDT" id="quote-LINKUSDT">
         <div><div class="quote-name">LINK/USDT</div><div class="quote-vol">VOL 12227143.79</div></div>
         <div class="quote-price">10.934</div>
         <div class="quote-change">-5.08%</div>
       </div>
-      <div class="quote-row" data-symbol="LTCUSDT">
+      <div class="quote-row" data-symbol="LTCUSDT" id="quote-LTCUSDT">
         <div><div class="quote-name">LTC/USDT</div><div class="quote-vol">VOL 9254185.88</div></div>
         <div class="quote-price">51.042</div>
         <div class="quote-change">-3.99%</div>
       </div>
-      <div class="quote-row" data-symbol="XRPUSDT">
+      <div class="quote-row" data-symbol="XRPUSDT" id="quote-XRPUSDT">
         <div><div class="quote-name">XRP/USDT</div><div class="quote-vol">VOL 273820845.99</div></div>
         <div class="quote-price">1.3126</div>
         <div class="quote-change">-7.78%</div>
       </div>
-      <div class="quote-row" data-symbol="ZECUSDT">
+      <div class="quote-row" data-symbol="ZECUSDT" id="quote-ZECUSDT">
         <div><div class="quote-name">ZEC/USDT</div><div class="quote-vol">VOL 135935199.57</div></div>
         <div class="quote-price">1104.445</div>
         <div class="quote-change">-5.16%</div>
@@ -888,7 +888,7 @@ function simulateMarket(){
   btcPrice+=(Math.random()-.5)*55; ethPrice+=(Math.random()-.5)*5;
   updateUI();drawChart();
 }
-setInterval(simulateMarket,2200);drawChart();
+drawChart();
 
 
 const homeTranslations={
@@ -929,6 +929,61 @@ function setLanguage(lang){
   localStorage.setItem("nexaLanguage",lang);
   document.getElementById("languageMenu")?.classList.add("hidden");
 }
+
+
+/* ===== LIVE MARKET DATA — Binance public Spot API ===== */
+const LIVE_SYMBOLS=["BTCUSDT","ETHUSDT","BCHUSDT","DASHUSDT","DOGEUSDT","DOTUSDT","FILUSDT","LINKUSDT","LTCUSDT","XRPUSDT","ZECUSDT"];
+
+function livePriceFormat(value){
+  const n=Number(value);
+  if(!Number.isFinite(n)) return "-";
+  if(n>=1000) return n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(n>=1) return n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:4});
+  return n.toLocaleString("en-US",{minimumFractionDigits:4,maximumFractionDigits:8});
+}
+function liveVolumeFormat(value){
+  const n=Number(value);
+  if(!Number.isFinite(n)) return "-";
+  return n.toLocaleString("en-US",{maximumFractionDigits:2});
+}
+async function refreshLiveQuotes(){
+  try{
+    const requests=LIVE_SYMBOLS.map(symbol=>
+      fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+encodeURIComponent(symbol))
+        .then(r=>{if(!r.ok) throw new Error(symbol+" HTTP "+r.status); return r.json();})
+    );
+    const results=await Promise.allSettled(requests);
+
+    results.forEach((result,index)=>{
+      if(result.status!=="fulfilled") return;
+      const d=result.value, symbol=LIVE_SYMBOLS[index];
+      const row=document.getElementById("quote-"+symbol);
+      if(!row) return;
+
+      const priceEl=row.querySelector(".quote-price");
+      const volEl=row.querySelector(".quote-vol");
+      const changeEl=row.querySelector(".quote-change");
+      const last=Number(d.lastPrice);
+      const pct=Number(d.priceChangePercent);
+
+      if(priceEl) priceEl.textContent=livePriceFormat(last);
+      if(volEl) volEl.textContent="VOL "+liveVolumeFormat(d.quoteVolume);
+      if(changeEl){
+        changeEl.textContent=(pct>=0?"+":"")+pct.toFixed(2)+"%";
+        changeEl.style.background=pct>=0?"#35c979":"#ff0d55";
+      }
+
+      if(symbol==="BTCUSDT" && Number.isFinite(last)) btcPrice=last;
+      if(symbol==="ETHUSDT" && Number.isFinite(last)) ethPrice=last;
+    });
+
+    updateUI();
+  }catch(err){
+    console.warn("Live market update unavailable:",err);
+  }
+}
+refreshLiveQuotes();
+setInterval(refreshLiveQuotes,10000);
 
 async function checkSession(){
   const {data:{session}}=await sb.auth.getSession();
