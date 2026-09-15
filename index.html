@@ -623,6 +623,14 @@ function showPage(pageId,button){
   document.getElementById(pageId).classList.add("active");
   if(button){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));button.classList.add("active")}
   if(pageId==="admin"&&isCurrentUserAdmin) loadAdminAll();
+  if(pageId==="home"||pageId==="quotes"||pageId==="trade"){
+    Object.keys(LIVE_MARKET).forEach(symbol=>{
+      updateHomeFromMarket(symbol);
+      updateQuotesFromMarket(symbol);
+    });
+    updateTradeFromMarket();
+    refreshLiveMarket();
+  }
 }
 
 function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2)}
@@ -943,9 +951,9 @@ function setLanguage(lang){
 
 
 /* =====================================================
-   CENTRAL LIVE MARKET — BINANCE REST API
+   CENTRAL LIVE MARKET — ROBUST REST POLLING
    HOME + QUOTES + TRADE
-   Remplace uniquement l'ancien WebSocket.
+   Keeps the existing design and previous modifications.
 ===================================================== */
 
 const LIVE_SYMBOLS = [
@@ -957,10 +965,15 @@ const LIVE_MARKET = {};
 const MARKET_API_BASES = [
   "https://data-api.binance.vision",
   "https://api.binance.com",
-  "https://api1.binance.com"
+  "https://api1.binance.com",
+  "https://api2.binance.com",
+  "https://api3.binance.com"
 ];
+
 let marketApiBaseIndex = 0;
 let marketRefreshBusy = false;
+let marketTimer = null;
+let lastBtcChartPush = 0;
 
 function livePriceFormat(value){
   const n=Number(value);
@@ -984,6 +997,7 @@ function updateQuotesFromMarket(symbol){
   const priceEl=row.querySelector(".quote-price");
   const volEl=row.querySelector(".quote-vol");
   const changeEl=row.querySelector(".quote-change");
+
   if(priceEl) priceEl.textContent=livePriceFormat(market.price);
   if(volEl) volEl.textContent="VOL "+liveVolumeFormat(market.volume);
   if(changeEl){
@@ -997,20 +1011,16 @@ function updateHomeFromMarket(symbol){
   const market=LIVE_MARKET[symbol];
   if(!market) return;
 
-  /* HOT : le HTML actuel n'a pas data-symbol, on identifie donc la carte par son texte */
   document.querySelectorAll("#home .hot-card").forEach(card=>{
-    const cardSymbol=card.querySelector(".hot-symbol")?.textContent.trim();
-    if(cardSymbol!==symbol) return;
+    if(card.querySelector(".hot-symbol")?.textContent.trim()!==symbol) return;
     const priceEl=card.querySelector(".hot-price");
     const usdEl=card.querySelector(".hot-usd");
     if(priceEl) priceEl.textContent=livePriceFormat(market.price);
     if(usdEl) usdEl.textContent="≈$"+livePriceFormat(market.price);
   });
 
-  /* Cryptocurrency grid */
   document.querySelectorAll("#home .crypto-card").forEach(card=>{
-    const cardSymbol=card.querySelector(".crypto-symbol")?.textContent.trim();
-    if(cardSymbol!==symbol) return;
+    if(card.querySelector(".crypto-symbol")?.textContent.trim()!==symbol) return;
     const priceEl=card.querySelector(".crypto-price");
     const usdEl=card.querySelector(".crypto-usd");
     if(priceEl) priceEl.textContent=livePriceFormat(market.price);
@@ -1018,49 +1028,88 @@ function updateHomeFromMarket(symbol){
   });
 }
 
+function updateTradeFromMarket(){
+  const market=LIVE_MARKET.BTCUSDT;
+  if(!market) return;
+
+  btcPrice=market.price;
+
+  const tradeEl=document.getElementById("btcTrade");
+  const changeEl=document.getElementById("trade24Change");
+
+  if(tradeEl) tradeEl.textContent=livePriceFormat(market.price);
+
+  if(changeEl){
+    changeEl.textContent=(market.change>=0?"+":"")+market.change.toFixed(2)+"%";
+    changeEl.style.color=market.change>=0?"#20d62c":"#ff1534";
+  }
+
+  /* Feed the existing candle chart with actual received BTC prices. */
+  if(Date.now()-lastBtcChartPush>=1800){
+    chartValues.push(market.price);
+    if(chartValues.length>28) chartValues.shift();
+    lastBtcChartPush=Date.now();
+  }
+  drawTradeChart();
+}
+
 function updateMarket(symbol,data){
-  const price=Number(data.lastPrice ?? data.c);
-  const change=Number(data.priceChangePercent ?? data.P);
-  const volume=Number(data.quoteVolume ?? data.q);
-  if(!Number.isFinite(price)) return;
+  const p=Number(data.lastPrice ?? data.c ?? data.price);
+  const ch=Number(data.priceChangePercent ?? data.P ?? 0);
+  const vol=Number(data.quoteVolume ?? data.q ?? data.volume ?? 0);
+  if(!Number.isFinite(p)) return false;
 
   LIVE_MARKET[symbol]={
-    price,
-    change:Number.isFinite(change)?change:0,
-    volume:Number.isFinite(volume)?volume:0,
+    price:p,
+    change:Number.isFinite(ch)?ch:0,
+    volume:Number.isFinite(vol)?vol:0,
     updatedAt:Date.now()
   };
 
+  if(symbol==="BTCUSDT") btcPrice=p;
+  if(symbol==="ETHUSDT") ethPrice=p;
+
   updateQuotesFromMarket(symbol);
   updateHomeFromMarket(symbol);
-
-  if(symbol==="BTCUSDT"){
-    btcPrice=price;
-    const tradeEl=document.getElementById("btcTrade");
-    if(tradeEl) tradeEl.textContent=livePriceFormat(price);
-  }
-  if(symbol==="ETHUSDT") ethPrice=price;
+  if(symbol==="BTCUSDT") updateTradeFromMarket();
+  return true;
 }
 
-async function fetchTicker24h(symbol){
+async function fetchJSON(url,timeoutMs=6500){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const sep=url.includes("?")?"&":"?";
+    const response=await fetch(url+sep+"_="+Date.now(),{
+      method:"GET",
+      cache:"no-store",
+      headers:{"Accept":"application/json"},
+      signal:controller.signal
+    });
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    return await response.json();
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+/* One request returns all tickers. This is much more reliable than
+   launching 11 independent requests every refresh. */
+async function fetchAllTickers(){
   let lastError=null;
+
   for(let attempt=0;attempt<MARKET_API_BASES.length;attempt++){
     const idx=(marketApiBaseIndex+attempt)%MARKET_API_BASES.length;
     const base=MARKET_API_BASES[idx];
+
     try{
-      const controller=new AbortController();
-      const timeout=setTimeout(()=>controller.abort(),7000);
-      const response=await fetch(base+"/api/v3/ticker/24hr?symbol="+encodeURIComponent(symbol),{
-        cache:"no-store",
-        signal:controller.signal
-      });
-      clearTimeout(timeout);
-      if(!response.ok) throw new Error("HTTP "+response.status);
-      const data=await response.json();
+      const data=await fetchJSON(base+"/api/v3/ticker/24hr");
+      if(!Array.isArray(data)) throw new Error("Unexpected market response");
       marketApiBaseIndex=idx;
       return data;
     }catch(error){
       lastError=error;
+      console.warn("Market endpoint failed:",base,error?.message||error);
     }
   }
   throw lastError || new Error("Market API unavailable");
@@ -1069,23 +1118,52 @@ async function fetchTicker24h(symbol){
 async function refreshLiveMarket(){
   if(marketRefreshBusy) return;
   marketRefreshBusy=true;
+
   try{
-    const results=await Promise.allSettled(LIVE_SYMBOLS.map(async symbol=>{
-      const data=await fetchTicker24h(symbol);
-      updateMarket(symbol,data);
-    }));
-    const ok=results.filter(r=>r.status==="fulfilled").length;
-    if(ok) console.log("✅ LIVE MARKET UPDATED:",ok+"/"+LIVE_SYMBOLS.length);
-    else console.error("❌ LIVE MARKET REST ERROR: no symbol updated");
+    const all=await fetchAllTickers();
+    const wanted=new Set(LIVE_SYMBOLS);
+    let updated=0;
+
+    for(const ticker of all){
+      if(!wanted.has(ticker.symbol)) continue;
+      if(updateMarket(ticker.symbol,ticker)) updated++;
+    }
+
+    if(updated===0) throw new Error("No requested symbols returned");
+
+    /* Update normal balance/UI fields without replacing the market values. */
+    const b=Number(profile?.balance||0);
+    const asset=document.getElementById("assetBalance");
+    const usdt=document.getElementById("usdtBalance");
+    const available=document.getElementById("tradeAvailable");
+    if(asset) asset.textContent=money(b);
+    if(usdt) usdt.textContent=money(b);
+    if(available) available.textContent=money(b);
+
+    console.log("✅ LIVE MARKET UPDATED:",updated+"/"+LIVE_SYMBOLS.length,
+                new Date().toLocaleTimeString());
+  }catch(error){
+    console.error("❌ LIVE MARKET ERROR:",error);
   }finally{
     marketRefreshBusy=false;
   }
 }
 
-/* Premier chargement immédiat puis mise à jour régulière.
-   5 s évite de marteler l'API tout en gardant l'affichage frais. */
-refreshLiveMarket();
-setInterval(refreshLiveMarket,5000);
+function scheduleMarketRefresh(){
+  if(marketTimer) clearInterval(marketTimer);
+  refreshLiveMarket();
+  marketTimer=setInterval(refreshLiveMarket,3000);
+}
+
+/* Refresh again when the tab becomes active. Browsers throttle timers
+   in background tabs, so this prevents a stale-looking page on return. */
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden) refreshLiveMarket();
+});
+window.addEventListener("focus",refreshLiveMarket);
+window.addEventListener("online",refreshLiveMarket);
+
+scheduleMarketRefresh();
 
 async function checkSession(){
   const {data:{session}}=await sb.auth.getSession();
