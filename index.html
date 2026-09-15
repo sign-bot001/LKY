@@ -893,23 +893,6 @@ function demoRecharge(){alert("Recharge DEMO uniquement. Aucun argent réel n'es
 function demoWithdraw(){alert("Withdraw DEMO uniquement. Aucun argent ou crypto réel n'est envoyé.")}
 function demoOnly(){alert("Fonction de simulation uniquement.")}
 
-function drawChart(){
-  chartValues.push(btcPrice); if(chartValues.length>28)chartValues.shift();
-  const min=Math.min(...chartValues), max=Math.max(...chartValues), span=Math.max(1,max-min);
-  const pts=chartValues.map((v,i)=>{
-    const x=i/(chartValues.length-1)*500;
-    const y=165-((v-min)/span)*145;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(" ");
-  chartLine.setAttribute("points",pts);
-}
-function simulateMarket(){
-  btcPrice+=(Math.random()-.5)*55; ethPrice+=(Math.random()-.5)*5;
-  updateUI();drawChart();
-}
-drawChart();
-
-
 const homeTranslations={
   en:{
     digitalCurrency:"Digital Currency",newsFlash:"News Flash",cryptocurrency:"Cryptocurrency",
