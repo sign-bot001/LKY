@@ -186,6 +186,16 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .trade-controls{padding:20px 24px}.trade-select-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.trade-select,.trade-amount{height:60px;border:1px solid #c9ced5;border-radius:15px;background:#fff;padding:0 18px;font-size:17px}.trade-amount-wrap{position:relative;margin-top:14px}.trade-amount{width:100%;padding-right:75px}.trade-unit{position:absolute;right:18px;top:18px;font-size:19px}.trade-available{display:flex;justify-content:space-between;margin:16px 0;font-size:16px}.trade-pcts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.trade-pcts button{height:40px;border:1px solid #1788ff;background:#fff;color:#1788ff;border-radius:8px;font-size:16px}.trade-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}.trade-actions button{height:64px;border:0;border-radius:14px;color:#fff;font-size:20px;font-weight:800}.trade-call{background:#89e88b}.trade-put{background:#f47fa1}.trade-order-tabs{display:grid;grid-template-columns:repeat(4,1fr);align-items:end;margin-top:54px;border-bottom:1px solid #ccc;text-align:center;color:#555}.trade-order-tab{padding:13px 4px;font-size:16px}.trade-order-tab.active{font-weight:800;color:#222;border-bottom:4px solid #2bd63c}.trade-empty{text-align:center;color:#aaa;padding:110px 20px 80px;font-size:20px}.trade-empty-icon{font-size:70px;opacity:.18;margin-bottom:25px}
 .app:has(#trade.active) .nav{max-width:560px;background:#2d2f32;border:0;border-radius:28px 28px 0 0;padding:15px 8px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -5px 18px rgba(0,0,0,.08)}.app:has(#trade.active) .nav button{color:#aaa;font-size:12px}.app:has(#trade.active) .nav button.active{color:#91ff75}.app:has(#trade.active) .nav-icon{font-size:25px;margin-bottom:5px}
 
+
+/* ===== TRADE LIVE CANDLES + ORDER PANELS ===== */
+.trade-chart-wrap{position:relative}
+.trade-chart-status{position:absolute;top:10px;left:18px;z-index:2;font-size:11px;font-weight:800;color:#68717d;background:rgba(255,255,255,.88);padding:5px 8px;border-radius:8px}
+.trade-chart-status.live{color:#16a96b}
+.trade-history-panel{padding:18px 24px 100px}
+.trade-history-card{border:1px solid #d9dde2;border-radius:20px;padding:15px 16px;margin-bottom:14px;background:#fff}
+.trade-history-title{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:900;margin-bottom:13px}.trade-history-title .call{color:#35c91e}.trade-history-title .put{color:#ef3158}.trade-history-title .cycle{color:#8c939e}
+.trade-history-line{display:flex;justify-content:space-between;gap:14px;font-size:14px;line-height:1.45}.trade-history-line span:first-child{color:#8a919c;font-weight:700}.trade-history-line strong{text-align:right}.profit-pos{color:#28c91e}.profit-neg{color:#f21f43}
+.follow-subtabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.follow-subtabs button{height:46px;border:1px solid #d6d9de;background:#fff;border-radius:8px;font-size:15px}.follow-box{display:flex;gap:10px;background:#eee;padding:14px;border-radius:8px}.follow-box input{flex:1;border:0;background:transparent;font-size:17px;outline:none;min-width:0}.follow-box button{border:1px solid #d4d8dd;background:#fff;border-radius:8px;padding:0 14px}.trade-empty-panel{text-align:center;color:#aaa;padding:95px 20px 70px;font-size:19px}.trade-empty-panel .trade-empty-icon{font-size:68px}.trade-order-tab{cursor:pointer}.trade-order-tab.active{color:#222}
 </style>
 </head>
 <body>
@@ -404,7 +414,7 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
       <div class="trade-price-row"><div><div id="btcTrade" class="trade-live-price">-</div><div id="trade24Change" class="trade-change">--%</div></div><div><div class="trade-count">countdown<strong id="tradeCountdownTop">00:00:60</strong></div><div id="tradeWindow" class="trade-window">↘ --:-- ~ --:--</div></div></div>
     </div>
     <div class="trade-tabs"><span>time sharing</span><span class="active">1 min</span><span>5 min</span><span>15 min</span><span>30 min</span><span>1d</span><span>1week</span><span>month</span></div>
-    <div class="trade-chart-wrap"><canvas id="tradeCandleCanvas" class="trade-canvas"></canvas></div>
+    <div class="trade-chart-wrap"><div id="tradeChartStatus" class="trade-chart-status">CONNECTING</div><canvas id="tradeCandleCanvas" class="trade-canvas"></canvas></div>
     <div class="trade-controls">
       <div class="trade-select-row"><select class="trade-select"><option>60s</option></select><select id="tradeTimeSelect" class="trade-select"><option>Next 60s</option></select></div>
       <div class="trade-amount-wrap"><input id="tradeAmount" class="trade-amount" type="number" min="0" value="0"><span class="trade-unit">USDT</span></div>
@@ -413,9 +423,23 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
       <div class="trade-actions"><button class="trade-call" onclick="prepareDirection('CALL')">CALL <span id="callPct">53.12%</span></button><button class="trade-put" onclick="prepareDirection('PUT')">PUT <span id="putPct">56.88%</span></button></div>
       <div class="card" style="margin:24px 0 0;background:#fff;color:#111;border-color:#ddd"><strong>Copy Trading DEMO</strong><div class="muted" style="margin-top:5px">Code 6 caractères · position 60S · simulation uniquement.</div><label>Code</label><div class="code-row"><input id="userCode" class="input code-input" maxlength="6" placeholder="10FHGV" style="background:#fff;color:#111;border-color:#ccc"><button class="code-btn" onclick="useCode()">TRADE</button></div><div id="tradeMessage" class="message"></div></div>
     </div>
-    <div class="trade-order-tabs"><div class="trade-order-tab active">delivery order</div><div class="trade-order-tab">historical<br>orders</div><div class="trade-order-tab">Invited me</div><div class="trade-order-tab">Invited</div></div>
-    <div id="activePositions"><div class="trade-empty"><div class="trade-empty-icon">▤</div>No data</div></div>
-    <div id="tradeHistory" class="hidden"></div>
+    <div class="trade-order-tabs">
+      <div class="trade-order-tab active" onclick="showTradeOrderTab('delivery',this)">delivery order</div>
+      <div class="trade-order-tab" onclick="showTradeOrderTab('history',this)">historical<br>orders</div>
+      <div class="trade-order-tab" onclick="showTradeOrderTab('invitedMe',this)">Invited me</div>
+      <div class="trade-order-tab" onclick="showTradeOrderTab('invited',this)">Invited</div>
+    </div>
+    <div id="tradeDeliveryPanel"><div id="activePositions"><div class="trade-empty"><div class="trade-empty-icon">▤</div>No data</div></div></div>
+    <div id="tradeHistoryPanel" class="trade-history-panel hidden"><div id="tradeHistory"></div></div>
+    <div id="tradeInvitedMePanel" class="trade-history-panel hidden">
+      <div class="follow-subtabs"><button>Initiate follow</button><button>Copying history</button></div>
+      <div class="follow-box"><input id="followOrderCode" maxlength="6" placeholder="Enter the order code"><button onclick="recognizeFollowCode()">recognize</button></div>
+      <div class="trade-empty-panel"><div class="trade-empty-icon">▤</div>No data</div>
+    </div>
+    <div id="tradeInvitedPanel" class="trade-history-panel hidden">
+      <div class="follow-subtabs"><button>Initiate follow</button><button>Release history</button></div>
+      <div class="trade-empty-panel"><div class="trade-empty-icon">▤</div>No data</div>
+    </div>
   </section>
 
   <section id="assets" class="page">
@@ -635,10 +659,83 @@ function showPage(pageId,button){
 
 function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2)}
 function prepareDirection(d){const msg=document.getElementById("tradeMessage");if(msg)showMessage("tradeMessage",d+" sélectionné. Entre ton code DEMO puis appuie sur TRADE.","success")}
-function updateTradeTimeUI(){const now=new Date(),next=new Date(now.getTime()+60000);const f=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");const w=document.getElementById("tradeWindow"),s=document.getElementById("tradeTimeSelect");if(w)w.textContent="↘ "+f(now)+" ~ "+f(next);if(s)s.innerHTML=`<option>${f(now)} - ${f(next)}</option>`;}
+function updateTradeTimeUI(){const now=new Date(),start=new Date(Math.floor(now.getTime()/60000)*60000),next=new Date(start.getTime()+60000);const f=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");const remaining=Math.max(1,Math.ceil((next-now)/1000));const w=document.getElementById("tradeWindow"),s=document.getElementById("tradeTimeSelect"),c=document.getElementById("tradeCountdownTop");if(w)w.textContent="↗ "+f(start)+" ~ "+f(next);if(s)s.innerHTML=`<option>${f(start)} - ${f(next)}</option>`;if(c)c.textContent="00:00:"+String(remaining).padStart(2,"0");}
 setInterval(updateTradeTimeUI,1000);updateTradeTimeUI();
-function drawTradeChart(){const c=document.getElementById("tradeCandleCanvas");if(!c)return;const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);const x=c.getContext("2d");x.scale(d,d);const W=r.width,H=r.height;x.clearRect(0,0,W,H);x.strokeStyle="#edf0f2";x.lineWidth=1;for(let i=1;i<6;i++){x.beginPath();x.moveTo(0,H*i/6);x.lineTo(W,H*i/6);x.stroke()}const vals=chartValues.slice(-24);if(!vals.length)return;const min=Math.min(...vals)*.9995,max=Math.max(...vals)*1.0005,bw=W/vals.length*.55;vals.forEach((v,i)=>{const prev=vals[Math.max(0,i-1)],open=prev,close=v,hi=Math.max(open,close)*(1+Math.random()*.0005),lo=Math.min(open,close)*(1-Math.random()*.0005),yy=z=>20+(max-z)/(max-min)*(H-55),cx=(i+.5)*W/vals.length,up=close>=open;x.strokeStyle=up?"#28bd89":"#f33762";x.fillStyle=x.strokeStyle;x.beginPath();x.moveTo(cx,yy(hi));x.lineTo(cx,yy(lo));x.stroke();x.fillRect(cx-bw/2,Math.min(yy(open),yy(close)),bw,Math.max(2,Math.abs(yy(open)-yy(close))))});}
-window.addEventListener("resize",drawTradeChart);setInterval(drawTradeChart,2000);
+let tradeCandles=[];
+let tradeChartGranularity=60;
+let candleBootstrapBusy=false;
+
+function candleBucket(ts=Date.now(),seconds=tradeChartGranularity){
+  const ms=seconds*1000;
+  return Math.floor(ts/ms)*ms;
+}
+
+function ingestBtcTick(rawPrice,ts=Date.now()){
+  const p=Number(rawPrice); if(!Number.isFinite(p))return;
+  const bucket=candleBucket(ts);
+  let c=tradeCandles[tradeCandles.length-1];
+  if(!c||c.time!==bucket){
+    const open=c?c.close:p;
+    c={time:bucket,open,high:Math.max(open,p),low:Math.min(open,p),close:p,volume:0};
+    tradeCandles.push(c);
+    if(tradeCandles.length>120)tradeCandles.shift();
+  }else{
+    c.high=Math.max(c.high,p);c.low=Math.min(c.low,p);c.close=p;
+  }
+  drawTradeChart();
+}
+
+async function bootstrapTradeCandles(){
+  if(candleBootstrapBusy)return;candleBootstrapBusy=true;
+  const status=document.getElementById("tradeChartStatus");
+  try{
+    const r=await fetch("https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=60",{cache:"no-store"});
+    if(!r.ok)throw new Error("Candles HTTP "+r.status);
+    const rows=await r.json();
+    if(!Array.isArray(rows))throw new Error("Invalid candle response");
+    tradeCandles=rows.slice(0,90).reverse().map(a=>({time:Number(a[0])*1000,low:Number(a[1]),high:Number(a[2]),open:Number(a[3]),close:Number(a[4]),volume:Number(a[5]||0)})).filter(c=>[c.open,c.high,c.low,c.close].every(Number.isFinite));
+    if(status){status.textContent="LIVE · 1m";status.classList.add("live")}
+    drawTradeChart();
+  }catch(e){
+    console.warn("CANDLE BOOTSTRAP:",e);
+    if(!tradeCandles.length&&Number.isFinite(btcPrice))ingestBtcTick(btcPrice);
+    if(status){status.textContent="LIVE TICKS · 1m";status.classList.add("live")}
+  }finally{candleBootstrapBusy=false}
+}
+
+function drawTradeChart(){
+  const c=document.getElementById("tradeCandleCanvas");if(!c)return;
+  const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
+  const d=window.devicePixelRatio||1;c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);
+  const x=c.getContext("2d");x.setTransform(d,0,0,d,0,0);
+  const W=r.width,H=r.height;x.clearRect(0,0,W,H);
+  const left=8,right=72,top=18,bottom=28,plotW=W-left-right,plotH=H-top-bottom;
+  x.strokeStyle="#edf0f2";x.lineWidth=1;x.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.fillStyle="#7f8996";
+  for(let i=0;i<=4;i++){const y=top+plotH*i/4;x.beginPath();x.moveTo(left,y);x.lineTo(W-right+4,y);x.stroke()}
+  const candles=tradeCandles.slice(-30);if(!candles.length)return;
+  let min=Math.min(...candles.map(v=>v.low)),max=Math.max(...candles.map(v=>v.high));
+  const span=Math.max(max-min,max*.0008);min-=span*.08;max+=span*.08;
+  const yy=v=>top+(max-v)/(max-min)*plotH;
+  const step=plotW/candles.length,bw=Math.max(3,Math.min(10,step*.58));
+  candles.forEach((v,i)=>{const cx=left+(i+.5)*step,up=v.close>=v.open,col=up?"#28bd89":"#f33762";x.strokeStyle=col;x.fillStyle=col;x.beginPath();x.moveTo(cx,yy(v.high));x.lineTo(cx,yy(v.low));x.stroke();const y1=yy(v.open),y2=yy(v.close);x.fillRect(cx-bw/2,Math.min(y1,y2),bw,Math.max(2,Math.abs(y1-y2)))});
+  x.fillStyle="#7f8996";x.textAlign="left";
+  for(let i=0;i<=4;i++){const v=max-(max-min)*i/4;x.fillText(livePriceFormat(v),W-right+8,top+plotH*i/4+4)}
+  const last=candles[candles.length-1],ly=yy(last.close);x.strokeStyle="#20bd8a";x.setLineDash([5,5]);x.beginPath();x.moveTo(left,ly);x.lineTo(W-right+4,ly);x.stroke();x.setLineDash([]);x.fillStyle="#20bd8a";x.fillRect(W-right+5,ly-10,right-8,20);x.fillStyle="#fff";x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.fillText(livePriceFormat(last.close),W-right+9,ly+4);
+}
+window.addEventListener("resize",drawTradeChart);
+
+function showTradeOrderTab(name,el){
+  document.querySelectorAll(".trade-order-tab").forEach(t=>t.classList.remove("active"));if(el)el.classList.add("active");
+  ["tradeDeliveryPanel","tradeHistoryPanel","tradeInvitedMePanel","tradeInvitedPanel"].forEach(id=>document.getElementById(id)?.classList.add("hidden"));
+  const map={delivery:"tradeDeliveryPanel",history:"tradeHistoryPanel",invitedMe:"tradeInvitedMePanel",invited:"tradeInvitedPanel"};document.getElementById(map[name])?.classList.remove("hidden");
+  if(name==="history")renderHistory();
+}
+function recognizeFollowCode(){
+  const code=(document.getElementById("followOrderCode")?.value||"").trim().toUpperCase();
+  if(code.length!==6)return alert("Le code doit contenir exactement 6 caractères.");
+  alert("Fonction de suivi DEMO : "+code+" reconnu localement. Aucun ordre réel n’est copié.");
+}
+
 
 async function useCode(){
   clearMessage("tradeMessage");
@@ -708,26 +805,22 @@ setInterval(()=>settleExpiredTrades(true),5000);
 
 function renderHistory(){
   const settled=trades.filter(t=>t.status==="SETTLED");
-  if(!settled.length){tradeHistory.innerHTML=`<div class="center muted">Aucun ordre terminé.</div>`;return}
-  tradeHistory.innerHTML=settled.map(t=>`
-    <div class="history-item">
-      <div class="history-header">
-        <div><strong>${esc(t.symbol)}</strong><div class="muted">${esc(t.code)}</div></div>
-        <span class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span>
-      </div>
-      <div class="history-details">
-        <div><span>Product Cycle</span><strong>60S</strong></div>
-        <div><span>Capital</span><strong>1%</strong></div>
-        <div><span>Opening Price</span><strong>${price(t.open_price)}</strong></div>
-        <div><span>Settlement Price</span><strong>${price(t.close_price)}</strong></div>
-        <div><span>Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
-        <div><span>Yield</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
-        <div><span>Profit</span><strong class="green">+${money(t.profit)} USDT</strong></div>
-        <div><span>Status</span><strong class="green">Settled</strong></div>
-        <div><span>Opening Time</span><strong>${formatDate(t.opened_at)}</strong></div>
-        <div><span>Settlement Time</span><strong>${formatDate(t.settled_at)}</strong></div>
-      </div>
-    </div>`).join("");
+  if(!settled.length){tradeHistory.innerHTML=`<div class="trade-empty-panel"><div class="trade-empty-icon">▤</div>No data</div>`;return}
+  tradeHistory.innerHTML=settled.map(t=>{
+    const opened=new Date(t.opened_at),settledAt=new Date(t.settled_at||t.settle_at);
+    const hm=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+    const profit=Number(t.profit||0),profitClass=profit>=0?"profit-pos":"profit-neg";
+    return `<div class="trade-history-card">
+      <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">60s</span></div>
+      <div class="trade-history-line"><span>time period</span><strong>${hm(opened)} ~ ${hm(settledAt)}</strong></div>
+      <div class="trade-history-line"><span>profit and loss</span><strong class="${profitClass}">${profit>=0?"+":""}${money(profit)}</strong></div>
+      <div class="trade-history-line"><span>rate of return</span><strong class="profit-pos">${money(t.yield_pct)}%</strong></div>
+      <div class="trade-history-line"><span>order quantity</span><strong>${money(t.amount)}</strong></div>
+      <div class="trade-history-line"><span>opening price</span><strong>${price(t.open_price)}</strong></div>
+      <div class="trade-history-line"><span>settlement price</span><strong>${price(t.close_price)}</strong></div>
+      <div class="trade-history-line"><span>order time</span><strong>${formatDate(t.opened_at)}</strong></div>
+    </div>`;
+  }).join("");
 }
 
 async function generateCode(){
@@ -1103,6 +1196,7 @@ function applyMarketUpdate(symbol,data={}){
   updateHomeFromMarket(symbol);
 
   if(symbol==="BTCUSDT"){
+    ingestBtcTick(p,Date.now());
     updateTradeFromMarket();
   }
 
@@ -1369,6 +1463,7 @@ function startLiveMarket(){
        and 24h metadata.
   */
   refreshLiveMarket();
+  bootstrapTradeCandles();
   connectMarketWebSocket();
 
   if(marketFallbackTimer){
