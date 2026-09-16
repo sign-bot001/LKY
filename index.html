@@ -1,4 +1,4 @@
-:root{<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -413,10 +413,10 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
     <div class="trade-market">
       <div class="trade-price-row"><div><div id="btcTrade" class="trade-live-price">-</div><div id="trade24Change" class="trade-change">--%</div></div><div><div class="trade-count">countdown<strong id="tradeCountdownTop">00:00:60</strong></div><div id="tradeWindow" class="trade-window">↘ --:-- ~ --:--</div></div></div>
     </div>
-    <div class="trade-tabs"><span>time sharing</span><span class="active">1 min</span><span>5 min</span><span>15 min</span><span>30 min</span><span>1d</span><span>1week</span><span>month</span></div>
+    <div class="trade-tabs"><span>time sharing</span><span class="active" onclick="setChartTimeframe(60,this)">1 min</span><span onclick="setChartTimeframe(300,this)">5 min</span><span onclick="setChartTimeframe(900,this)">15 min</span><span onclick="setChartTimeframe(1800,this)">30 min</span><span onclick="setChartTimeframe(86400,this)">1d</span><span onclick="setChartTimeframe(604800,this)">1week</span><span onclick="setChartTimeframe(2592000,this)">month</span></div>
     <div class="trade-chart-wrap"><div id="tradeChartStatus" class="trade-chart-status">CONNECTING</div><canvas id="tradeCandleCanvas" class="trade-canvas"></canvas></div>
     <div class="trade-controls">
-      <div class="trade-select-row"><select class="trade-select"><option>60s</option></select><select id="tradeTimeSelect" class="trade-select"><option>Next 60s</option></select></div>
+      <div class="trade-select-row"><select id="tradeDuration" class="trade-select" onchange="updateTradeTimeUI()"><option value="60">60s</option><option value="120">120s</option><option value="300">5 min</option><option value="600">10 min</option></select><select id="tradeTimeSelect" class="trade-select"><option>Next 60s</option></select></div>
       <div class="trade-amount-wrap"><input id="tradeAmount" class="trade-amount" type="number" min="0" value="0"><span class="trade-unit">USDT</span></div>
       <div class="trade-available"><span>available&nbsp;&nbsp; <strong id="tradeAvailable">0.00</strong></span><span>USDT</span></div>
       <div class="trade-pcts"><button onclick="setTradePercent(1)">1%</button><button onclick="setTradePercent(50)">50%</button><button onclick="setTradePercent(75)">75%</button><button onclick="setTradePercent(100)">100%</button></div>
@@ -659,7 +659,7 @@ function showPage(pageId,button){
 
 function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2)}
 function prepareDirection(d){const msg=document.getElementById("tradeMessage");if(msg)showMessage("tradeMessage",d+" sélectionné. Entre ton code DEMO puis appuie sur TRADE.","success")}
-function updateTradeTimeUI(){const now=new Date(),start=new Date(Math.floor(now.getTime()/60000)*60000),next=new Date(start.getTime()+60000);const f=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");const remaining=Math.max(1,Math.ceil((next-now)/1000));const w=document.getElementById("tradeWindow"),s=document.getElementById("tradeTimeSelect"),c=document.getElementById("tradeCountdownTop");if(w)w.textContent="↗ "+f(start)+" ~ "+f(next);if(s)s.innerHTML=`<option>${f(start)} - ${f(next)}</option>`;if(c)c.textContent="00:00:"+String(remaining).padStart(2,"0");}
+function updateTradeTimeUI(){const duration=Number(document.getElementById("tradeDuration")?.value||60),now=new Date(),start=new Date(),next=new Date(now.getTime()+duration*1000);const f=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");const remaining=Math.max(1,Math.ceil((next-now)/1000));const w=document.getElementById("tradeWindow"),s=document.getElementById("tradeTimeSelect"),c=document.getElementById("tradeCountdownTop");if(w)w.textContent="↗ "+f(start)+" ~ "+f(next);if(s)s.innerHTML=`<option>${f(start)} - ${f(next)}</option>`;if(c)c.textContent="00:00:"+String(remaining).padStart(2,"0");}
 setInterval(updateTradeTimeUI,1000);updateTradeTimeUI();
 let tradeCandles=[];
 let tradeChartGranularity=60;
@@ -706,6 +706,18 @@ async function bootstrapTradeCandles(){
   }finally{candleBootstrapBusy=false}
 }
 
+function setChartTimeframe(seconds,el){
+  tradeChartGranularity=Number(seconds);
+  document.querySelectorAll(".trade-tabs span").forEach(x=>x.classList.remove("active"));
+  el?.classList.add("active");
+  drawTradeChart();
+}
+function chartCandlesForTimeframe(){
+  if(tradeChartGranularity<=60)return tradeCandles;
+  const ms=tradeChartGranularity*1000,m=new Map();
+  for(const c of tradeCandles){const k=Math.floor(c.time/ms)*ms;let b=m.get(k);if(!b){b={...c,time:k};m.set(k,b)}else{b.high=Math.max(b.high,c.high);b.low=Math.min(b.low,c.low);b.close=c.close;b.volume=Number(b.volume||0)+Number(c.volume||0)}}
+  return [...m.values()].sort((a,b)=>a.time-b.time);
+}
 function drawTradeChart(){
   const c=document.getElementById("tradeCandleCanvas");if(!c)return;
   const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
@@ -715,7 +727,7 @@ function drawTradeChart(){
   const left=8,right=72,top=18,bottom=28,plotW=W-left-right,plotH=H-top-bottom;
   x.strokeStyle="#edf0f2";x.lineWidth=1;x.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.fillStyle="#7f8996";
   for(let i=0;i<=4;i++){const y=top+plotH*i/4;x.beginPath();x.moveTo(left,y);x.lineTo(W-right+4,y);x.stroke()}
-  const candles=tradeCandles.slice(-60);if(!candles.length)return;
+  const candles=chartCandlesForTimeframe().slice(-60);if(!candles.length)return;
   let min=Math.min(...candles.map(v=>v.low)),max=Math.max(...candles.map(v=>v.high));
   const span=Math.max(max-min,max*.0008);min-=span*.08;max+=span*.08;
   const yy=v=>top+(max-v)/(max-min)*plotH;
@@ -757,10 +769,10 @@ function activePositionHTML(t){
       <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${esc(t.code)}</div></div>
       <div class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</div>
     </div>
-    <div class="countdown" id="countdown-${t.id}">60S</div>
+    <div class="countdown" id="countdown-${t.id}">${Math.max(0,Math.ceil((new Date(t.settle_at)-Date.now())/1000))}S</div>
     <div class="progress"><div id="progress-${t.id}" class="progress-inner"></div></div>
     <div class="trade-grid">
-      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>60S</strong></div>
+      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}S</strong></div>
       <div class="trade-detail"><span class="muted">Capital Used</span><strong>1%</strong></div>
       <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
       <div class="trade-detail"><span class="muted">Yield</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
@@ -781,7 +793,7 @@ async function updateCountdowns(){
     const remaining=Math.max(0,Math.ceil(ms/1000));
     const c=document.getElementById("countdown-"+t.id), p=document.getElementById("progress-"+t.id);
     if(c)c.textContent=remaining+"S";
-    if(p)p.style.width=Math.max(0,Math.min(100,remaining/60*100))+"%";
+    if(p){const duration=Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000));p.style.width=Math.max(0,Math.min(100,remaining/duration*100))+"%";}
     if(remaining<=0&&!settlingTrades.has(t.id)){
       settlingTrades.add(t.id);
       await settleTrade(t.id);
@@ -814,7 +826,7 @@ function renderHistory(){
     const hm=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
     const profit=Number(t.profit||0),profitClass=profit>=0?"profit-pos":"profit-neg";
     return `<div class="trade-history-card">
-      <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">60s</span></div>
+      <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}s</span></div>
       <div class="trade-history-line"><span>time period</span><strong>${hm(opened)} ~ ${hm(settledAt)}</strong></div>
       <div class="trade-history-line"><span>profit and loss</span><strong class="${profitClass}">${profit>=0?"+":""}${money(profit)}</strong></div>
       <div class="trade-history-line"><span>rate of return</span><strong class="profit-pos">${money(t.yield_pct)}%</strong></div>
