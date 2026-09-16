@@ -934,8 +934,11 @@ function setLanguage(lang){
 
 
 /* =====================================================
-   CENTRAL LIVE MARKET — SUPABASE EDGE FUNCTION
+   CENTRAL LIVE MARKET — REAL-TIME WEBSOCKET + REST FALLBACK
    HOME + QUOTES + TRADE
+
+   Primary: Coinbase public WebSocket (real-time ticker)
+   Fallback/bootstrap: Supabase smooth-api
 ===================================================== */
 
 const LIVE_SYMBOLS = [
@@ -945,8 +948,32 @@ const LIVE_SYMBOLS = [
 
 const LIVE_MARKET = {};
 const MARKET_API_URL = SUPABASE_URL + "/functions/v1/smooth-api";
+
+/*
+  Coinbase product mapping.
+  Symbols not available on the WebSocket remain supplied by smooth-api.
+*/
+const COINBASE_PRODUCTS = {
+  "BTC-USD":"BTCUSDT",
+  "ETH-USD":"ETHUSDT",
+  "BCH-USD":"BCHUSDT",
+  "DOGE-USD":"DOGEUSDT",
+  "DOT-USD":"DOTUSDT",
+  "LINK-USD":"LINKUSDT",
+  "LTC-USD":"LTCUSDT",
+  "XRP-USD":"XRPUSDT"
+};
+
+const COINBASE_WS_URL = "wss://advanced-trade-ws.coinbase.com";
+
+let marketSocket = null;
+let marketSocketReconnectTimer = null;
+let marketSocketReconnectAttempts = 0;
+let marketSocketLastMessageAt = 0;
+let marketSocketWatchdog = null;
+
 let marketRefreshBusy = false;
-let marketTimer = null;
+let marketFallbackTimer = null;
 let lastBtcChartPush = 0;
 
 function livePriceFormat(value){
@@ -966,15 +993,19 @@ function liveVolumeFormat(value){
 function updateQuotesFromMarket(symbol){
   const market=LIVE_MARKET[symbol];
   if(!market) return;
+
   const row=document.getElementById("quote-"+symbol);
   if(!row) return;
+
   const priceEl=row.querySelector(".quote-price");
   const volEl=row.querySelector(".quote-vol");
   const changeEl=row.querySelector(".quote-change");
+
   if(priceEl) priceEl.textContent=livePriceFormat(market.price);
   if(volEl) volEl.textContent="VOL "+liveVolumeFormat(market.volume);
+
   if(changeEl){
-    const pct=market.change;
+    const pct=Number(market.change||0);
     changeEl.textContent=(pct>=0?"+":"")+pct.toFixed(2)+"%";
     changeEl.style.background=pct>=0?"#35c979":"#ff0d55";
   }
@@ -983,17 +1014,23 @@ function updateQuotesFromMarket(symbol){
 function updateHomeFromMarket(symbol){
   const market=LIVE_MARKET[symbol];
   if(!market) return;
+
   document.querySelectorAll("#home .hot-card").forEach(card=>{
     if(card.querySelector(".hot-symbol")?.textContent.trim()!==symbol) return;
+
     const priceEl=card.querySelector(".hot-price");
     const usdEl=card.querySelector(".hot-usd");
+
     if(priceEl) priceEl.textContent=livePriceFormat(market.price);
     if(usdEl) usdEl.textContent="≈$"+livePriceFormat(market.price);
   });
+
   document.querySelectorAll("#home .crypto-card").forEach(card=>{
     if(card.querySelector(".crypto-symbol")?.textContent.trim()!==symbol) return;
+
     const priceEl=card.querySelector(".crypto-price");
     const usdEl=card.querySelector(".crypto-usd");
+
     if(priceEl) priceEl.textContent=livePriceFormat(market.price);
     if(usdEl) usdEl.textContent="≈$"+livePriceFormat(market.price);
   });
@@ -1002,76 +1039,373 @@ function updateHomeFromMarket(symbol){
 function updateTradeFromMarket(){
   const market=LIVE_MARKET.BTCUSDT;
   if(!market) return;
+
   btcPrice=market.price;
+
   const tradeEl=document.getElementById("btcTrade");
   const changeEl=document.getElementById("trade24Change");
+
   if(tradeEl) tradeEl.textContent=livePriceFormat(market.price);
+
   if(changeEl){
     changeEl.textContent=(market.change>=0?"+":"")+market.change.toFixed(2)+"%";
     changeEl.style.color=market.change>=0?"#20d62c":"#ff1534";
   }
-  if(Date.now()-lastBtcChartPush>=1800){
+
+  /*
+    Feed the existing chart with real BTC ticks.
+    We keep the rest of your chart/UI untouched.
+  */
+  if(Date.now()-lastBtcChartPush>=1000){
     chartValues.push(market.price);
     if(chartValues.length>28) chartValues.shift();
     lastBtcChartPush=Date.now();
   }
+
   drawTradeChart();
 }
 
-function updateMarket(item){
-  const symbol=String(item.symbol||"").toUpperCase();
+function applyMarketUpdate(symbol,data={}){
   if(!LIVE_SYMBOLS.includes(symbol)) return false;
-  const p=Number(item.price);
-  const ch=Number(item.change24h ?? 0);
-  const vol=Number(item.quoteVolume ?? item.volume ?? 0);
+
+  const previous=LIVE_MARKET[symbol]||{};
+
+  const p=Number(data.price);
   if(!Number.isFinite(p)) return false;
-  LIVE_MARKET[symbol]={price:p,change:Number.isFinite(ch)?ch:0,volume:Number.isFinite(vol)?vol:0,updatedAt:Number(item.lastUpdatedAt||Date.now())};
+
+  const ch=Number(
+    data.change24h ??
+    data.price_percent_chg_24_h ??
+    previous.change ??
+    0
+  );
+
+  const vol=Number(
+    data.volume ??
+    data.volume_24_h ??
+    data.quoteVolume ??
+    previous.volume ??
+    0
+  );
+
+  LIVE_MARKET[symbol]={
+    price:p,
+    change:Number.isFinite(ch)?ch:0,
+    volume:Number.isFinite(vol)?vol:0,
+    updatedAt:Date.now(),
+    source:data.source||previous.source||"market"
+  };
+
   if(symbol==="BTCUSDT") btcPrice=p;
   if(symbol==="ETHUSDT") ethPrice=p;
+
   updateQuotesFromMarket(symbol);
   updateHomeFromMarket(symbol);
-  if(symbol==="BTCUSDT") updateTradeFromMarket();
+
+  if(symbol==="BTCUSDT"){
+    updateTradeFromMarket();
+  }
+
   return true;
 }
+
+/* ---------- REST bootstrap / fallback ---------- */
 
 async function refreshLiveMarket(){
   if(marketRefreshBusy) return;
   marketRefreshBusy=true;
+
   try{
-    const url=MARKET_API_URL+"?symbols="+encodeURIComponent(LIVE_SYMBOLS.join(","))+"&_="+Date.now();
-    const response=await fetch(url,{method:"GET",cache:"no-store",headers:{"Accept":"application/json"}});
-    if(!response.ok) throw new Error("smooth-api HTTP "+response.status);
+    const url=
+      MARKET_API_URL+
+      "?symbols="+encodeURIComponent(LIVE_SYMBOLS.join(","))+
+      "&_="+Date.now();
+
+    const response=await fetch(url,{
+      method:"GET",
+      cache:"no-store",
+      headers:{
+        "Accept":"application/json"
+      }
+    });
+
+    if(!response.ok){
+      throw new Error("smooth-api HTTP "+response.status);
+    }
+
     const payload=await response.json();
-    if(!payload?.success || !Array.isArray(payload.data)) throw new Error(payload?.error||"Invalid smooth-api response");
+
+    if(!payload?.success || !Array.isArray(payload.data)){
+      throw new Error(payload?.error||"Invalid smooth-api response");
+    }
+
     let updated=0;
-    for(const item of payload.data) if(updateMarket(item)) updated++;
-    if(updated===0) throw new Error("No requested symbols returned");
+
+    for(const item of payload.data){
+      const symbol=String(item.symbol||"").toUpperCase();
+
+      if(applyMarketUpdate(symbol,{
+        price:item.price,
+        change24h:item.change24h,
+        volume:item.quoteVolume ?? item.volume,
+        source:"smooth-api"
+      })){
+        updated++;
+      }
+    }
+
+    if(updated===0){
+      throw new Error("No requested symbols returned");
+    }
+
     const b=Number(profile?.balance||0);
     const asset=document.getElementById("assetBalance");
     const usdt=document.getElementById("usdtBalance");
     const available=document.getElementById("tradeAvailable");
+
     if(asset) asset.textContent=money(b);
     if(usdt) usdt.textContent=money(b);
     if(available) available.textContent=money(b);
-    console.log("LIVE MARKET UPDATED via smooth-api:",updated+"/"+LIVE_SYMBOLS.length,payload.source||"");
+
+    console.log(
+      "MARKET REST SNAPSHOT:",
+      updated+"/"+LIVE_SYMBOLS.length,
+      payload.source||""
+    );
   }catch(error){
-    console.error("LIVE MARKET ERROR:",error);
+    console.error("MARKET REST ERROR:",error);
   }finally{
     marketRefreshBusy=false;
   }
 }
 
-function scheduleMarketRefresh(){
-  if(marketTimer) clearInterval(marketTimer);
-  refreshLiveMarket();
-  marketTimer=setInterval(refreshLiveMarket,3000);
+/* ---------- Coinbase public WebSocket ---------- */
+
+function clearMarketSocketReconnect(){
+  if(marketSocketReconnectTimer){
+    clearTimeout(marketSocketReconnectTimer);
+    marketSocketReconnectTimer=null;
+  }
 }
 
-document.addEventListener("visibilitychange",()=>{if(!document.hidden) refreshLiveMarket();});
-window.addEventListener("focus",refreshLiveMarket);
-window.addEventListener("online",refreshLiveMarket);
+function scheduleMarketSocketReconnect(){
+  clearMarketSocketReconnect();
 
-scheduleMarketRefresh();
+  /*
+    Exponential reconnect:
+    1s, 2s, 4s, 8s ... max 30s.
+  */
+  const delay=Math.min(
+    30000,
+    1000*Math.pow(2,Math.min(marketSocketReconnectAttempts,5))
+  );
+
+  marketSocketReconnectAttempts++;
+
+  marketSocketReconnectTimer=setTimeout(()=>{
+    connectMarketWebSocket();
+  },delay);
+}
+
+function closeMarketWebSocket(){
+  clearMarketSocketReconnect();
+
+  if(marketSocketWatchdog){
+    clearInterval(marketSocketWatchdog);
+    marketSocketWatchdog=null;
+  }
+
+  if(marketSocket){
+    try{
+      marketSocket.onopen=null;
+      marketSocket.onmessage=null;
+      marketSocket.onerror=null;
+      marketSocket.onclose=null;
+      marketSocket.close();
+    }catch(_){}
+    marketSocket=null;
+  }
+}
+
+function handleCoinbaseTickerMessage(message){
+  if(message?.channel!=="ticker" || !Array.isArray(message.events)){
+    return;
+  }
+
+  marketSocketLastMessageAt=Date.now();
+
+  for(const event of message.events){
+    if(!Array.isArray(event?.tickers)) continue;
+
+    for(const ticker of event.tickers){
+      const symbol=COINBASE_PRODUCTS[ticker.product_id];
+      if(!symbol) continue;
+
+      applyMarketUpdate(symbol,{
+        price:ticker.price,
+        change24h:ticker.price_percent_chg_24_h,
+        volume:ticker.volume_24_h,
+        source:"coinbase-ws"
+      });
+    }
+  }
+}
+
+function connectMarketWebSocket(){
+  if(
+    marketSocket &&
+    (
+      marketSocket.readyState===WebSocket.OPEN ||
+      marketSocket.readyState===WebSocket.CONNECTING
+    )
+  ){
+    return;
+  }
+
+  clearMarketSocketReconnect();
+
+  console.log("MARKET WS: connecting...");
+
+  try{
+    marketSocket=new WebSocket(COINBASE_WS_URL);
+  }catch(error){
+    console.error("MARKET WS CREATE ERROR:",error);
+    scheduleMarketSocketReconnect();
+    return;
+  }
+
+  marketSocket.onopen=()=>{
+    console.log("MARKET WS: connected");
+
+    marketSocketReconnectAttempts=0;
+    marketSocketLastMessageAt=Date.now();
+
+    const subscription={
+      type:"subscribe",
+      product_ids:Object.keys(COINBASE_PRODUCTS),
+      channel:"ticker"
+    };
+
+    marketSocket.send(JSON.stringify(subscription));
+
+    /*
+      Get one complete REST snapshot as soon as the socket connects.
+      This fills symbols not streamed by Coinbase and gives us
+      initial 24h data immediately.
+    */
+    refreshLiveMarket();
+  };
+
+  marketSocket.onmessage=(event)=>{
+    try{
+      const message=JSON.parse(event.data);
+
+      if(message?.channel==="ticker"){
+        handleCoinbaseTickerMessage(message);
+      }else if(message?.type==="error" || message?.channel==="error"){
+        console.error("MARKET WS SERVER ERROR:",message);
+      }
+    }catch(error){
+      console.error("MARKET WS MESSAGE ERROR:",error);
+    }
+  };
+
+  marketSocket.onerror=(error)=>{
+    console.error("MARKET WS ERROR:",error);
+  };
+
+  marketSocket.onclose=(event)=>{
+    console.warn(
+      "MARKET WS: disconnected",
+      event.code,
+      event.reason||""
+    );
+
+    marketSocket=null;
+
+    /*
+      Immediately refresh through smooth-api so the UI does not
+      remain stale while WebSocket reconnects.
+    */
+    refreshLiveMarket();
+
+    if(navigator.onLine){
+      scheduleMarketSocketReconnect();
+    }
+  };
+
+  if(marketSocketWatchdog){
+    clearInterval(marketSocketWatchdog);
+  }
+
+  marketSocketWatchdog=setInterval(()=>{
+    if(document.hidden) return;
+
+    /*
+      If no ticker has arrived for 20 seconds, rebuild the socket.
+      This protects against a half-open/stale connection.
+    */
+    if(
+      marketSocket &&
+      marketSocket.readyState===WebSocket.OPEN &&
+      Date.now()-marketSocketLastMessageAt>20000
+    ){
+      console.warn("MARKET WS: stale connection, reconnecting");
+
+      try{
+        marketSocket.close();
+      }catch(_){}
+    }
+  },5000);
+}
+
+/* ---------- Start market services ---------- */
+
+function startLiveMarket(){
+  /*
+    1. Immediate REST snapshot.
+    2. Real-time WebSocket for supported products.
+    3. REST fallback every 15 seconds for unsupported products
+       and 24h metadata.
+  */
+  refreshLiveMarket();
+  connectMarketWebSocket();
+
+  if(marketFallbackTimer){
+    clearInterval(marketFallbackTimer);
+  }
+
+  marketFallbackTimer=setInterval(()=>{
+    refreshLiveMarket();
+  },15000);
+}
+
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden){
+    refreshLiveMarket();
+    connectMarketWebSocket();
+  }
+});
+
+window.addEventListener("focus",()=>{
+  refreshLiveMarket();
+  connectMarketWebSocket();
+});
+
+window.addEventListener("online",()=>{
+  refreshLiveMarket();
+  connectMarketWebSocket();
+});
+
+window.addEventListener("offline",()=>{
+  console.warn("MARKET: browser offline");
+});
+
+window.addEventListener("beforeunload",()=>{
+  closeMarketWebSocket();
+});
+
+startLiveMarket();
 
 async function checkSession(){
   const {data:{session}}=await sb.auth.getSession();
