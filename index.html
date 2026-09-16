@@ -712,11 +712,11 @@ function drawTradeChart(){
   const left=8,right=72,top=18,bottom=28,plotW=W-left-right,plotH=H-top-bottom;
   x.strokeStyle="#edf0f2";x.lineWidth=1;x.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.fillStyle="#7f8996";
   for(let i=0;i<=4;i++){const y=top+plotH*i/4;x.beginPath();x.moveTo(left,y);x.lineTo(W-right+4,y);x.stroke()}
-  const candles=tradeCandles.slice(-30);if(!candles.length)return;
+  const candles=tradeCandles.slice(-60);if(!candles.length)return;
   let min=Math.min(...candles.map(v=>v.low)),max=Math.max(...candles.map(v=>v.high));
   const span=Math.max(max-min,max*.0008);min-=span*.08;max+=span*.08;
   const yy=v=>top+(max-v)/(max-min)*plotH;
-  const step=plotW/candles.length,bw=Math.max(3,Math.min(10,step*.58));
+  const step=plotW/candles.length,bw=Math.max(2,Math.min(7,step*.78));
   candles.forEach((v,i)=>{const cx=left+(i+.5)*step,up=v.close>=v.open,col=up?"#28bd89":"#f33762";x.strokeStyle=col;x.fillStyle=col;x.beginPath();x.moveTo(cx,yy(v.high));x.lineTo(cx,yy(v.low));x.stroke();const y1=yy(v.open),y2=yy(v.close);x.fillRect(cx-bw/2,Math.min(y1,y2),bw,Math.max(2,Math.abs(y1-y2)))});
   x.fillStyle="#7f8996";x.textAlign="left";
   for(let i=0;i<=4;i++){const v=max-(max-min)*i/4;x.fillText(livePriceFormat(v),W-right+8,top+plotH*i/4+4)}
