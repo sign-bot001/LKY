@@ -432,6 +432,80 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
   .nav-icon{font-size:25px}
 }
 
+
+/* ===== MY ASSETS V5 — TYPOGRAPHY + BALANCE VISIBILITY ===== */
+#assets,
+#assets button,
+#assets input,
+#assets select{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
+}
+.assets-title,
+.assets-account-title{
+  font-weight:800;
+  letter-spacing:-1.15px;
+}
+.assets-valuation-card{
+  padding:28px 32px 30px;
+}
+.assets-valuation-top{
+  font-size:18px;
+  font-weight:400;
+  letter-spacing:-.15px;
+}
+.assets-valuation-label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.assets-eye-btn{
+  width:27px;
+  height:27px;
+  border:0;
+  padding:0;
+  background:transparent;
+  color:#aeb0b6;
+  display:inline-grid;
+  place-items:center;
+  cursor:pointer;
+}
+.assets-eye-btn svg{
+  width:24px;
+  height:24px;
+  display:block;
+}
+.assets-balance{
+  font-size:46px;
+  font-weight:700;
+  letter-spacing:-1.2px;
+  font-variant-numeric:tabular-nums;
+}
+.assets-subline{
+  font-size:18px;
+  font-weight:400;
+  letter-spacing:-.2px;
+  font-variant-numeric:tabular-nums;
+}
+.assets-account-card h3{
+  font-size:24px;
+  font-weight:650;
+  letter-spacing:-.35px;
+}
+.assets-account-balance span{
+  font-size:16px;
+  font-weight:400;
+  letter-spacing:-.15px;
+}
+.assets-account-balance strong{
+  font-size:21px;
+  font-weight:450;
+  letter-spacing:-.2px;
+  font-variant-numeric:tabular-nums;
+}
+.assets-balance-masked{
+  letter-spacing:3px!important;
+}
+
 </style>
 </head>
 <body>
@@ -798,7 +872,10 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 
     <div class="assets-valuation-card">
       <div class="assets-valuation-top">
-        <span>asset valuation <span class="assets-eye">◉</span></span>
+        <span class="assets-valuation-label">
+          <span>asset valuation</span>
+          <button id="assetBalanceEye" class="assets-eye-btn" type="button" onclick="toggleAssetBalanceVisibility()" aria-label="Hide balance" title="Hide balance"></button>
+        </span>
         <span>USD</span>
       </div>
       <div class="assets-balance"><span id="assetBalance">0.00</span></div>
@@ -834,7 +911,7 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
         <span class="assets-account-arrow">›</span>
         <div class="assets-account-balance">
           <span>available balance</span>
-          <strong>0.00</strong>
+          <strong id="exchangeAccountBalance">0.00</strong>
         </div>
       </div>
 
@@ -852,7 +929,7 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
         <span class="assets-account-arrow">›</span>
         <div class="assets-account-balance">
           <span>available balance</span>
-          <strong>0.00</strong>
+          <strong id="perpetualAccountBalance">0.00</strong>
         </div>
       </div>
     </div>
@@ -1166,6 +1243,79 @@ function showMessage(id,text,type){const e=document.getElementById(id);e.classNa
 function clearMessage(id){const e=document.getElementById(id);e.className="message";e.textContent=""}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
+let assetBalanceVisible=true;
+
+function assetNumber(n,decimals=2){
+  const value=Number(n||0);
+  if(!Number.isFinite(value))return "0.00";
+  return value.toFixed(decimals);
+}
+
+function assetEyeSVG(hidden=false){
+  if(hidden){
+    return `<svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M10.6 10.7a2 2 0 0 0 2.7 2.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M9.2 5.3A10.8 10.8 0 0 1 12 5c5.2 0 8.5 4.1 9.4 5.4a2.7 2.7 0 0 1 0 3.2 13.8 13.8 0 0 1-2.5 2.7M6.1 6.1a14.6 14.6 0 0 0-3.5 4.3 2.7 2.7 0 0 0 0 3.2C3.5 14.9 6.8 19 12 19c1 0 2-.2 2.8-.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+  return `<svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M2.6 10.4C3.5 9.1 6.8 5 12 5s8.5 4.1 9.4 5.4a2.7 2.7 0 0 1 0 3.2C20.5 14.9 17.2 19 12 19S3.5 14.9 2.6 13.6a2.7 2.7 0 0 1 0-3.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  </svg>`;
+}
+
+function refreshAssetVisibility(){
+  const eye=document.getElementById("assetBalanceEye");
+  if(eye){
+    eye.innerHTML=assetEyeSVG(!assetBalanceVisible);
+    eye.setAttribute("aria-label",assetBalanceVisible?"Hide balance":"Show balance");
+    eye.title=assetBalanceVisible?"Hide balance":"Show balance";
+  }
+
+  const balance=Number(profile?.balance||0);
+  const today=assetTodayProfitValue();
+
+  const valueMap=[
+    ["assetBalance",assetNumber(balance)],
+    ["assetApproxBalance",assetNumber(balance)],
+    ["assetTodayEarnings",assetNumber(today)],
+    ["usdtBalance",assetNumber(balance)]
+  ];
+
+  valueMap.forEach(([id,value])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.textContent=assetBalanceVisible?value:"••••••";
+    el.classList.toggle("assets-balance-masked",!assetBalanceVisible);
+  });
+
+  ["exchangeAccountBalance","perpetualAccountBalance"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.textContent=assetBalanceVisible?"0.00":"••••••";
+    el.classList.toggle("assets-balance-masked",!assetBalanceVisible);
+  });
+}
+
+function toggleAssetBalanceVisibility(){
+  assetBalanceVisible=!assetBalanceVisible;
+  refreshAssetVisibility();
+}
+
+function assetTodayProfitValue(){
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
+  return (trades||[])
+    .filter(t=>{
+      if(t.status!=="SETTLED")return false;
+      const dt=new Date(t.settled_at||t.settle_at);
+      return dt.getFullYear()===y&&dt.getMonth()===m&&dt.getDate()===d;
+    })
+    .reduce((sum,t)=>sum+Number(t.profit||0),0);
+}
+
+
 function updateClock(){
   const el=document.getElementById("liveClock"); if(!el)return;
   el.textContent=new Intl.DateTimeFormat("fr-CA",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date());
@@ -1243,8 +1393,8 @@ function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== 
   const ethQuoteEl = document.getElementById("ethQuote");
   const btcTradeEl = document.getElementById("btcTrade");
 
-  if(assetBalanceEl) assetBalanceEl.textContent = money(b);
-  if(usdtBalanceEl) usdtBalanceEl.textContent = money(b);
+  if(assetBalanceEl) assetBalanceEl.textContent = assetNumber(b);
+  if(usdtBalanceEl) usdtBalanceEl.textContent = assetNumber(b);
 
   if(btcHotEl) btcHotEl.textContent = price(btcPrice);
   if(ethHotEl) ethHotEl.textContent = price(ethPrice);
@@ -1261,8 +1411,9 @@ function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== 
   const ta=document.getElementById("tradeAvailable"); if(ta) ta.textContent=money(b);
 
   const approx=document.getElementById("assetApproxBalance");
-  if(approx) approx.textContent=money(b);
+  if(approx) approx.textContent=assetNumber(b);
   updateAssetsTodayEarnings();
+  refreshAssetVisibility();
 
   drawTradeChart();
 }
@@ -1859,16 +2010,7 @@ let currentAssetAction="";
 function updateAssetsTodayEarnings(){
   const el=document.getElementById("assetTodayEarnings");
   if(!el)return;
-  const now=new Date();
-  const y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
-  const total=(trades||[])
-    .filter(t=>{
-      if(t.status!=="SETTLED")return false;
-      const dt=new Date(t.settled_at||t.settle_at);
-      return dt.getFullYear()===y&&dt.getMonth()===m&&dt.getDate()===d;
-    })
-    .reduce((sum,t)=>sum+Number(t.profit||0),0);
-  el.textContent=money(total);
+  el.textContent=assetBalanceVisible?assetNumber(assetTodayProfitValue()):"••••••";
 }
 
 function assetLedgerKey(){
