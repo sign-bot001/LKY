@@ -310,6 +310,80 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
   .funding-record-amount{font-size:18px}
 }
 
+
+/* ===== WALLET ACTION PAGES — DEMO ONLY ===== */
+.wallet-action-page{position:fixed;z-index:900;inset:0;background:#f6fff2;color:#171a1f;overflow:auto;padding:72px max(22px,calc((100vw - 560px)/2 + 22px)) 110px}
+.wallet-action-inner{max-width:516px;margin:0 auto}
+.wallet-action-head{display:grid;grid-template-columns:55px 1fr 55px;align-items:center;margin-bottom:54px}
+.wallet-action-back,.wallet-action-records{border:0;background:transparent;color:#404849;cursor:pointer}
+.wallet-action-back{font-size:44px;text-align:left;line-height:1}
+.wallet-action-records{font-size:29px;text-align:right}
+.wallet-action-title{text-align:center;font-size:31px;font-weight:900;text-transform:lowercase}
+.wallet-demo-pill{display:inline-block;background:#ffbe3d;color:#111;font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.wallet-label{display:flex;justify-content:space-between;gap:12px;color:#8d95a3;font-size:17px;font-weight:700;margin:0 0 10px}
+.wallet-field,.wallet-selector{width:100%;min-height:72px;border:0;border-radius:22px;background:#e9efe7;color:#14171a;padding:0 22px;margin-bottom:28px;font-size:20px}
+.wallet-selector{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.wallet-selector-main{display:flex;align-items:center;gap:14px;font-weight:800}
+.wallet-chevron{font-size:31px;color:#b9bec2}
+.wallet-input{height:72px;outline:none}
+.wallet-input::placeholder{color:#c5c8cf}
+.wallet-quantity{position:relative}
+.wallet-quantity input{padding-right:135px}
+.wallet-max{position:absolute;right:20px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#55d946;font-weight:900;font-size:22px;cursor:pointer}
+.wallet-fee{margin-top:-20px;margin-bottom:28px;color:#8e96a3;font-size:16px}
+.wallet-fee strong{color:#1b1d20;font-weight:500}
+.wallet-notice{background:#edffe8;border-radius:28px;padding:28px 30px;margin:26px 0 18px}
+.wallet-notice h3{font-size:29px;color:#59db48;font-weight:500;margin-bottom:28px}
+.wallet-notice p{font-size:15px;line-height:1.25;color:#303438}
+.wallet-primary{width:100%;height:68px;border:0;border-radius:22px;background:#5fda45;color:#fff;font-size:23px;font-weight:900;cursor:pointer}
+.wallet-primary:disabled{opacity:.45;cursor:not-allowed}
+.wallet-search{position:relative;margin-bottom:28px}
+.wallet-search input{width:100%;height:68px;border:0;border-radius:18px;background:#f0f0f1;padding:0 58px 0 24px;font-size:20px;outline:none}
+.wallet-search span{position:absolute;right:22px;top:17px;font-size:28px;color:#8b9096}
+.wallet-big-heading{font-size:27px;font-weight:900;margin:12px 0 18px}
+.wallet-currency-list{display:grid;gap:22px}
+.wallet-currency-row{height:88px;border:0;border-radius:23px;background:#f3f3f4;padding:0 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.wallet-currency-main{display:flex;align-items:center;gap:16px;font-size:24px;font-weight:800}
+.wallet-coin{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:21px;font-weight:900}
+.wallet-coin.usdt{background:#42a6a1;color:#fff;border-radius:9px;transform:rotate(45deg)}
+.wallet-coin.usdt span{transform:rotate(-45deg)}
+.wallet-coin.eth{background:#eef0f1;color:#444}
+.wallet-coin.btc{background:#f39b32;color:#fff}
+.wallet-coin.usdc{background:#3e78cb;color:#fff}
+.wallet-coin.dai{background:#f5b73f;color:#fff}
+.wallet-transfer-pair{display:grid;grid-template-columns:1fr;gap:0}
+.wallet-account-chip{display:flex;align-items:center;gap:10px}
+.wallet-account-dot{width:30px;height:30px;border-radius:50%;background:#59db48;display:grid;place-items:center;color:#111;font-weight:900}
+.wallet-amount-unit{display:flex;align-items:center;gap:10px;font-weight:800}
+.wallet-helper{font-size:13px;color:#8e95a0;margin-top:-18px;margin-bottom:24px}
+.wallet-exchange-rate{display:flex;justify-content:space-between;gap:10px;padding:15px 4px;color:#8d95a3;font-size:14px}
+.wallet-result-box{background:#e9efe7;border-radius:20px;padding:18px 22px;margin-bottom:26px}
+.wallet-result-box span{display:block;color:#8d95a3;font-size:13px}
+.wallet-result-box strong{display:block;font-size:24px;margin-top:5px}
+
+/* Shared white selection sheet */
+.wallet-sheet-overlay{position:fixed;z-index:980;inset:0;background:rgba(0,0,0,.69);display:flex;align-items:center;justify-content:center;padding:22px}
+.wallet-sheet{width:min(475px,100%);background:#fff;color:#111;border-radius:26px;padding:24px 22px}
+.wallet-sheet-row{min-height:78px;border:0;background:#fff;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 3px;font-size:22px;cursor:pointer;text-align:left}
+.wallet-sheet-row+.wallet-sheet-row{border-top:1.5px solid #5cdf4a}
+.wallet-sheet-row-main{display:flex;align-items:center;gap:17px}
+.wallet-sheet-check{color:#8df58d;font-size:30px;font-weight:900}
+.wallet-sheet-simple .wallet-sheet-row{min-height:86px}
+
+/* Recharge DEMO amount panel */
+.recharge-demo-box{margin-top:24px;background:#f3f3f4;border-radius:24px;padding:22px}
+.recharge-demo-box h3{font-size:22px;margin-bottom:8px}
+.recharge-demo-box p{color:#8e95a0;font-size:13px;line-height:1.3;margin-bottom:16px}
+.recharge-demo-box input{width:100%;height:60px;border:0;border-radius:16px;background:#fff;padding:0 16px;font-size:19px;outline:none}
+.recharge-demo-box button{width:100%;height:56px;border:0;border-radius:16px;background:#5fda45;color:#fff;font-weight:900;font-size:18px;margin-top:12px;cursor:pointer}
+
+@media(max-width:380px){
+  .wallet-action-title{font-size:28px}
+  .wallet-big-heading{font-size:23px}
+  .wallet-currency-main{font-size:21px}
+  .wallet-field,.wallet-selector{min-height:66px}
+}
+
 </style>
 </head>
 <body>
@@ -707,7 +781,7 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 
     <div class="assets-account-title">my account</div>
     <div class="assets-account-list">
-      <div class="assets-account-card">
+      <div class="assets-account-card" onclick="openAssetAction('exchange')">
         <h3>Exchange</h3>
         <span class="assets-account-arrow">›</span>
         <div class="assets-account-balance">
@@ -725,7 +799,7 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
         </div>
       </div>
 
-      <div class="assets-account-card">
+      <div class="assets-account-card" onclick="transferTo='Perpetual';openAssetAction('transfer')">
         <h3>Perpetual</h3>
         <span class="assets-account-arrow">›</span>
         <div class="assets-account-balance">
@@ -837,17 +911,184 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
     </div>
   </div>
 
-  <div id="assetActionOverlay" class="asset-action-overlay hidden" onclick="if(event.target===this)closeAssetAction()">
-    <div class="asset-action-modal">
-      <div class="asset-action-head">
-        <h3 id="assetActionTitle">demo action</h3>
-        <button class="asset-action-close" onclick="closeAssetAction()">×</button>
+
+  <!-- WITHDRAW DEMO -->
+  <div id="withdrawPage" class="wallet-action-page hidden">
+    <div class="wallet-action-inner">
+      <div class="wallet-action-head">
+        <button class="wallet-action-back" onclick="closeWalletPage('withdrawPage')">←</button>
+        <div class="wallet-action-title">withdraw <span class="wallet-demo-pill">DEMO</span></div>
+        <button class="wallet-action-records" onclick="openFundingRecords()">▤</button>
       </div>
-      <div id="assetActionNote" class="asset-action-note">
-        Simulation only. This does not send or receive real money or cryptocurrency and does not change your Supabase balance.
+
+      <div class="wallet-label"><span>select currency</span></div>
+      <button class="wallet-selector" onclick="openWalletCurrencySheet('withdraw')">
+        <span class="wallet-selector-main"><span id="withdrawCoinIcon" class="wallet-coin usdt"><span>₮</span></span><span id="withdrawCurrencyText">USDT</span></span>
+        <span class="wallet-chevron">›</span>
+      </button>
+
+      <div class="wallet-label"><span>withdrawal network</span></div>
+      <button class="wallet-selector" onclick="openNetworkSheet()">
+        <span id="withdrawNetworkText">TRC20</span><span class="wallet-chevron">›</span>
+      </button>
+
+      <div class="wallet-label"><span>withdrawal address</span></div>
+      <input id="withdrawAddress" class="wallet-field wallet-input" placeholder="DEMO wallet address only">
+
+      <div class="wallet-label"><span>fund password</span></div>
+      <input id="withdrawFundPassword" class="wallet-field wallet-input" type="password" autocomplete="off" placeholder="DEMO only — do not enter a real password">
+
+      <div class="wallet-label"><span>quantity</span><span>available: <strong id="withdrawAvailable">0.00</strong></span></div>
+      <div class="wallet-quantity">
+        <input id="withdrawQuantity" class="wallet-field wallet-input" type="number" min="0" step="0.01" value="0" oninput="updateWithdrawFee()">
+        <button class="wallet-max" onclick="setWithdrawMaximum()">maximum</button>
       </div>
-      <input id="assetActionAmount" type="number" min="0" step="0.01" placeholder="Amount in USDT DEMO">
-      <button class="asset-action-confirm" onclick="confirmAssetAction()">Confirm DEMO</button>
+      <div class="wallet-fee">handling fee&nbsp; <strong id="withdrawFee">(-- USDT)</strong></div>
+
+      <div class="wallet-notice">
+        <h3>important notice</h3>
+        <p>
+          DEMO simulation only. This page does not transmit cryptocurrency, contact a blockchain,
+          freeze funds, or submit a real withdrawal. The displayed fee is illustrative only.
+          Never enter a real exchange password or seed phrase here.
+        </p>
+      </div>
+      <button class="wallet-primary" onclick="submitWithdrawDemo()">next step</button>
+    </div>
+  </div>
+
+  <!-- RECHARGE DEMO -->
+  <div id="rechargePage" class="wallet-action-page hidden" style="background:#fff">
+    <div class="wallet-action-inner">
+      <div class="wallet-action-head">
+        <button class="wallet-action-back" onclick="closeWalletPage('rechargePage')">←</button>
+        <div class="wallet-action-title">recharge <span class="wallet-demo-pill">DEMO</span></div>
+        <button class="wallet-action-records" onclick="openFundingRecords()">▤</button>
+      </div>
+
+      <div class="wallet-search">
+        <input id="rechargeSearch" placeholder="search" oninput="filterRechargeCurrencies()">
+        <span>⌕</span>
+      </div>
+
+      <div class="wallet-big-heading">select the currency you want to recharge</div>
+      <div id="rechargeCurrencyList" class="wallet-currency-list">
+        <button class="wallet-currency-row" data-currency="USDT" onclick="selectRechargeCurrency('USDT')">
+          <span class="wallet-currency-main"><span class="wallet-coin usdt"><span>₮</span></span>USDT</span><span class="wallet-chevron">›</span>
+        </button>
+        <button class="wallet-currency-row" data-currency="ETH" onclick="selectRechargeCurrency('ETH')">
+          <span class="wallet-currency-main"><span class="wallet-coin eth">◆</span>ETH</span><span class="wallet-chevron">›</span>
+        </button>
+        <button class="wallet-currency-row" data-currency="BTC" onclick="selectRechargeCurrency('BTC')">
+          <span class="wallet-currency-main"><span class="wallet-coin btc">₿</span>BTC</span><span class="wallet-chevron">›</span>
+        </button>
+        <button class="wallet-currency-row" data-currency="USDC" onclick="selectRechargeCurrency('USDC')">
+          <span class="wallet-currency-main"><span class="wallet-coin usdc">$</span>USDC</span><span class="wallet-chevron">›</span>
+        </button>
+      </div>
+
+      <div id="rechargeDemoBox" class="recharge-demo-box hidden">
+        <h3><span id="rechargeSelectedCurrency">USDT</span> DEMO recharge</h3>
+        <p>No real deposit address is generated. Enter a fictitious amount to add a local funding-record entry only.</p>
+        <input id="rechargeAmount" type="number" min="0" step="0.01" placeholder="DEMO amount">
+        <button onclick="submitRechargeDemo()">simulate recharge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUND TRANSFER DEMO -->
+  <div id="transferPage" class="wallet-action-page hidden">
+    <div class="wallet-action-inner">
+      <div class="wallet-action-head">
+        <button class="wallet-action-back" onclick="closeWalletPage('transferPage')">←</button>
+        <div class="wallet-action-title">fund transfer <span class="wallet-demo-pill">DEMO</span></div>
+        <button class="wallet-action-records" onclick="openFundingRecords()">▤</button>
+      </div>
+
+      <div class="wallet-label"><span>select currency</span></div>
+      <button class="wallet-selector" onclick="openWalletCurrencySheet('transfer')">
+        <span class="wallet-selector-main"><span id="transferCoinIcon" class="wallet-coin usdt"><span>₮</span></span><span id="transferCurrencyText">USDT</span></span>
+        <span class="wallet-chevron">›</span>
+      </button>
+
+      <div class="wallet-label"><span>wallet from</span></div>
+      <button class="wallet-selector" onclick="openAccountSheet('from')">
+        <span class="wallet-account-chip"><span class="wallet-account-dot">✓</span><strong id="transferFromText">Trade</strong></span>
+        <span class="wallet-chevron">›</span>
+      </button>
+
+      <div class="wallet-label"><span>wallet to</span></div>
+      <button class="wallet-selector" onclick="openAccountSheet('to')">
+        <span class="wallet-account-chip"><span class="wallet-account-dot">→</span><strong id="transferToText">Exchange</strong></span>
+        <span class="wallet-chevron">›</span>
+      </button>
+
+      <div class="wallet-label"><span>quantity</span><span>available: <strong id="transferAvailable">0.00</strong></span></div>
+      <div class="wallet-quantity">
+        <input id="transferQuantity" class="wallet-field wallet-input" type="number" min="0" step="0.01" placeholder="please enter quantity">
+        <button class="wallet-max" onclick="setTransferMaximum()">maximum</button>
+      </div>
+
+      <div class="wallet-helper">Simulation only. Account balances are not actually moved in Supabase.</div>
+      <button class="wallet-primary" onclick="submitTransferDemo()">exchange</button>
+    </div>
+  </div>
+
+  <!-- EXCHANGE DEMO
+       No separate reference screen was supplied, so this follows the same wallet visual language. -->
+  <div id="exchangePage" class="wallet-action-page hidden">
+    <div class="wallet-action-inner">
+      <div class="wallet-action-head">
+        <button class="wallet-action-back" onclick="closeWalletPage('exchangePage')">←</button>
+        <div class="wallet-action-title">exchange <span class="wallet-demo-pill">DEMO</span></div>
+        <button class="wallet-action-records" onclick="openFundingRecords()">▤</button>
+      </div>
+
+      <div class="wallet-label"><span>from currency</span></div>
+      <button class="wallet-selector" onclick="openWalletCurrencySheet('exchangeFrom')">
+        <span class="wallet-selector-main"><span id="exchangeFromCoinIcon" class="wallet-coin usdt"><span>₮</span></span><span id="exchangeFromCurrencyText">USDT</span></span>
+        <span class="wallet-chevron">›</span>
+      </button>
+
+      <div class="wallet-label"><span>to currency</span></div>
+      <button class="wallet-selector" onclick="openWalletCurrencySheet('exchangeTo')">
+        <span class="wallet-selector-main"><span id="exchangeToCoinIcon" class="wallet-coin usdc">$</span><span id="exchangeToCurrencyText">USDC</span></span>
+        <span class="wallet-chevron">›</span>
+      </button>
+
+      <div class="wallet-label"><span>quantity</span><span>available: <strong id="exchangeAvailable">0.00</strong></span></div>
+      <div class="wallet-quantity">
+        <input id="exchangeQuantity" class="wallet-field wallet-input" type="number" min="0" step="0.01" value="0" oninput="updateExchangePreview()">
+        <button class="wallet-max" onclick="setExchangeMaximum()">maximum</button>
+      </div>
+
+      <div class="wallet-exchange-rate"><span>illustrative rate</span><strong id="exchangeRateText">1 USDT = 1 USDC</strong></div>
+      <div class="wallet-result-box"><span>you receive (DEMO)</span><strong id="exchangeReceiveText">0.00 USDC</strong></div>
+      <button class="wallet-primary" onclick="submitExchangeDemo()">exchange</button>
+    </div>
+  </div>
+
+  <!-- Shared currency selector -->
+  <div id="walletCurrencySheetOverlay" class="wallet-sheet-overlay hidden" onclick="if(event.target===this)closeWalletSheet('walletCurrencySheetOverlay')">
+    <div class="wallet-sheet">
+      <div id="walletCurrencySheetRows"></div>
+    </div>
+  </div>
+
+  <!-- Withdrawal network selector -->
+  <div id="walletNetworkSheetOverlay" class="wallet-sheet-overlay hidden" onclick="if(event.target===this)closeWalletSheet('walletNetworkSheetOverlay')">
+    <div class="wallet-sheet wallet-sheet-simple">
+      <button class="wallet-sheet-row" onclick="selectWithdrawNetwork('TRC20')"><span>TRC20</span><span id="networkCheckTRC20" class="wallet-sheet-check">✓</span></button>
+      <button class="wallet-sheet-row" onclick="selectWithdrawNetwork('ERC20')"><span>ERC20</span><span id="networkCheckERC20" class="wallet-sheet-check"></span></button>
+    </div>
+  </div>
+
+  <!-- Transfer account selector -->
+  <div id="walletAccountSheetOverlay" class="wallet-sheet-overlay hidden" onclick="if(event.target===this)closeWalletSheet('walletAccountSheetOverlay')">
+    <div class="wallet-sheet wallet-sheet-simple">
+      <button class="wallet-sheet-row" onclick="selectTransferAccount('Exchange')"><span>Exchange</span><span id="accountCheckExchange" class="wallet-sheet-check"></span></button>
+      <button class="wallet-sheet-row" onclick="selectTransferAccount('Trade')"><span>Trade</span><span id="accountCheckTrade" class="wallet-sheet-check">✓</span></button>
+      <button class="wallet-sheet-row" onclick="selectTransferAccount('Perpetual')"><span>Perpetual</span><span id="accountCheckPerpetual" class="wallet-sheet-check"></span></button>
     </div>
   </div>
 
@@ -1802,54 +2043,306 @@ function applyFundingDateRange(){
   renderFundingRecords();
 }
 
+const WALLET_CURRENCIES=["USDT","ETH","BTC","USDC","DAI"];
+let walletCurrencyTarget="withdraw";
+let withdrawCurrency="USDT";
+let withdrawNetwork="TRC20";
+let transferCurrency="USDT";
+let transferFrom="Trade";
+let transferTo="Exchange";
+let transferAccountTarget="from";
+let exchangeFromCurrency="USDT";
+let exchangeToCurrency="USDC";
+let rechargeCurrency="USDT";
+
+function coinClass(currency){
+  const c=String(currency||"USDT").toLowerCase();
+  return ["usdt","eth","btc","usdc","dai"].includes(c)?c:"usdt";
+}
+function coinGlyph(currency){
+  return {USDT:"₮",ETH:"◆",BTC:"₿",USDC:"$",DAI:"Ð"}[currency]||"¤";
+}
+function walletCoinHTML(currency,id=""){
+  const inner=currency==="USDT"?`<span>${coinGlyph(currency)}</span>`:coinGlyph(currency);
+  return `<span ${id?`id="${id}"`:""} class="wallet-coin ${coinClass(currency)}">${inner}</span>`;
+}
+function walletAvailableFor(currency){
+  // Current NexaTrade DEMO has one Supabase demo balance denominated in USDT.
+  return currency==="USDT" ? Number(profile?.balance||0) : 0;
+}
+function openWalletPage(id){
+  ["withdrawPage","rechargePage","transferPage","exchangePage"].forEach(x=>document.getElementById(x)?.classList.add("hidden"));
+  document.getElementById(id)?.classList.remove("hidden");
+}
+function closeWalletPage(id){
+  document.getElementById(id)?.classList.add("hidden");
+}
 function openAssetAction(type){
-  currentAssetAction=String(type||"").toLowerCase();
-  const title=document.getElementById("assetActionTitle");
-  const amount=document.getElementById("assetActionAmount");
-  if(title)title.textContent=currentAssetAction||"demo action";
-  if(amount)amount.value="";
-  document.getElementById("assetActionOverlay")?.classList.remove("hidden");
+  const t=String(type||"").toLowerCase();
+  if(t==="withdraw"){
+    refreshWithdrawUI();
+    openWalletPage("withdrawPage");
+  }else if(t==="recharge"){
+    document.getElementById("rechargeDemoBox")?.classList.add("hidden");
+    const s=document.getElementById("rechargeSearch"); if(s)s.value="";
+    filterRechargeCurrencies();
+    openWalletPage("rechargePage");
+  }else if(t==="transfer"){
+    refreshTransferUI();
+    openWalletPage("transferPage");
+  }else if(t==="exchange"){
+    refreshExchangeUI();
+    openWalletPage("exchangePage");
+  }
 }
 function closeAssetAction(){
-  document.getElementById("assetActionOverlay")?.classList.add("hidden");
+  ["withdrawPage","rechargePage","transferPage","exchangePage"].forEach(id=>document.getElementById(id)?.classList.add("hidden"));
+}
+function closeWalletSheet(id){document.getElementById(id)?.classList.add("hidden")}
+
+function renderCurrencySelectorRows(selected){
+  return WALLET_CURRENCIES.map(c=>`
+    <button class="wallet-sheet-row" onclick="selectWalletCurrency('${c}')">
+      <span class="wallet-sheet-row-main">${walletCoinHTML(c)}<span>${c}</span></span>
+      <span class="wallet-sheet-check">${c===selected?"✓":""}</span>
+    </button>`).join("");
+}
+function currentTargetCurrency(){
+  if(walletCurrencyTarget==="withdraw")return withdrawCurrency;
+  if(walletCurrencyTarget==="transfer")return transferCurrency;
+  if(walletCurrencyTarget==="exchangeFrom")return exchangeFromCurrency;
+  if(walletCurrencyTarget==="exchangeTo")return exchangeToCurrency;
+  return "USDT";
+}
+function openWalletCurrencySheet(target){
+  walletCurrencyTarget=target;
+  const rows=document.getElementById("walletCurrencySheetRows");
+  if(rows)rows.innerHTML=renderCurrencySelectorRows(currentTargetCurrency());
+  document.getElementById("walletCurrencySheetOverlay")?.classList.remove("hidden");
+}
+function selectWalletCurrency(currency){
+  if(!WALLET_CURRENCIES.includes(currency))return;
+  if(walletCurrencyTarget==="withdraw"){
+    withdrawCurrency=currency;
+    // Reference provides TRC20/ERC20 for USDT. Other currencies use an illustrative DEMO network.
+    withdrawNetwork=currency==="USDT"?"TRC20":(currency==="BTC"?"BTC":currency==="ETH"?"ERC20":"ERC20");
+    refreshWithdrawUI();
+  }else if(walletCurrencyTarget==="transfer"){
+    transferCurrency=currency;
+    refreshTransferUI();
+  }else if(walletCurrencyTarget==="exchangeFrom"){
+    exchangeFromCurrency=currency;
+    if(exchangeFromCurrency===exchangeToCurrency)exchangeToCurrency=exchangeFromCurrency==="USDT"?"USDC":"USDT";
+    refreshExchangeUI();
+  }else if(walletCurrencyTarget==="exchangeTo"){
+    exchangeToCurrency=currency;
+    if(exchangeToCurrency===exchangeFromCurrency)exchangeFromCurrency=exchangeToCurrency==="USDT"?"USDC":"USDT";
+    refreshExchangeUI();
+  }
+  closeWalletSheet("walletCurrencySheetOverlay");
 }
 
-function confirmAssetAction(){
-  const amount=Number(document.getElementById("assetActionAmount")?.value||0);
-  if(!Number.isFinite(amount)||amount<=0)return alert("Enter a DEMO amount greater than 0.");
+/* -------- WITHDRAW DEMO -------- */
+function refreshWithdrawUI(){
+  const c=document.getElementById("withdrawCurrencyText");
+  const icon=document.getElementById("withdrawCoinIcon");
+  const network=document.getElementById("withdrawNetworkText");
+  const available=document.getElementById("withdrawAvailable");
+  if(c)c.textContent=withdrawCurrency;
+  if(icon){
+    icon.className="wallet-coin "+coinClass(withdrawCurrency);
+    icon.innerHTML=withdrawCurrency==="USDT"?`<span>${coinGlyph(withdrawCurrency)}</span>`:coinGlyph(withdrawCurrency);
+  }
+  if(network)network.textContent=withdrawNetwork;
+  if(available)available.textContent=money(walletAvailableFor(withdrawCurrency));
+  updateWithdrawFee();
+}
+function openNetworkSheet(){
+  const trc=document.getElementById("networkCheckTRC20"),erc=document.getElementById("networkCheckERC20");
+  if(trc)trc.textContent=withdrawNetwork==="TRC20"?"✓":"";
+  if(erc)erc.textContent=withdrawNetwork==="ERC20"?"✓":"";
+  document.getElementById("walletNetworkSheetOverlay")?.classList.remove("hidden");
+}
+function selectWithdrawNetwork(network){
+  // Screenshot reference exposes TRC20 / ERC20.
+  if(!["TRC20","ERC20"].includes(network))return;
+  withdrawNetwork=network;
+  document.getElementById("withdrawNetworkText").textContent=network;
+  closeWalletSheet("walletNetworkSheetOverlay");
+}
+function setWithdrawMaximum(){
+  const el=document.getElementById("withdrawQuantity");
+  if(el){el.value=walletAvailableFor(withdrawCurrency).toFixed(2);updateWithdrawFee()}
+}
+function demoWithdrawalFee(amount,currency){
+  const n=Number(amount||0);
+  if(currency!=="USDT"||n<=0)return 0;
+  // Mirrors the provided reference as an illustrative DEMO calculation only.
+  return n<=100?10:n*0.10;
+}
+function updateWithdrawFee(){
+  const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
+  const fee=demoWithdrawalFee(amount,withdrawCurrency);
+  const el=document.getElementById("withdrawFee");
+  if(el)el.textContent=amount>0?`(${money(fee)} ${withdrawCurrency})`:`(-- ${withdrawCurrency})`;
+}
+function submitWithdrawDemo(){
+  const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
+  const address=(document.getElementById("withdrawAddress")?.value||"").trim();
+  const pass=(document.getElementById("withdrawFundPassword")?.value||"").trim();
+  const available=walletAvailableFor(withdrawCurrency);
+  if(amount<=0)return alert("Enter a DEMO quantity greater than 0.");
+  if(amount>available)return alert("DEMO available balance is insufficient.");
+  if(!address)return alert("Enter a DEMO wallet address.");
+  if(!pass)return alert("Enter a DEMO fund password. Do not use a real password.");
+  const fee=demoWithdrawalFee(amount,withdrawCurrency);
+  addWalletRecord("DEMO withdrawal",withdrawCurrency,-amount,{network:withdrawNetwork,fee});
+  document.getElementById("withdrawFundPassword").value="";
+  alert(`DEMO withdrawal recorded locally: ${money(amount)} ${withdrawCurrency}. No cryptocurrency was sent.`);
+}
 
-  const titleMap={
-    withdraw:"DEMO withdrawal",
-    recharge:"DEMO recharge",
-    transfer:"DEMO transfer",
-    exchange:"DEMO exchange"
-  };
-  const signMap={
-    withdraw:-1,
-    recharge:1,
-    transfer:-1,
-    exchange:0
-  };
+/* -------- RECHARGE DEMO -------- */
+function filterRechargeCurrencies(){
+  const q=(document.getElementById("rechargeSearch")?.value||"").trim().toUpperCase();
+  document.querySelectorAll("#rechargeCurrencyList .wallet-currency-row").forEach(row=>{
+    row.style.display=(!q||(row.dataset.currency||"").includes(q))?"flex":"none";
+  });
+}
+function selectRechargeCurrency(currency){
+  if(!["USDT","ETH","BTC","USDC"].includes(currency))return;
+  rechargeCurrency=currency;
+  const box=document.getElementById("rechargeDemoBox");
+  const label=document.getElementById("rechargeSelectedCurrency");
+  const input=document.getElementById("rechargeAmount");
+  if(label)label.textContent=currency;
+  if(input)input.value="";
+  box?.classList.remove("hidden");
+  box?.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function submitRechargeDemo(){
+  const amount=Number(document.getElementById("rechargeAmount")?.value||0);
+  if(amount<=0)return alert("Enter a DEMO recharge amount greater than 0.");
+  addWalletRecord("DEMO recharge",rechargeCurrency,amount);
+  alert(`DEMO recharge recorded locally: ${money(amount)} ${rechargeCurrency}. No real deposit address or funds are involved.`);
+}
 
+/* -------- FUND TRANSFER DEMO -------- */
+function refreshTransferUI(){
+  const currency=document.getElementById("transferCurrencyText");
+  const icon=document.getElementById("transferCoinIcon");
+  if(currency)currency.textContent=transferCurrency;
+  if(icon){
+    icon.className="wallet-coin "+coinClass(transferCurrency);
+    icon.innerHTML=transferCurrency==="USDT"?`<span>${coinGlyph(transferCurrency)}</span>`:coinGlyph(transferCurrency);
+  }
+  document.getElementById("transferFromText").textContent=transferFrom;
+  document.getElementById("transferToText").textContent=transferTo;
+  document.getElementById("transferAvailable").textContent=money(transferFrom==="Trade"?walletAvailableFor(transferCurrency):0);
+}
+function openAccountSheet(target){
+  transferAccountTarget=target;
+  const selected=target==="from"?transferFrom:transferTo;
+  ["Exchange","Trade","Perpetual"].forEach(name=>{
+    const el=document.getElementById("accountCheck"+name);
+    if(el)el.textContent=name===selected?"✓":"";
+  });
+  document.getElementById("walletAccountSheetOverlay")?.classList.remove("hidden");
+}
+function selectTransferAccount(account){
+  if(!["Exchange","Trade","Perpetual"].includes(account))return;
+  if(transferAccountTarget==="from"){
+    if(account===transferTo)return alert("Source and destination must be different.");
+    transferFrom=account;
+  }else{
+    if(account===transferFrom)return alert("Source and destination must be different.");
+    transferTo=account;
+  }
+  refreshTransferUI();
+  closeWalletSheet("walletAccountSheetOverlay");
+}
+function setTransferMaximum(){
+  const max=transferFrom==="Trade"?walletAvailableFor(transferCurrency):0;
+  const el=document.getElementById("transferQuantity");
+  if(el)el.value=max.toFixed(2);
+}
+function submitTransferDemo(){
+  const amount=Number(document.getElementById("transferQuantity")?.value||0);
+  const available=transferFrom==="Trade"?walletAvailableFor(transferCurrency):0;
+  if(amount<=0)return alert("Enter a DEMO transfer quantity greater than 0.");
+  if(amount>available)return alert("DEMO available balance is insufficient for the selected source account.");
+  addWalletRecord(`DEMO transfer ${transferFrom} → ${transferTo}`,transferCurrency,-amount);
+  alert(`DEMO transfer recorded locally: ${money(amount)} ${transferCurrency} · ${transferFrom} → ${transferTo}. Supabase balances were not changed.`);
+}
+
+/* -------- EXCHANGE DEMO -------- */
+function demoExchangeRate(from,to){
+  if(from===to)return 1;
+  const usdPrice={
+    USDT:1,
+    USDC:1,
+    DAI:1,
+    BTC:Number(btcPrice||0),
+    ETH:Number(ethPrice||0)
+  };
+  const a=usdPrice[from]||1,b=usdPrice[to]||1;
+  return b>0?a/b:0;
+}
+function refreshExchangeUI(){
+  const pairs=[
+    ["exchangeFromCurrencyText","exchangeFromCoinIcon",exchangeFromCurrency],
+    ["exchangeToCurrencyText","exchangeToCoinIcon",exchangeToCurrency]
+  ];
+  pairs.forEach(([textId,iconId,currency])=>{
+    const t=document.getElementById(textId),i=document.getElementById(iconId);
+    if(t)t.textContent=currency;
+    if(i){
+      i.className="wallet-coin "+coinClass(currency);
+      i.innerHTML=currency==="USDT"?`<span>${coinGlyph(currency)}</span>`:coinGlyph(currency);
+    }
+  });
+  document.getElementById("exchangeAvailable").textContent=money(walletAvailableFor(exchangeFromCurrency));
+  updateExchangePreview();
+}
+function setExchangeMaximum(){
+  const el=document.getElementById("exchangeQuantity");
+  if(el){el.value=walletAvailableFor(exchangeFromCurrency).toFixed(2);updateExchangePreview()}
+}
+function updateExchangePreview(){
+  const amount=Number(document.getElementById("exchangeQuantity")?.value||0);
+  const rate=demoExchangeRate(exchangeFromCurrency,exchangeToCurrency);
+  const rateEl=document.getElementById("exchangeRateText"),receive=document.getElementById("exchangeReceiveText");
+  if(rateEl)rateEl.textContent=`1 ${exchangeFromCurrency} = ${rate.toLocaleString("en-US",{maximumFractionDigits:8})} ${exchangeToCurrency}`;
+  if(receive)receive.textContent=`${(amount*rate).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:8})} ${exchangeToCurrency}`;
+}
+function submitExchangeDemo(){
+  const amount=Number(document.getElementById("exchangeQuantity")?.value||0);
+  const available=walletAvailableFor(exchangeFromCurrency);
+  if(amount<=0)return alert("Enter a DEMO exchange quantity greater than 0.");
+  if(amount>available)return alert("DEMO available balance is insufficient.");
+  const rate=demoExchangeRate(exchangeFromCurrency,exchangeToCurrency);
+  addWalletRecord(`DEMO exchange ${exchangeFromCurrency} → ${exchangeToCurrency}`,exchangeFromCurrency,-amount,{receive:amount*rate,to:exchangeToCurrency});
+  alert(`DEMO exchange recorded locally. No real assets were converted.`);
+}
+
+function addWalletRecord(title,currency,amount,extra={}){
   const rows=readAssetLedger();
   rows.unshift({
-    id:"local-"+Date.now(),
-    title:titleMap[currentAssetAction]||"DEMO wallet action",
-    currency:"USDT",
-    amount:amount*(signMap[currentAssetAction]??0),
-    at:new Date().toISOString()
+    id:"local-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),
+    title,
+    currency,
+    amount:Number(amount||0),
+    at:new Date().toISOString(),
+    ...extra
   });
   writeAssetLedger(rows);
-
-  closeAssetAction();
   renderFundingRecords();
-  alert("DEMO record saved locally. No real funds moved and your Supabase balance was not changed.");
 }
 
-/* Compatibility with the previous buttons/functions */
+/* Compatibility with existing calls */
 function demoRecharge(){openAssetAction("recharge")}
 function demoWithdraw(){openAssetAction("withdraw")}
 function demoOnly(){alert("Fonction de simulation uniquement.")}
+
 
 
 const homeTranslations={
