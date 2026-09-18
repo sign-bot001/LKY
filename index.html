@@ -230,6 +230,86 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .follow-confirm{width:100%;height:54px;border:0;background:#fff;color:#1687ff;font-weight:900;font-size:20px;cursor:pointer;border-top:1px solid #eee;margin-top:10px}
 .follow-modal .demo-badge-inline{display:inline-block;padding:4px 8px;border-radius:999px;background:#ffbe3d;color:#111;font-size:10px;font-weight:900;margin-left:8px}
 
+
+/* ===== MY ASSETS / WALLET DEMO ===== */
+.app:has(#assets.active){max-width:560px;background:#f6fff2;padding-bottom:120px}
+.app:has(#assets.active)>.header,.app:has(#assets.active)>.warning{display:none}
+#assets{min-height:100vh;background:#f6fff2;color:#171a1f;padding:72px 16px 140px}
+.assets-head{display:flex;align-items:center;justify-content:space-between;margin:0 22px 30px}
+.assets-title{font-size:40px;font-weight:900;letter-spacing:-1.4px;text-transform:lowercase}
+.assets-records-btn{width:58px;height:58px;border:0;border-radius:17px;background:#303236;color:#71fa78;display:grid;place-items:center;font-size:27px;cursor:pointer}
+.assets-valuation-card{background:#303236;color:#fff;border-radius:30px;padding:28px 32px 30px;margin-bottom:58px}
+.assets-valuation-top{display:flex;align-items:center;justify-content:space-between;color:#aeb0b6;font-size:19px}
+.assets-eye{font-size:17px}
+.assets-balance{font-size:46px;line-height:1.05;font-weight:800;color:#69f572;margin-top:25px}
+.assets-subline{display:flex;gap:18px;flex-wrap:wrap;color:#aeb0b6;font-size:19px;margin-top:24px}
+.assets-actions-card{background:#edf4e9;border-radius:28px;padding:22px 13px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:64px}
+.assets-action{border:0;background:transparent;color:#16191d;text-align:center;cursor:pointer;min-width:0}
+.assets-action-icon{width:72px;height:72px;margin:0 auto 12px;border:2px solid #303236;border-radius:50%;background:#1ddd26;display:grid;place-items:center;font-size:29px;font-weight:900}
+.assets-action-label{font-size:18px;white-space:nowrap}
+.assets-account-title{font-size:40px;font-weight:900;letter-spacing:-1.3px;text-transform:lowercase;margin:0 22px 36px}
+.assets-account-list{display:grid;gap:24px;margin:0 22px}
+.assets-account-card{min-height:178px;background:#edf4e9;border-radius:26px;padding:24px 28px;position:relative;cursor:pointer}
+.assets-account-card h3{font-size:25px;font-weight:700}
+.assets-account-arrow{position:absolute;top:24px;right:28px;color:#b8bec0;font-size:34px;font-weight:300}
+.assets-account-balance{position:absolute;left:28px;bottom:25px}
+.assets-account-balance span{display:block;color:#9aa0a4;font-size:16px}
+.assets-account-balance strong{display:block;font-size:21px;font-weight:500}
+.assets-demo-note{margin:28px 22px 0;color:#949b9d;font-size:12px;text-align:center}
+
+/* Funding records full-screen panel */
+.funding-page{position:fixed;z-index:850;inset:0;background:#f6fff2;color:#171a1f;overflow:auto;padding:72px max(22px,calc((100vw - 560px)/2 + 22px)) 120px}
+.funding-inner{max-width:516px;margin:0 auto}
+.funding-head{display:grid;grid-template-columns:54px 1fr 54px;align-items:center;margin-bottom:55px}
+.funding-back{border:0;background:transparent;font-size:43px;line-height:1;color:#42494a;cursor:pointer;text-align:left}
+.funding-title{text-align:center;font-size:30px;font-weight:900}
+.funding-period{width:100%;height:62px;border:0;border-radius:14px;background:#edf4e9;padding:0 22px;display:flex;align-items:center;justify-content:space-between;font-size:18px;font-weight:700;cursor:pointer;margin-bottom:48px}
+.funding-list{display:grid;gap:16px}
+.funding-record{background:#edf4e9;border-radius:20px;padding:18px 22px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+.funding-record-title{font-size:20px;font-weight:800;line-height:1.15}
+.funding-record-currency{color:#949aa6;font-size:15px;font-weight:700;margin-top:8px}
+.funding-record-amount{text-align:right;font-size:21px;font-weight:700;white-space:nowrap}
+.funding-record-time{text-align:right;color:#949aa6;font-size:15px;font-weight:700;margin-top:7px;white-space:nowrap}
+.funding-empty{text-align:center;color:#a0a5aa;padding:95px 20px;font-size:18px}
+
+/* Calendar */
+.funding-calendar-overlay{position:fixed;z-index:950;inset:0;background:rgba(0,0,0,.66);display:flex;align-items:flex-end;justify-content:center}
+.funding-calendar{width:min(560px,100%);background:#fff;color:#111;border-radius:28px 28px 0 0;padding:22px 0 28px;max-height:88vh;overflow:auto}
+.calendar-head{display:grid;grid-template-columns:54px 1fr 54px;align-items:center;padding:0 24px 18px}
+.calendar-head strong{text-align:center;font-size:27px}
+.calendar-close{border:0;background:transparent;font-size:42px;color:#b7bbc0;cursor:pointer}
+.calendar-month-row{display:grid;grid-template-columns:48px 48px 1fr 48px 48px;align-items:center;padding:16px 24px}
+.calendar-month-row button{border:0;background:transparent;font-size:30px;cursor:pointer}
+.calendar-month-label{text-align:center;font-size:24px;font-weight:700}
+.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.calendar-weekdays{padding:14px 10px;border-bottom:1px solid #eee}
+.calendar-weekdays div{text-align:center;font-size:16px}
+.calendar-grid{padding:12px 10px 22px}
+.calendar-day{height:74px;border:0;background:#fff;font-size:20px;position:relative;cursor:pointer}
+.calendar-day.muted{color:#c4c8cc}
+.calendar-day.in-range{background:#e5f1ff;color:#2e80ef}
+.calendar-day.selected{background:#4188e9;color:#fff}
+.calendar-day.selected-start:after{content:"Start";display:block;font-size:11px;margin-top:2px}
+.calendar-submit{width:calc(100% - 44px);height:58px;border:0;border-radius:30px;background:#4188e9;color:#fff;font-size:21px;margin:12px 22px 0;cursor:pointer}
+
+/* Asset action DEMO modal */
+.asset-action-overlay{position:fixed;z-index:960;inset:0;background:rgba(0,0,0,.64);display:flex;align-items:center;justify-content:center;padding:20px}
+.asset-action-modal{width:min(470px,100%);background:#fff;color:#111;border-radius:25px;padding:24px}
+.asset-action-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.asset-action-head h3{font-size:26px;text-transform:capitalize}
+.asset-action-close{border:0;background:transparent;font-size:34px;cursor:pointer}
+.asset-action-note{font-size:13px;color:#8a919c;line-height:1.35;margin-bottom:18px}
+.asset-action-modal input{width:100%;height:54px;border:1px solid #d8dde2;border-radius:14px;padding:0 15px;font-size:18px}
+.asset-action-confirm{width:100%;height:52px;border:0;border-radius:14px;background:#1ddd26;color:#111;font-size:18px;font-weight:900;margin-top:14px;cursor:pointer}
+
+@media(max-width:380px){
+  .assets-title,.assets-account-title{font-size:34px}
+  .assets-action-icon{width:62px;height:62px}
+  .assets-action-label{font-size:15px}
+  .funding-record-title{font-size:17px}
+  .funding-record-amount{font-size:18px}
+}
+
 </style>
 </head>
 <body>
@@ -589,18 +669,73 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
   </section>
 
   <section id="assets" class="page">
-    <div class="section-title">My Assets</div>
-    <div class="card">
-      <div class="muted">Asset valuation · DEMO</div>
-      <div class="balance green"><span id="assetBalance">0.00</span> USD</div>
-      <div class="actions">
-        <div class="action" onclick="demoWithdraw()"><div class="action-circle">↑</div><small>Withdraw</small></div>
-        <div class="action" onclick="demoRecharge()"><div class="action-circle">↓</div><small>Recharge</small></div>
-        <div class="action" onclick="demoOnly()"><div class="action-circle">⇄</div><small>Transfer</small></div>
-        <div class="action" onclick="demoOnly()"><div class="action-circle">↻</div><small>Exchange</small></div>
+    <div class="assets-head">
+      <div class="assets-title">my assets</div>
+      <button class="assets-records-btn" onclick="openFundingRecords()" aria-label="Funding records">≡</button>
+    </div>
+
+    <div class="assets-valuation-card">
+      <div class="assets-valuation-top">
+        <span>asset valuation <span class="assets-eye">◉</span></span>
+        <span>USD</span>
+      </div>
+      <div class="assets-balance"><span id="assetBalance">0.00</span></div>
+      <div class="assets-subline">
+        <span>≈$<span id="assetApproxBalance">0.00</span></span>
+        <span>today's earnings: <strong id="assetTodayEarnings">0.00</strong></span>
       </div>
     </div>
-    <div class="card"><div class="asset-row"><div><strong>USDT DEMO</strong><div class="muted">Available Balance</div></div><strong id="usdtBalance">0.00</strong></div></div>
+
+    <div class="assets-actions-card">
+      <button class="assets-action" onclick="openAssetAction('withdraw')">
+        <span class="assets-action-icon">⇧</span>
+        <span class="assets-action-label">withdraw</span>
+      </button>
+      <button class="assets-action" onclick="openAssetAction('recharge')">
+        <span class="assets-action-icon">▤</span>
+        <span class="assets-action-label">recharge</span>
+      </button>
+      <button class="assets-action" onclick="openAssetAction('transfer')">
+        <span class="assets-action-icon">⇄</span>
+        <span class="assets-action-label">transfer</span>
+      </button>
+      <button class="assets-action" onclick="openAssetAction('exchange')">
+        <span class="assets-action-icon">ϟ</span>
+        <span class="assets-action-label">exchange</span>
+      </button>
+    </div>
+
+    <div class="assets-account-title">my account</div>
+    <div class="assets-account-list">
+      <div class="assets-account-card" onclick="openFundingRecords()">
+        <h3>Exchange</h3>
+        <span class="assets-account-arrow">›</span>
+        <div class="assets-account-balance">
+          <span>available balance</span>
+          <strong>0.00</strong>
+        </div>
+      </div>
+
+      <div class="assets-account-card" onclick="showPage('trade',document.querySelector('.nav button:nth-child(3)'))">
+        <h3>Trade</h3>
+        <span class="assets-account-arrow">›</span>
+        <div class="assets-account-balance">
+          <span>available balance</span>
+          <strong id="usdtBalance">0.00</strong>
+        </div>
+      </div>
+
+      <div class="assets-account-card" onclick="openFundingRecords()">
+        <h3>Perpetual</h3>
+        <span class="assets-account-arrow">›</span>
+        <div class="assets-account-balance">
+          <span>available balance</span>
+          <strong>0.00</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="assets-demo-note">DEMO ONLY · balances, records and wallet operations are simulated.</div>
   </section>
 
   <section id="admin" class="page">
@@ -659,6 +794,62 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
     <div class="section-title">Recent Trades</div>
     <div id="adminTrades" class="card"><div class="muted center">Chargement...</div></div>
   </section>
+
+
+  <div id="fundingRecordsPage" class="funding-page hidden">
+    <div class="funding-inner">
+      <div class="funding-head">
+        <button class="funding-back" onclick="closeFundingRecords()">←</button>
+        <div class="funding-title">funding records</div>
+        <div></div>
+      </div>
+
+      <button id="fundingPeriodButton" class="funding-period" onclick="openFundingCalendar()">
+        <span>30 days</span><span>⌄</span>
+      </button>
+
+      <div id="fundingRecordsList" class="funding-list"></div>
+    </div>
+  </div>
+
+  <div id="fundingCalendarOverlay" class="funding-calendar-overlay hidden" onclick="if(event.target===this)closeFundingCalendar()">
+    <div class="funding-calendar">
+      <div class="calendar-head">
+        <div></div>
+        <strong>Select Date</strong>
+        <button class="calendar-close" onclick="closeFundingCalendar()">×</button>
+      </div>
+
+      <div class="calendar-month-row">
+        <button onclick="changeFundingCalendarYear(-1)">«</button>
+        <button onclick="changeFundingCalendarMonth(-1)">‹</button>
+        <div id="fundingCalendarMonthLabel" class="calendar-month-label">----</div>
+        <button onclick="changeFundingCalendarMonth(1)">›</button>
+        <button onclick="changeFundingCalendarYear(1)">»</button>
+      </div>
+
+      <div class="calendar-weekdays">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div id="fundingCalendarGrid" class="calendar-grid"></div>
+
+      <button class="calendar-submit" onclick="applyFundingDateRange()">Submit</button>
+    </div>
+  </div>
+
+  <div id="assetActionOverlay" class="asset-action-overlay hidden" onclick="if(event.target===this)closeAssetAction()">
+    <div class="asset-action-modal">
+      <div class="asset-action-head">
+        <h3 id="assetActionTitle">demo action</h3>
+        <button class="asset-action-close" onclick="closeAssetAction()">×</button>
+      </div>
+      <div id="assetActionNote" class="asset-action-note">
+        Simulation only. This does not send or receive real money or cryptocurrency and does not change your Supabase balance.
+      </div>
+      <input id="assetActionAmount" type="number" min="0" step="0.01" placeholder="Amount in USDT DEMO">
+      <button class="asset-action-confirm" onclick="confirmAssetAction()">Confirm DEMO</button>
+    </div>
+  </div>
 
   <nav class="nav">
     <button class="active" onclick="showPage('home',this)"><span class="nav-icon">⌂</span>Home</button>
@@ -743,7 +934,8 @@ async function loadProfile(){
 async function loadTrades(){
   const {data,error}=await sb.from("trades").select("*").eq("user_id",currentUser.id).order("opened_at",{ascending:false});
   if(error){console.error(error);return}
-  trades=data||[];renderPositions();renderHistory();
+  trades=data||[];renderPositions();renderHistory();updateAssetsTodayEarnings();
+  if(!document.getElementById("fundingRecordsPage")?.classList.contains("hidden")) renderFundingRecords();
 }
 
 async function refreshEverything(){
@@ -778,6 +970,11 @@ function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== 
   if(ethQuoteEl) ethQuoteEl.textContent = "$" + price(ethPrice);
   if(btcTradeEl) btcTradeEl.textContent = price(btcPrice);
   const ta=document.getElementById("tradeAvailable"); if(ta) ta.textContent=money(b);
+
+  const approx=document.getElementById("assetApproxBalance");
+  if(approx) approx.textContent=money(b);
+  updateAssetsTodayEarnings();
+
   drawTradeChart();
 }
 
@@ -1362,9 +1559,298 @@ function updateAdminStats(){
   statSettled.textContent=adminTrades.filter(t=>t.status==="SETTLED").length;
 }
 
-function demoRecharge(){alert("Recharge DEMO uniquement. Aucun argent réel n'est accepté.")}
-function demoWithdraw(){alert("Withdraw DEMO uniquement. Aucun argent ou crypto réel n'est envoyé.")}
+/* ===== MY ASSETS / WALLET DEMO LOGIC ===== */
+let fundingFilterStart=null;
+let fundingFilterEnd=null;
+let fundingCalendarView=new Date();
+let fundingDraftStart=null;
+let fundingDraftEnd=null;
+let currentAssetAction="";
+
+function updateAssetsTodayEarnings(){
+  const el=document.getElementById("assetTodayEarnings");
+  if(!el)return;
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
+  const total=(trades||[])
+    .filter(t=>{
+      if(t.status!=="SETTLED")return false;
+      const dt=new Date(t.settled_at||t.settle_at);
+      return dt.getFullYear()===y&&dt.getMonth()===m&&dt.getDate()===d;
+    })
+    .reduce((sum,t)=>sum+Number(t.profit||0),0);
+  el.textContent=money(total);
+}
+
+function assetLedgerKey(){
+  return "nexatrade_asset_records_"+(currentUser?.id||"guest");
+}
+function readAssetLedger(){
+  try{return JSON.parse(localStorage.getItem(assetLedgerKey())||"[]")}catch(e){return[]}
+}
+function writeAssetLedger(rows){
+  localStorage.setItem(assetLedgerKey(),JSON.stringify(rows.slice(0,250)));
+}
+
+function buildFundingRecords(){
+  const rows=[];
+
+  (trades||[]).forEach(t=>{
+    if(t.opened_at){
+      rows.push({
+        id:"trade-open-"+t.id,
+        title:"Generate futures trading orders",
+        currency:"USDT",
+        amount:-Math.abs(Number(t.amount||0)),
+        at:t.opened_at
+      });
+    }
+    if(t.status==="SETTLED"&&(t.settled_at||t.settle_at)){
+      rows.push({
+        id:"trade-settle-"+t.id,
+        title:"Trading settlement",
+        currency:"USDT",
+        amount:Number(t.amount||0)+Number(t.profit||0),
+        at:t.settled_at||t.settle_at
+      });
+    }
+  });
+
+  readAssetLedger().forEach(r=>rows.push(r));
+
+  return rows
+    .filter(r=>r.at)
+    .sort((a,b)=>new Date(b.at)-new Date(a.at));
+}
+
+function fundingDateTime(d){
+  const x=new Date(d);
+  const pad=n=>String(n).padStart(2,"0");
+  return `${x.getFullYear()}.${pad(x.getMonth()+1)}.${pad(x.getDate())} ${pad(x.getHours())}:${pad(x.getMinutes())}:${pad(x.getSeconds())}`;
+}
+
+function fundingAmount(n){
+  const value=Number(n||0);
+  return (value>0?"":"")+value.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function getFundingFilteredRecords(){
+  let rows=buildFundingRecords();
+  let start=fundingFilterStart;
+  let end=fundingFilterEnd;
+
+  if(!start&&!end){
+    const now=new Date();
+    end=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59,999);
+    start=new Date(end);
+    start.setDate(start.getDate()-29);
+    start.setHours(0,0,0,0);
+  }
+
+  if(start)rows=rows.filter(r=>new Date(r.at)>=start);
+  if(end)rows=rows.filter(r=>new Date(r.at)<=end);
+  return rows;
+}
+
+function renderFundingRecords(){
+  const list=document.getElementById("fundingRecordsList");
+  if(!list)return;
+
+  const rows=getFundingFilteredRecords();
+  if(!rows.length){
+    list.innerHTML=`<div class="funding-empty">No data</div>`;
+    return;
+  }
+
+  list.innerHTML=rows.map(r=>{
+    const n=Number(r.amount||0);
+    return `<div class="funding-record">
+      <div>
+        <div class="funding-record-title">${esc(r.title||"DEMO record")}</div>
+        <div class="funding-record-currency">${esc(r.currency||"USDT")}</div>
+      </div>
+      <div>
+        <div class="funding-record-amount">${n>0?"":""}${fundingAmount(n)}</div>
+        <div class="funding-record-time">${fundingDateTime(r.at)}</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openFundingRecords(){
+  renderFundingRecords();
+  document.getElementById("fundingRecordsPage")?.classList.remove("hidden");
+}
+
+function closeFundingRecords(){
+  document.getElementById("fundingRecordsPage")?.classList.add("hidden");
+}
+
+function openFundingCalendar(){
+  const today=new Date();
+  fundingCalendarView=new Date(today.getFullYear(),today.getMonth(),1);
+  fundingDraftStart=fundingFilterStart?new Date(fundingFilterStart):null;
+  fundingDraftEnd=fundingFilterEnd?new Date(fundingFilterEnd):null;
+  renderFundingCalendar();
+  document.getElementById("fundingCalendarOverlay")?.classList.remove("hidden");
+}
+function closeFundingCalendar(){
+  document.getElementById("fundingCalendarOverlay")?.classList.add("hidden");
+}
+function changeFundingCalendarMonth(delta){
+  fundingCalendarView=new Date(
+    fundingCalendarView.getFullYear(),
+    fundingCalendarView.getMonth()+delta,
+    1
+  );
+  renderFundingCalendar();
+}
+function changeFundingCalendarYear(delta){
+  fundingCalendarView=new Date(
+    fundingCalendarView.getFullYear()+delta,
+    fundingCalendarView.getMonth(),
+    1
+  );
+  renderFundingCalendar();
+}
+
+function sameCalendarDay(a,b){
+  return a&&b&&
+    a.getFullYear()===b.getFullYear()&&
+    a.getMonth()===b.getMonth()&&
+    a.getDate()===b.getDate();
+}
+
+function calendarDayKey(d){
+  const pad=n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function chooseFundingDate(key){
+  const [y,m,d]=key.split("-").map(Number);
+  const picked=new Date(y,m-1,d);
+
+  if(!fundingDraftStart || (fundingDraftStart&&fundingDraftEnd)){
+    fundingDraftStart=picked;
+    fundingDraftEnd=null;
+  }else{
+    if(picked<fundingDraftStart){
+      fundingDraftEnd=fundingDraftStart;
+      fundingDraftStart=picked;
+    }else{
+      fundingDraftEnd=picked;
+    }
+  }
+  renderFundingCalendar();
+}
+
+function renderFundingCalendar(){
+  const label=document.getElementById("fundingCalendarMonthLabel");
+  const grid=document.getElementById("fundingCalendarGrid");
+  if(!label||!grid)return;
+
+  const y=fundingCalendarView.getFullYear();
+  const m=fundingCalendarView.getMonth();
+  label.textContent=`${y}-${String(m+1).padStart(2,"0")}`;
+
+  const first=new Date(y,m,1);
+  const start=new Date(y,m,1-first.getDay());
+  const cells=[];
+
+  for(let i=0;i<42;i++){
+    const d=new Date(start);
+    d.setDate(start.getDate()+i);
+
+    const outMonth=d.getMonth()!==m;
+    const selectedStart=sameCalendarDay(d,fundingDraftStart);
+    const selectedEnd=sameCalendarDay(d,fundingDraftEnd);
+    const inRange=fundingDraftStart&&fundingDraftEnd&&d>=fundingDraftStart&&d<=fundingDraftEnd;
+
+    const cls=[
+      "calendar-day",
+      outMonth?"muted":"",
+      inRange?"in-range":"",
+      selectedStart||selectedEnd?"selected":"",
+      selectedStart?"selected-start":""
+    ].filter(Boolean).join(" ");
+
+    cells.push(`<button class="${cls}" onclick="chooseFundingDate('${calendarDayKey(d)}')">${d.getDate()}</button>`);
+  }
+
+  grid.innerHTML=cells.join("");
+}
+
+function applyFundingDateRange(){
+  if(!fundingDraftStart){
+    fundingFilterStart=null;
+    fundingFilterEnd=null;
+    document.querySelector("#fundingPeriodButton span:first-child").textContent="30 days";
+  }else{
+    fundingFilterStart=new Date(fundingDraftStart);
+    fundingFilterStart.setHours(0,0,0,0);
+
+    fundingFilterEnd=new Date(fundingDraftEnd||fundingDraftStart);
+    fundingFilterEnd.setHours(23,59,59,999);
+
+    const pad=n=>String(n).padStart(2,"0");
+    const fmt=d=>`${pad(d.getMonth()+1)}/${pad(d.getDate())}`;
+    document.querySelector("#fundingPeriodButton span:first-child").textContent=
+      `${fmt(fundingFilterStart)} - ${fmt(fundingFilterEnd)}`;
+  }
+
+  closeFundingCalendar();
+  renderFundingRecords();
+}
+
+function openAssetAction(type){
+  currentAssetAction=String(type||"").toLowerCase();
+  const title=document.getElementById("assetActionTitle");
+  const amount=document.getElementById("assetActionAmount");
+  if(title)title.textContent=currentAssetAction||"demo action";
+  if(amount)amount.value="";
+  document.getElementById("assetActionOverlay")?.classList.remove("hidden");
+}
+function closeAssetAction(){
+  document.getElementById("assetActionOverlay")?.classList.add("hidden");
+}
+
+function confirmAssetAction(){
+  const amount=Number(document.getElementById("assetActionAmount")?.value||0);
+  if(!Number.isFinite(amount)||amount<=0)return alert("Enter a DEMO amount greater than 0.");
+
+  const titleMap={
+    withdraw:"DEMO withdrawal",
+    recharge:"DEMO recharge",
+    transfer:"DEMO transfer",
+    exchange:"DEMO exchange"
+  };
+  const signMap={
+    withdraw:-1,
+    recharge:1,
+    transfer:-1,
+    exchange:0
+  };
+
+  const rows=readAssetLedger();
+  rows.unshift({
+    id:"local-"+Date.now(),
+    title:titleMap[currentAssetAction]||"DEMO wallet action",
+    currency:"USDT",
+    amount:amount*(signMap[currentAssetAction]??0),
+    at:new Date().toISOString()
+  });
+  writeAssetLedger(rows);
+
+  closeAssetAction();
+  renderFundingRecords();
+  alert("DEMO record saved locally. No real funds moved and your Supabase balance was not changed.");
+}
+
+/* Compatibility with the previous buttons/functions */
+function demoRecharge(){openAssetAction("recharge")}
+function demoWithdraw(){openAssetAction("withdraw")}
 function demoOnly(){alert("Fonction de simulation uniquement.")}
+
 
 const homeTranslations={
   en:{
