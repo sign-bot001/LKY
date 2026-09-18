@@ -421,7 +421,9 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
       <div class="trade-available"><span>available&nbsp;&nbsp; <strong id="tradeAvailable">0.00</strong></span><span>USDT</span></div>
       <div class="trade-pcts"><button onclick="setTradePercent(1)">1%</button><button onclick="setTradePercent(50)">50%</button><button onclick="setTradePercent(75)">75%</button><button onclick="setTradePercent(100)">100%</button></div>
       <div class="trade-actions"><button class="trade-call" onclick="prepareDirection('CALL')">CALL <span id="callPct">53.12%</span></button><button class="trade-put" onclick="prepareDirection('PUT')">PUT <span id="putPct">56.88%</span></button></div>
-      <div class="card" style="margin:24px 0 0;background:#fff;color:#111;border-color:#ddd"><strong>Copy Trading DEMO</strong><div class="muted" style="margin-top:5px">Code 6 caractères · position 60S · simulation uniquement.</div><label>Code</label><div class="code-row"><input id="userCode" class="input code-input" maxlength="6" placeholder="10FHGV" style="background:#fff;color:#111;border-color:#ccc"><button class="code-btn" onclick="useCode()">TRADE</button></div><div id="tradeMessage" class="message"></div></div>
+      <!-- Copy Trading DEMO card removed from the visible Trade page.
+           Keep this hidden message target so existing settlement/message code is not broken. -->
+      <div id="tradeMessage" class="message hidden"></div>
     </div>
     <div class="trade-order-tabs">
       <div class="trade-order-tab active" onclick="showTradeOrderTab('delivery',this)">delivery order</div>
@@ -659,8 +661,54 @@ function showPage(pageId,button){
 
 function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2)}
 function prepareDirection(d){const msg=document.getElementById("tradeMessage");if(msg)showMessage("tradeMessage",d+" sélectionné. Entre ton code DEMO puis appuie sur TRADE.","success")}
-function updateTradeTimeUI(){const duration=Number(document.getElementById("tradeDuration")?.value||60),now=new Date(),start=new Date(),next=new Date(now.getTime()+duration*1000);const f=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");const remaining=Math.max(1,Math.ceil((next-now)/1000));const w=document.getElementById("tradeWindow"),s=document.getElementById("tradeTimeSelect"),c=document.getElementById("tradeCountdownTop");if(w)w.textContent="↗ "+f(start)+" ~ "+f(next);if(s)s.innerHTML=`<option>${f(start)} - ${f(next)}</option>`;if(c)c.textContent="00:00:"+String(remaining).padStart(2,"0");}
-setInterval(updateTradeTimeUI,1000);updateTradeTimeUI();
+let tradeCycleStartMs=Date.now();
+let tradeCycleEndMs=tradeCycleStartMs+Number(document.getElementById("tradeDuration")?.value||60)*1000;
+let tradeCycleDuration=Number(document.getElementById("tradeDuration")?.value||60);
+
+function formatTradeCountdown(totalSeconds){
+  const sec=Math.max(0,Math.ceil(Number(totalSeconds)||0));
+  const h=Math.floor(sec/3600);
+  const m=Math.floor((sec%3600)/60);
+  const s=sec%60;
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+
+function resetTradeCycle(){
+  tradeCycleDuration=Number(document.getElementById("tradeDuration")?.value||60);
+  tradeCycleStartMs=Date.now();
+  tradeCycleEndMs=tradeCycleStartMs+tradeCycleDuration*1000;
+}
+
+function updateTradeTimeUI(){
+  const duration=Number(document.getElementById("tradeDuration")?.value||60);
+
+  // Reset only when the selected duration changes or the current cycle finishes.
+  if(duration!==tradeCycleDuration){
+    resetTradeCycle();
+  }
+
+  const nowMs=Date.now();
+  if(nowMs>=tradeCycleEndMs){
+    tradeCycleStartMs=nowMs;
+    tradeCycleEndMs=nowMs+duration*1000;
+  }
+
+  const start=new Date(tradeCycleStartMs);
+  const end=new Date(tradeCycleEndMs);
+  const remaining=Math.max(0,(tradeCycleEndMs-nowMs)/1000);
+  const f=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+
+  const w=document.getElementById("tradeWindow");
+  const s=document.getElementById("tradeTimeSelect");
+  const c=document.getElementById("tradeCountdownTop");
+
+  if(w)w.textContent="↗ "+f(start)+" ~ "+f(end);
+  if(s)s.innerHTML=`<option>${f(start)} - ${f(end)}</option>`;
+  if(c)c.textContent=formatTradeCountdown(remaining);
+}
+
+setInterval(updateTradeTimeUI,250);
+updateTradeTimeUI();
 let tradeCandles=[];
 let tradeChartGranularity=60;
 let candleBootstrapBusy=false;
