@@ -638,6 +638,45 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
   .nexa-support-panel{right:14px}
 }
 
+
+/* ===== PERSONAL CENTER V1 ===== */
+.personal-overlay{position:fixed;z-index:940;inset:0;background:#f8fff5;color:#171a1f;overflow:auto;padding:54px max(22px,calc((100vw - 560px)/2 + 22px)) 120px}
+.personal-inner{max-width:516px;margin:auto}
+.personal-head{display:grid;grid-template-columns:55px 1fr 55px;align-items:center;margin-bottom:72px}
+.personal-back{border:0;background:transparent;font-size:43px;color:#46504d;text-align:left;cursor:pointer}
+.personal-title{text-align:center;font-size:30px;font-weight:900;text-transform:lowercase}
+.personal-profile{position:relative;background:#303236;color:#fff;border-radius:30px 30px 0 0;padding:58px 22px 42px;text-align:center;margin-bottom:24px}
+.personal-avatar{position:absolute;left:50%;top:-58px;transform:translateX(-50%);width:116px;height:116px;border:9px solid #303236;border-radius:50%;background:#dfe7e8;display:grid;place-items:center;font-size:55px}
+.personal-email{font-size:24px;font-weight:800;word-break:break-word}
+.personal-id{margin-top:9px;color:#9da2aa;font-size:19px;display:flex;align-items:center;justify-content:center;gap:8px}
+.copy-mini{border:0;background:transparent;color:#63df4f;font-size:22px;cursor:pointer}
+.personal-status{display:inline-block;margin-top:16px;padding:6px 12px;border:2px solid #fff;border-radius:7px;font-size:15px}
+.personal-status.verified{border-color:#6ef16b;color:#6ef16b}
+.personal-menu{display:grid;gap:15px}
+.personal-row{min-height:78px;border:0;border-radius:22px;background:#f1f1f2;padding:0 22px;display:flex;align-items:center;justify-content:space-between;font-size:20px;color:#272b2f;text-align:left;cursor:pointer}
+.personal-row .chev{font-size:32px;color:#111;font-weight:300}
+.personal-switch{width:55px;height:32px;border-radius:18px;background:#d9dbdf;padding:4px;display:flex;align-items:center}
+.personal-switch i{width:24px;height:24px;border-radius:50%;background:#fff;display:block}
+.personal-switch.on{background:#70ed67;justify-content:flex-end}
+.personal-subpage{position:fixed;z-index:955;inset:0;background:#f8fff5;color:#171a1f;overflow:auto;padding:54px max(22px,calc((100vw - 560px)/2 + 22px)) 120px}
+.personal-sub-inner{max-width:516px;margin:auto}
+.personal-form-card{background:#f1f1f2;border-radius:24px;padding:22px;margin-bottom:16px}
+.personal-form-card label{color:#555;margin:10px 0 7px}
+.personal-input{width:100%;height:54px;border:1px solid #d6dad7;border-radius:14px;background:#fff;color:#111;padding:0 14px;outline:none}
+.personal-primary{width:100%;height:56px;border:0;border-radius:17px;background:#68e65b;color:#111;font-size:18px;font-weight:900;margin-top:16px;cursor:pointer}
+.personal-note{font-size:12px;color:#7d8585;line-height:1.4;margin:10px 2px}
+.personal-msg{margin-top:12px;font-size:13px;line-height:1.35}
+.personal-msg.ok{color:#199a32}.personal-msg.err{color:#d02c44}
+.help-search{width:100%;height:66px;border:0;border-radius:20px;background:#e7ebe5;padding:0 22px;font-size:19px;outline:none;margin-bottom:42px}
+.help-list{display:grid}.help-item{border-bottom:1px solid #e0e3df;padding:23px 0;cursor:pointer}.help-q{font-size:19px;font-weight:800}.help-n{color:#3278ed;margin-right:9px}.help-a{display:none;color:#626a68;line-height:1.45;padding:13px 0 0 28px}.help-item.open .help-a{display:block}
+.share-hero{text-align:center;font-size:100px;padding:35px 0 20px}.share-box{background:#fff;border-radius:28px;padding:28px 20px}.share-qr{width:210px;height:210px;margin:0 auto 28px;display:block;border:5px solid #39db44;border-radius:25px;padding:10px;background:#fff}.share-row{background:#f1f1f2;border-radius:17px;padding:17px;margin-top:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}.share-value{font-size:14px;word-break:break-all;text-align:right}
+.lang-overlay{position:fixed;z-index:980;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:24px}
+.lang-dialog{width:min(470px,100%);max-height:82vh;overflow:auto;background:#fff;color:#111;border-radius:28px;padding:25px}
+.lang-dialog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.lang-dialog-head h2{font-size:29px}.lang-close{width:42px;height:42px;border-radius:50%;border:2px solid #222;background:#8cff80;font-size:28px}
+.lang-option{width:100%;min-height:68px;border:0;border-bottom:2px solid transparent;background:#fff;text-align:left;font-size:20px;padding:0 2px;cursor:pointer}.lang-option.selected{border-bottom-color:#5ee14e}.lang-option.selected:after{content:"✓";float:right;color:#7af06e;font-size:28px}
+.kyc-files{display:grid;gap:10px}.kyc-file{background:#fff;border:1px dashed #bcc4be;border-radius:15px;padding:14px}.kyc-status-box{background:#edf9e9;border-radius:18px;padding:16px;margin-bottom:16px}
+@media(max-width:380px){.personal-email{font-size:20px}.personal-title{font-size:27px}.personal-row{font-size:18px}}
+
 </style>
 </head>
 <body>
@@ -645,9 +684,6 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 <div id="authScreen" class="auth-screen">
   <div class="auth-box">
     <div class="brand">NexaTrade</div>
-    <div class="center"><span class="demo-badge">DEMO ONLY</span></div>
-    <p class="muted center" style="margin-top:12px">Tous les fonds, trades et rendements sont fictifs.</p>
-
     <div id="loginForm">
       <h2 style="margin-top:24px">Connexion</h2>
       <label>Email</label><input id="loginEmail" class="input" type="email">
@@ -673,7 +709,6 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
   <header class="header">
     <div>
       <div class="logo">NexaTrade</div>
-      <span class="demo-badge">DEMO</span>
       <div id="liveClock" class="clock">--</div>
     </div>
     <div class="user-area">
@@ -682,13 +717,11 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
     </div>
   </header>
 
-  <div class="warning">⚠️ Simulation uniquement — aucun dépôt, retrait ou rendement réel.</div>
-
   <section id="home" class="page active">
 
   <div class="home-top">
     <button class="home-icon-btn" onclick="toggleLanguageMenu()" aria-label="Language">🌐</button>
-    <button class="home-icon-btn home-profile-emoji" aria-label="Profile">👨🏻‍💼</button>
+    <button class="home-icon-btn home-profile-emoji" onclick="openPersonalCenter()" aria-label="Profile">👨🏻‍💼</button>
   </div>
 
   <div class="currency-banner" data-i18n="digitalCurrency">Digital Currency</div>
@@ -1348,6 +1381,110 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
       <button class="wallet-sheet-row" onclick="selectTransferAccount('Perpetual')"><span>Perpetual</span><span id="accountCheckPerpetual" class="wallet-sheet-check"></span></button>
     </div>
   </div>
+
+
+
+  <!-- Personal Center -->
+  <div id="personalCenter" class="personal-overlay hidden">
+    <div class="personal-inner">
+      <div class="personal-head">
+        <button class="personal-back" onclick="closePersonalCenter()">←</button>
+        <div class="personal-title">personal center</div><div></div>
+      </div>
+      <div class="personal-profile">
+        <div class="personal-avatar">🐰</div>
+        <div id="personalEmail" class="personal-email">-</div>
+        <div class="personal-id">ID:<span id="personalId">-</span><button class="copy-mini" onclick="copyPersonalId()">▣</button></div>
+        <div id="personalVerifyStatus" class="personal-status">not verified</div>
+      </div>
+      <div class="personal-menu">
+        <button class="personal-row" onclick="openPersonalSub('securityPage')"><span>security center</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="openAuthentication()"><span>authentication</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="openLanguageDialog()"><span>language</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="openSharePage()"><span>invite friends</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="openOnlineService()"><span>online service</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="openPersonalSub('introPage')"><span>platform introduction</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="openPersonalSub('helpPage')"><span>help center</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="installNexaTrade()"><span>download</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="clearNexaCache()"><span>clear cache</span><span class="chev">›</span></button>
+        <button class="personal-row" onclick="logout()"><span>log out</span><span class="chev">›</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="securityPage" class="personal-subpage hidden"><div class="personal-sub-inner">
+    <div class="personal-head"><button class="personal-back" onclick="closePersonalSub('securityPage')">←</button><div class="personal-title">security center</div><div></div></div>
+    <div class="personal-form-card">
+      <h2>Change password</h2>
+      <p class="personal-note">For security, enter your current password before choosing a new one.</p>
+      <label>Current password</label><input id="secCurrent" class="personal-input" type="password" autocomplete="current-password">
+      <label>New password</label><input id="secNew" class="personal-input" type="password" autocomplete="new-password">
+      <label>Confirm new password</label><input id="secConfirm" class="personal-input" type="password" autocomplete="new-password">
+      <button class="personal-primary" onclick="changeAccountPassword()">update password</button>
+      <div id="securityMsg" class="personal-msg"></div>
+    </div>
+  </div></div>
+
+  <div id="authenticationPage" class="personal-subpage hidden"><div class="personal-sub-inner">
+    <div class="personal-head"><button class="personal-back" onclick="closePersonalSub('authenticationPage')">←</button><div class="personal-title">authentication</div><div></div></div>
+    <div id="kycStatusBox" class="kyc-status-box"><strong>Identity check</strong><div id="kycStatusText" class="personal-note">Not submitted</div></div>
+    <div class="personal-form-card">
+      <label>Full legal name</label><input id="kycName" class="personal-input" autocomplete="name">
+      <label>Date of birth</label><input id="kycDob" class="personal-input" type="date">
+      <label>Country</label><input id="kycCountry" class="personal-input" placeholder="Canada">
+      <label>Document type</label><select id="kycDocType" class="personal-input"><option>Passport</option><option>Driver licence</option><option>National ID card</option></select>
+      <div class="kyc-files">
+        <label class="kyc-file">Identity document<input id="kycDocument" type="file" accept="image/*,application/pdf" style="display:block;margin-top:8px"></label>
+        <label class="kyc-file">Selfie / liveness photo<input id="kycSelfie" type="file" accept="image/*" capture="user" style="display:block;margin-top:8px"></label>
+      </div>
+      <p class="personal-note">This self-built identity check is not regulatory KYC. The selected document images are validated locally and are not uploaded by this page.</p>
+      <button class="personal-primary" onclick="submitDemoIdentity()">submit verification</button>
+      <div id="kycMsg" class="personal-msg"></div>
+    </div>
+  </div></div>
+
+  <div id="sharePage" class="personal-subpage hidden"><div class="personal-sub-inner">
+    <div class="personal-head"><button class="personal-back" onclick="closePersonalSub('sharePage')">←</button><div class="personal-title">my share</div><div></div></div>
+    <div class="share-hero">🎁₿</div>
+    <div class="share-box">
+      <img id="shareQr" class="share-qr" alt="Invitation QR code">
+      <div class="share-row"><span>invitation code</span><span class="share-value"><b id="shareCode">-</b> <button class="copy-mini" onclick="copyShareCode()">▣</button></span></div>
+      <div class="share-row"><span>share link</span><span class="share-value"><span id="shareLink">-</span> <button class="copy-mini" onclick="copyShareLink()">▣</button></span></div>
+    </div>
+  </div></div>
+
+  <div id="introPage" class="personal-subpage hidden"><div class="personal-sub-inner">
+    <div class="personal-head"><button class="personal-back" onclick="closePersonalSub('introPage')">←</button><div class="personal-title">platform introduction</div><div></div></div>
+    <div class="personal-form-card"><h2>NexaTrade</h2><p style="line-height:1.55;margin-top:12px">NexaTrade provides a digital-asset trading interface.</p></div>
+  </div></div>
+
+  <div id="helpPage" class="personal-subpage hidden"><div class="personal-sub-inner">
+    <div class="personal-head"><button class="personal-back" onclick="closePersonalSub('helpPage')">←</button><div class="personal-title">help center</div><div></div></div>
+    <input id="helpSearch" class="help-search" placeholder="search" oninput="filterHelp()">
+    <div id="helpList" class="help-list">
+      <div class="help-item" data-help="demo account official"><div class="help-q"><span class="help-n">1</span>About accounts</div><div class="help-a">This section provides information about NexaTrade accounts.</div></div>
+      <div class="help-item" data-help="transaction volume"><div class="help-q"><span class="help-n">2</span>What is transaction volume?</div><div class="help-a">Transaction volume is the simulated amount used in a demo trade or operation.</div></div>
+      <div class="help-item" data-help="transfer funds"><div class="help-q"><span class="help-n">3</span>Why transfer funds?</div><div class="help-a">Transfers in this build move simulated balances between demo account sections.</div></div>
+      <div class="help-item" data-help="futures"><div class="help-q"><span class="help-n">4</span>What are futures?</div><div class="help-a">Futures are contracts linked to the future value of an asset. NexaTrade's current interface is a simulation and does not execute real futures contracts.</div></div>
+      <div class="help-item" data-help="conversion exchange"><div class="help-q"><span class="help-n">5</span>Why can converted amounts change?</div><div class="help-a">Displayed conversion values can vary with the illustrative market rate used by the demo.</div></div>
+      <div class="help-item" data-help="identity authentication kyc"><div class="help-q"><span class="help-n">6</span>Why identity authentication?</div><div class="help-a">The current identity flow is a self-built identity check. It is not regulatory KYC.</div></div>
+      <div class="help-item" data-help="frozen assets"><div class="help-q"><span class="help-n">7</span>What are frozen assets?</div><div class="help-a">A frozen amount is a simulated balance temporarily unavailable while a demo operation is active.</div></div>
+      <div class="help-item" data-help="rules trading"><div class="help-q"><span class="help-n">8</span>What are the demo trading rules?</div><div class="help-a">Use only fictitious funds and demo codes. No real deposit, withdrawal or guaranteed return is provided.</div></div>
+    </div>
+  </div></div>
+
+  <div id="personalLanguageOverlay" class="lang-overlay hidden" onclick="if(event.target===this)closeLanguageDialog()"><div class="lang-dialog">
+    <div class="lang-dialog-head"><h2>setting the language</h2><button class="lang-close" onclick="closeLanguageDialog()">×</button></div>
+    <button class="lang-option" data-lang-choice="en" onclick="choosePersonalLanguage('en')">English</button>
+    <button class="lang-option" data-lang-choice="zh" onclick="choosePersonalLanguage('zh')">繁體中文</button>
+    <button class="lang-option" data-lang-choice="es" onclick="choosePersonalLanguage('es')">Español</button>
+    <button class="lang-option" data-lang-choice="ar" onclick="choosePersonalLanguage('ar')">العربية</button>
+    <button class="lang-option" data-lang-choice="fr" onclick="choosePersonalLanguage('fr')">Français</button>
+    <button class="lang-option" data-lang-choice="de" onclick="choosePersonalLanguage('de')">Deutsch</button>
+    <button class="lang-option" data-lang-choice="it" onclick="choosePersonalLanguage('it')">Italiano</button>
+    <button class="lang-option" data-lang-choice="ru" onclick="choosePersonalLanguage('ru')">Русский</button>
+    <button class="lang-option" data-lang-choice="pl" onclick="choosePersonalLanguage('pl')">Polski</button>
+  </div></div>
 
 
   <!-- NexaTrade AI Customer Support -->
@@ -3332,6 +3469,128 @@ window.addEventListener("beforeunload",()=>{
 });
 
 startLiveMarket();
+
+
+/* ===== PERSONAL CENTER V1 ===== */
+function nexaDisplayId(){
+  if(!currentUser?.id)return "------------";
+  const raw=currentUser.id.replace(/-/g,"").toUpperCase();
+  return (raw.slice(0,10)+"00").slice(0,12);
+}
+function openPersonalCenter(){
+  const el=document.getElementById("personalCenter"); if(!el)return;
+  document.getElementById("personalEmail").textContent=currentUser?.email||"-";
+  document.getElementById("personalId").textContent=nexaDisplayId();
+  refreshPersonalVerification();
+  el.classList.remove("hidden");
+}
+function closePersonalCenter(){document.getElementById("personalCenter")?.classList.add("hidden")}
+function openPersonalSub(id){document.getElementById(id)?.classList.remove("hidden")}
+function closePersonalSub(id){document.getElementById(id)?.classList.add("hidden")}
+async function copyTextSafe(v){
+  try{await navigator.clipboard.writeText(v);return true}catch(_){
+    const t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();return true;
+  }
+}
+async function copyPersonalId(){await copyTextSafe(nexaDisplayId())}
+function toggleDemoMode(){
+  const sw=document.getElementById("demoSwitch");
+  sw?.classList.add("on");
+  alert("NexaTrade currently supports DEMO mode only.");
+}
+async function changeAccountPassword(){
+  const msg=document.getElementById("securityMsg"), current=document.getElementById("secCurrent").value;
+  const next=document.getElementById("secNew").value, confirm=document.getElementById("secConfirm").value;
+  msg.className="personal-msg"; msg.textContent="";
+  if(!current||!next||!confirm){msg.classList.add("err");msg.textContent="Complete all password fields.";return}
+  if(next.length<8){msg.classList.add("err");msg.textContent="Use at least 8 characters for the new password.";return}
+  if(next!==confirm){msg.classList.add("err");msg.textContent="The new passwords do not match.";return}
+  const email=currentUser?.email;
+  const verify=await sb.auth.signInWithPassword({email,password:current});
+  if(verify.error){msg.classList.add("err");msg.textContent="Current password is incorrect.";return}
+  const upd=await sb.auth.updateUser({password:next});
+  if(upd.error){msg.classList.add("err");msg.textContent=upd.error.message;return}
+  document.getElementById("secCurrent").value="";document.getElementById("secNew").value="";document.getElementById("secConfirm").value="";
+  msg.classList.add("ok");msg.textContent="Password updated successfully.";
+}
+function kycStorageKey(){return "nexa_demo_identity_"+(currentUser?.id||"guest")}
+function openAuthentication(){
+  const saved=JSON.parse(localStorage.getItem(kycStorageKey())||"{}");
+  document.getElementById("kycName").value=saved.name||"";
+  document.getElementById("kycDob").value=saved.dob||"";
+  document.getElementById("kycCountry").value=saved.country||"";
+  if(saved.docType)document.getElementById("kycDocType").value=saved.docType;
+  refreshPersonalVerification();openPersonalSub("authenticationPage");
+}
+function refreshPersonalVerification(){
+  const saved=JSON.parse(localStorage.getItem(kycStorageKey())||"{}");
+  const status=saved.status||"not verified";
+  const p=document.getElementById("personalVerifyStatus"), k=document.getElementById("kycStatusText");
+  if(p){p.textContent=status;p.classList.toggle("verified",status==="verified")}
+  if(k)k.textContent=status==="verified"?"Verified":status;
+}
+function basicImageCheck(file){
+  return new Promise(resolve=>{
+    if(!file||!file.type.startsWith("image/"))return resolve(bool(file));
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{const ok=img.width>=300&&img.height>=300;URL.revokeObjectURL(url);resolve(ok)};
+    img.onerror=()=>{URL.revokeObjectURL(url);resolve(false)};img.src=url;
+  });
+}
+function bool(v){return !!v}
+async function submitDemoIdentity(){
+  const msg=document.getElementById("kycMsg"), name=document.getElementById("kycName").value.trim(), dob=document.getElementById("kycDob").value;
+  const country=document.getElementById("kycCountry").value.trim(), docType=document.getElementById("kycDocType").value;
+  const doc=document.getElementById("kycDocument").files[0], selfie=document.getElementById("kycSelfie").files[0];
+  msg.className="personal-msg";msg.textContent="";
+  if(name.length<3||!dob||country.length<2||!doc||!selfie){msg.classList.add("err");msg.textContent="Complete the identity information and select both required files.";return}
+  const birth=new Date(dob+"T00:00:00"), now=new Date();
+  if(!Number.isFinite(birth.getTime())||birth>=now){msg.classList.add("err");msg.textContent="Enter a valid date of birth.";return}
+  const docOk=doc.type==="application/pdf" ? doc.size>5000 : await basicImageCheck(doc);
+  const selfieOk=await basicImageCheck(selfie);
+  if(!docOk||!selfieOk){msg.classList.add("err");msg.textContent="The selected images are too small or unreadable for this demo check.";return}
+  localStorage.setItem(kycStorageKey(),JSON.stringify({name,dob,country,docType,status:"verified",checkedAt:new Date().toISOString()}));
+  refreshPersonalVerification();
+  msg.classList.add("ok");msg.textContent="Identity check completed. No document image was uploaded or stored.";
+}
+function openLanguageDialog(){
+  const ov=document.getElementById("personalLanguageOverlay");ov?.classList.remove("hidden");
+  const lang=localStorage.getItem("nexaLanguage")||"en";
+  document.querySelectorAll("[data-lang-choice]").forEach(b=>b.classList.toggle("selected",b.dataset.langChoice===lang));
+}
+function closeLanguageDialog(){document.getElementById("personalLanguageOverlay")?.classList.add("hidden")}
+function choosePersonalLanguage(lang){
+  if(typeof setLanguage==="function")setLanguage(lang); else localStorage.setItem("nexaLanguage",lang);
+  openLanguageDialog();setTimeout(closeLanguageDialog,180);
+}
+function openSharePage(){
+  const code=nexaDisplayId().toLowerCase();
+  const link=location.origin+location.pathname+"?code="+encodeURIComponent(code);
+  document.getElementById("shareCode").textContent=code;
+  document.getElementById("shareLink").textContent=link;
+  document.getElementById("shareQr").src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(link);
+  openPersonalSub("sharePage");
+}
+async function copyShareCode(){await copyTextSafe(document.getElementById("shareCode").textContent)}
+async function copyShareLink(){await copyTextSafe(document.getElementById("shareLink").textContent)}
+function openOnlineService(){closePersonalCenter();toggleNexaSupport(true)}
+function filterHelp(){
+  const q=(document.getElementById("helpSearch")?.value||"").toLowerCase();
+  document.querySelectorAll("#helpList .help-item").forEach(x=>x.style.display=(!q||x.innerText.toLowerCase().includes(q)||x.dataset.help.includes(q))?"block":"none");
+}
+document.addEventListener("click",e=>{const item=e.target.closest?.(".help-item");if(item)item.classList.toggle("open")});
+let deferredInstallPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e});
+async function installNexaTrade(){
+  if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null}
+  else alert("Installation is not available in this browser yet. You can add this site to your Home Screen from the browser menu.");
+}
+function clearNexaCache(){
+  const keep=["nexaLanguage",kycStorageKey()];
+  Object.keys(localStorage).filter(k=>k.startsWith("nexa_")&&!keep.includes(k)).forEach(k=>localStorage.removeItem(k));
+  alert("App cache cleared. Account and Supabase data were not deleted.");
+}
+
 
 async function checkSession(){
   const {data:{session}}=await sb.auth.getSession();
