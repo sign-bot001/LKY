@@ -675,6 +675,27 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .lang-dialog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.lang-dialog-head h2{font-size:29px}.lang-close{width:42px;height:42px;border-radius:50%;border:2px solid #222;background:#8cff80;font-size:28px}
 .lang-option{width:100%;min-height:68px;border:0;border-bottom:2px solid transparent;background:#fff;text-align:left;font-size:20px;padding:0 2px;cursor:pointer}.lang-option.selected{border-bottom-color:#5ee14e}.lang-option.selected:after{content:"✓";float:right;color:#7af06e;font-size:28px}
 .kyc-files{display:grid;gap:10px}.kyc-file{background:#fff;border:1px dashed #bcc4be;border-radius:15px;padding:14px}.kyc-status-box{background:#edf9e9;border-radius:18px;padding:16px;margin-bottom:16px}
+
+.kyc-camera-card{margin-top:10px;background:#fff;border:1px solid #d9ded9;border-radius:20px;padding:14px}
+.kyc-camera-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.kyc-camera-title strong{font-size:17px}
+.kyc-camera-badge{font-size:11px;font-weight:800;padding:5px 9px;border-radius:999px;background:#e9fbe5;color:#299b31}
+.kyc-camera-stage{position:relative;width:100%;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:#17191c;display:grid;place-items:center}
+.kyc-camera-stage video,.kyc-camera-stage img{width:100%;height:100%;object-fit:cover;display:block}
+.kyc-camera-stage video{transform:scaleX(-1)}
+.kyc-camera-guide{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62%;height:63%;border:3px solid rgba(126,255,116,.95);border-radius:48% 48% 44% 44% / 40% 40% 55% 55%;box-shadow:0 0 0 999px rgba(0,0,0,.18);pointer-events:none}
+.kyc-camera-placeholder{padding:30px;text-align:center;color:#aeb4ba}
+.kyc-camera-placeholder .cam-icon{font-size:56px;margin-bottom:12px}
+.kyc-camera-hint{font-size:12px;color:#7f8784;line-height:1.4;margin:10px 2px 2px;text-align:center}
+.kyc-camera-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.kyc-camera-actions.one{grid-template-columns:1fr}
+.kyc-camera-btn{height:50px;border:0;border-radius:14px;font-weight:900;font-size:15px;cursor:pointer}
+.kyc-camera-btn.primary{background:#68e65b;color:#111;margin:0}
+.kyc-camera-btn.secondary{background:#ecefec;color:#222;margin:0}
+.kyc-camera-btn:disabled{opacity:.45;cursor:not-allowed}
+.kyc-camera-status{font-size:12px;color:#6f7773;margin-top:9px;text-align:center;min-height:17px}
+.kyc-live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#35db43;margin-right:6px;box-shadow:0 0 0 4px rgba(53,219,67,.14)}
+
 @media(max-width:380px){.personal-email{font-size:20px}.personal-title{font-size:27px}.personal-row{font-size:18px}}
 
 </style>
@@ -1435,9 +1456,42 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
       <label>Document type</label><select id="kycDocType" class="personal-input"><option>Passport</option><option>Driver licence</option><option>National ID card</option></select>
       <div class="kyc-files">
         <label class="kyc-file">Identity document<input id="kycDocument" type="file" accept="image/*,application/pdf" style="display:block;margin-top:8px"></label>
-        <label class="kyc-file">Selfie / liveness photo<input id="kycSelfie" type="file" accept="image/*" capture="user" style="display:block;margin-top:8px"></label>
+        <div class="kyc-camera-card">
+          <div class="kyc-camera-title">
+            <strong>Live selfie</strong>
+            <span class="kyc-camera-badge">camera</span>
+          </div>
+
+          <div class="kyc-camera-stage">
+            <div id="kycCameraPlaceholder" class="kyc-camera-placeholder">
+              <div class="cam-icon">📷</div>
+              <div>Start the front camera to take your selfie live.</div>
+            </div>
+            <video id="kycCameraVideo" class="hidden" autoplay muted playsinline></video>
+            <img id="kycSelfiePreview" class="hidden" alt="Captured selfie preview">
+            <div id="kycFaceGuide" class="kyc-camera-guide hidden"></div>
+          </div>
+
+          <canvas id="kycSelfieCanvas" class="hidden"></canvas>
+
+          <div id="kycCameraStartActions" class="kyc-camera-actions one">
+            <button type="button" class="kyc-camera-btn primary" onclick="startKycCamera()">start camera</button>
+          </div>
+
+          <div id="kycCameraCaptureActions" class="kyc-camera-actions one hidden">
+            <button type="button" class="kyc-camera-btn primary" onclick="captureKycSelfie()">take selfie</button>
+          </div>
+
+          <div id="kycCameraReviewActions" class="kyc-camera-actions hidden">
+            <button type="button" class="kyc-camera-btn secondary" onclick="retakeKycSelfie()">retake</button>
+            <button type="button" class="kyc-camera-btn primary" onclick="acceptKycSelfie()">use photo</button>
+          </div>
+
+          <div id="kycCameraStatus" class="kyc-camera-status">Camera has not started.</div>
+          <div class="kyc-camera-hint">Keep your face centered, remove sunglasses, and use good lighting.</div>
+        </div>
       </div>
-      <p class="personal-note">This self-built identity check is not regulatory KYC. The selected document images are validated locally and are not uploaded by this page.</p>
+      <p class="personal-note">This self-built identity check is not regulatory KYC. The live camera stream stays in your browser; only the captured frame is used locally by this page.</p>
       <button class="personal-primary" onclick="submitDemoIdentity()">submit verification</button>
       <div id="kycMsg" class="personal-msg"></div>
     </div>
@@ -3486,7 +3540,10 @@ function openPersonalCenter(){
 }
 function closePersonalCenter(){document.getElementById("personalCenter")?.classList.add("hidden")}
 function openPersonalSub(id){document.getElementById(id)?.classList.remove("hidden")}
-function closePersonalSub(id){document.getElementById(id)?.classList.add("hidden")}
+function closePersonalSub(id){
+  if(id==="authenticationPage") stopKycCamera();
+  document.getElementById(id)?.classList.add("hidden");
+}
 async function copyTextSafe(v){
   try{await navigator.clipboard.writeText(v);return true}catch(_){
     const t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();return true;
@@ -3520,15 +3577,154 @@ function openAuthentication(){
   document.getElementById("kycDob").value=saved.dob||"";
   document.getElementById("kycCountry").value=saved.country||"";
   if(saved.docType)document.getElementById("kycDocType").value=saved.docType;
-  refreshPersonalVerification();openPersonalSub("authenticationPage");
+  refreshPersonalVerification();
+  stopKycCamera(true);
+  openPersonalSub("authenticationPage");
 }
 function refreshPersonalVerification(){
   const saved=JSON.parse(localStorage.getItem(kycStorageKey())||"{}");
   const status=saved.status||"not verified";
   const p=document.getElementById("personalVerifyStatus"), k=document.getElementById("kycStatusText");
   if(p){p.textContent=status;p.classList.toggle("verified",status==="verified")}
-  if(k)k.textContent=status==="verified"?"Verified":status;
+  if(k)k.textContent=status==="verified"?"Verified":status==="submitted"?"Submitted — review/matching required":status;
 }
+
+let kycCameraStream=null;
+let kycCapturedSelfieBlob=null;
+let kycCapturedSelfieUrl="";
+let kycSelfieAccepted=false;
+
+function setKycCameraStatus(text,live=false){
+  const el=document.getElementById("kycCameraStatus");
+  if(!el)return;
+  el.innerHTML=live?'<span class="kyc-live-dot"></span>'+text:text;
+}
+function showKycCameraState(state){
+  const ph=document.getElementById("kycCameraPlaceholder");
+  const video=document.getElementById("kycCameraVideo");
+  const preview=document.getElementById("kycSelfiePreview");
+  const guide=document.getElementById("kycFaceGuide");
+  const start=document.getElementById("kycCameraStartActions");
+  const capture=document.getElementById("kycCameraCaptureActions");
+  const review=document.getElementById("kycCameraReviewActions");
+  [ph,video,preview,guide,start,capture,review].forEach(el=>el?.classList.add("hidden"));
+  if(state==="idle"){ph?.classList.remove("hidden");start?.classList.remove("hidden")}
+  if(state==="live"){video?.classList.remove("hidden");guide?.classList.remove("hidden");capture?.classList.remove("hidden")}
+  if(state==="review"){preview?.classList.remove("hidden");review?.classList.remove("hidden")}
+  if(state==="accepted"){preview?.classList.remove("hidden");review?.classList.remove("hidden")}
+}
+async function startKycCamera(){
+  const msg=document.getElementById("kycMsg");
+  if(msg){msg.className="personal-msg";msg.textContent=""}
+  if(!navigator.mediaDevices?.getUserMedia){
+    setKycCameraStatus("Live camera is not supported by this browser.");
+    return;
+  }
+  try{
+    stopKycCamera(false);
+    setKycCameraStatus("Requesting camera access…");
+    const constraints={
+      audio:false,
+      video:{
+        facingMode:{ideal:"user"},
+        width:{ideal:1280},
+        height:{ideal:1280}
+      }
+    };
+    kycCameraStream=await navigator.mediaDevices.getUserMedia(constraints);
+    const video=document.getElementById("kycCameraVideo");
+    video.srcObject=kycCameraStream;
+    await video.play();
+    kycCapturedSelfieBlob=null;
+    kycSelfieAccepted=false;
+    showKycCameraState("live");
+    setKycCameraStatus("Camera live — center your face in the frame.",true);
+  }catch(err){
+    console.error("Camera error:",err);
+    showKycCameraState("idle");
+    const insecure=location.protocol!=="https:"&&location.hostname!=="localhost";
+    setKycCameraStatus(insecure
+      ?"Camera access requires HTTPS. Open NexaTrade from its secure HTTPS address."
+      :"Camera permission was denied or no front camera is available.");
+  }
+}
+async function captureKycSelfie(){
+  const video=document.getElementById("kycCameraVideo");
+  const canvas=document.getElementById("kycSelfieCanvas");
+  if(!video||!canvas||!video.videoWidth||!video.videoHeight){
+    setKycCameraStatus("The camera is not ready yet.");
+    return;
+  }
+  const maxSide=1200;
+  const scale=Math.min(1,maxSide/Math.max(video.videoWidth,video.videoHeight));
+  canvas.width=Math.max(1,Math.round(video.videoWidth*scale));
+  canvas.height=Math.max(1,Math.round(video.videoHeight*scale));
+  const ctx=canvas.getContext("2d");
+  ctx.save();
+  ctx.translate(canvas.width,0);
+  ctx.scale(-1,1);
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  ctx.restore();
+
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",0.9));
+  if(!blob){setKycCameraStatus("Unable to capture the selfie. Please try again.");return}
+  kycCapturedSelfieBlob=blob;
+  kycSelfieAccepted=false;
+  if(kycCapturedSelfieUrl)URL.revokeObjectURL(kycCapturedSelfieUrl);
+  kycCapturedSelfieUrl=URL.createObjectURL(blob);
+  const preview=document.getElementById("kycSelfiePreview");
+  preview.src=kycCapturedSelfieUrl;
+  showKycCameraState("review");
+  setKycCameraStatus("Review your selfie, then choose “use photo” or retake it.");
+}
+function retakeKycSelfie(){
+  kycCapturedSelfieBlob=null;
+  kycSelfieAccepted=false;
+  if(kycCameraStream){
+    showKycCameraState("live");
+    setKycCameraStatus("Camera live — center your face in the frame.",true);
+  }else{
+    showKycCameraState("idle");
+    setKycCameraStatus("Camera has not started.");
+  }
+}
+function acceptKycSelfie(){
+  if(!kycCapturedSelfieBlob){
+    setKycCameraStatus("Take a selfie first.");
+    return;
+  }
+  kycSelfieAccepted=true;
+  showKycCameraState("accepted");
+  setKycCameraStatus("Selfie selected ✓");
+  stopKycCamera(false);
+}
+function stopKycCamera(resetUi=true){
+  if(kycCameraStream){
+    kycCameraStream.getTracks().forEach(track=>track.stop());
+    kycCameraStream=null;
+  }
+  const video=document.getElementById("kycCameraVideo");
+  if(video)video.srcObject=null;
+  if(resetUi){
+    kycCapturedSelfieBlob=null;
+    kycSelfieAccepted=false;
+    if(kycCapturedSelfieUrl){URL.revokeObjectURL(kycCapturedSelfieUrl);kycCapturedSelfieUrl=""}
+    const preview=document.getElementById("kycSelfiePreview");
+    if(preview)preview.removeAttribute("src");
+    showKycCameraState("idle");
+    setKycCameraStatus("Camera has not started.");
+  }
+}
+async function basicCapturedSelfieCheck(blob){
+  if(!blob||blob.size<10000)return false;
+  return await new Promise(resolve=>{
+    const img=new Image(),url=URL.createObjectURL(blob);
+    img.onload=()=>{const ok=img.width>=300&&img.height>=300;URL.revokeObjectURL(url);resolve(ok)};
+    img.onerror=()=>{URL.revokeObjectURL(url);resolve(false)};
+    img.src=url;
+  });
+}
+
 function basicImageCheck(file){
   return new Promise(resolve=>{
     if(!file||!file.type.startsWith("image/"))return resolve(bool(file));
@@ -3539,19 +3735,52 @@ function basicImageCheck(file){
 }
 function bool(v){return !!v}
 async function submitDemoIdentity(){
-  const msg=document.getElementById("kycMsg"), name=document.getElementById("kycName").value.trim(), dob=document.getElementById("kycDob").value;
-  const country=document.getElementById("kycCountry").value.trim(), docType=document.getElementById("kycDocType").value;
-  const doc=document.getElementById("kycDocument").files[0], selfie=document.getElementById("kycSelfie").files[0];
-  msg.className="personal-msg";msg.textContent="";
-  if(name.length<3||!dob||country.length<2||!doc||!selfie){msg.classList.add("err");msg.textContent="Complete the identity information and select both required files.";return}
-  const birth=new Date(dob+"T00:00:00"), now=new Date();
-  if(!Number.isFinite(birth.getTime())||birth>=now){msg.classList.add("err");msg.textContent="Enter a valid date of birth.";return}
+  const msg=document.getElementById("kycMsg"),
+        name=document.getElementById("kycName").value.trim(),
+        dob=document.getElementById("kycDob").value,
+        country=document.getElementById("kycCountry").value.trim(),
+        docType=document.getElementById("kycDocType").value,
+        doc=document.getElementById("kycDocument").files[0];
+
+  msg.className="personal-msg";
+  msg.textContent="";
+
+  if(name.length<3||!dob||country.length<2||!doc){
+    msg.classList.add("err");
+    msg.textContent="Complete your identity information and select an identity document.";
+    return;
+  }
+  if(!kycCapturedSelfieBlob||!kycSelfieAccepted){
+    msg.classList.add("err");
+    msg.textContent="Take a live selfie and press “use photo” before submitting.";
+    return;
+  }
+
+  const birth=new Date(dob+"T00:00:00"),now=new Date();
+  if(!Number.isFinite(birth.getTime())||birth>=now){
+    msg.classList.add("err");
+    msg.textContent="Enter a valid date of birth.";
+    return;
+  }
+
   const docOk=doc.type==="application/pdf" ? doc.size>5000 : await basicImageCheck(doc);
-  const selfieOk=await basicImageCheck(selfie);
-  if(!docOk||!selfieOk){msg.classList.add("err");msg.textContent="The selected images are too small or unreadable for this demo check.";return}
-  localStorage.setItem(kycStorageKey(),JSON.stringify({name,dob,country,docType,status:"verified",checkedAt:new Date().toISOString()}));
+  const selfieOk=await basicCapturedSelfieCheck(kycCapturedSelfieBlob);
+
+  if(!docOk||!selfieOk){
+    msg.classList.add("err");
+    msg.textContent="The identity document or captured selfie is too small or unreadable.";
+    return;
+  }
+
+  localStorage.setItem(kycStorageKey(),JSON.stringify({
+    name,dob,country,docType,
+    status:"submitted",
+    selfieCapturedLive:true,
+    checkedAt:new Date().toISOString()
+  }));
   refreshPersonalVerification();
-  msg.classList.add("ok");msg.textContent="Identity check completed. No document image was uploaded or stored.";
+  msg.classList.add("ok");
+  msg.textContent="Identity information and live selfie captured successfully. Automated face/document matching is not yet enabled.";
 }
 function openLanguageDialog(){
   const ov=document.getElementById("personalLanguageOverlay");ov?.classList.remove("hidden");
