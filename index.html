@@ -2338,6 +2338,352 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 }
 .nexa-support-bubble,.notification-text,.funding-record-title{overflow-wrap:anywhere}
 
+
+
+/* ===== NEXATRADE FINAL WHITE / PREMIUM FINISH ===== */
+
+/* Global white canvas — prevents the legacy dark background from resurfacing */
+html{
+  background:#ffffff!important;
+  color-scheme:light;
+}
+body{
+  background:#ffffff!important;
+  color:#171a1f;
+  overflow-x:hidden;
+}
+.app{
+  background:#ffffff!important;
+  color:#171a1f;
+  overflow-x:clip;
+}
+
+/* Every primary screen uses the same white surface */
+#home,
+#quotes,
+#trade,
+#assets,
+#admin{
+  background:#ffffff!important;
+}
+.app:has(#home.active),
+.app:has(#quotes.active),
+.app:has(#trade.active),
+.app:has(#assets.active),
+.app:has(#admin.active){
+  background:#ffffff!important;
+}
+
+/* Secondary screens stay bright as well */
+.personal-overlay,
+.personal-subpage,
+.wallet-action-page,
+.funding-page,
+.deposit-detail-page,
+.withdraw-success-page,
+.auth-screen,
+.reference-login{
+  background-color:#ffffff!important;
+}
+
+/* Keep the login visual soft but never dark */
+.reference-login{
+  background:
+    radial-gradient(circle at 50% -8%,rgba(112,238,96,.20),transparent 34%),
+    #ffffff!important;
+}
+
+/* Consistent design tokens for light UI */
+:root{
+  --nx-white:#ffffff;
+  --nx-surface:#ffffff;
+  --nx-soft:#f7faf6;
+  --nx-soft-green:#f1faef;
+  --nx-border:#e4ebe2;
+  --nx-ink:#171c18;
+  --nx-muted:#7d877f;
+  --nx-accent:#69df5c;
+  --nx-accent-dark:#43bf3c;
+  --nx-shadow-xs:0 2px 10px rgba(28,48,31,.045);
+  --nx-shadow-sm:0 8px 28px rgba(28,48,31,.065);
+  --nx-shadow-md:0 16px 46px rgba(28,48,31,.10);
+}
+
+/* Cleaner card hierarchy */
+.hot-card,
+.crypto-card,
+.service-card,
+.adv-card,
+.assets-valuation-card,
+.assets-actions-card,
+.assets-account-card,
+.asset-holdings-card,
+.trade-history-card,
+.pro-portfolio-card,
+.pro-stats-card,
+.monitoring-card,
+.account-status-card,
+.personal-form-card,
+.kyc-camera-card,
+.funding-record,
+.wallet-notice,
+.deposit-step-card,
+.deposit-confirm-card,
+.card{
+  border-color:var(--nx-border)!important;
+  box-shadow:var(--nx-shadow-xs);
+}
+
+/* Remove legacy dark card backgrounds where the modern UI does not override them */
+#assets .card,
+#admin .card,
+.personal-form-card,
+.kyc-camera-card,
+.wallet-notice,
+.funding-record{
+  background:#ffffff!important;
+  color:var(--nx-ink)!important;
+}
+
+/* Inputs: uniform, premium, mobile-friendly */
+input,
+select,
+textarea,
+.input,
+.reference-input,
+.personal-input,
+.wallet-input,
+.trade-select,
+.trade-amount,
+.nexa-support-input{
+  border-color:#dfe7dd!important;
+  box-shadow:none;
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease,
+    background .18s ease;
+}
+input:focus,
+select:focus,
+textarea:focus,
+.input:focus,
+.reference-input:focus,
+.personal-input:focus,
+.wallet-input:focus,
+.trade-select:focus,
+.trade-amount:focus,
+.nexa-support-input:focus{
+  border-color:#83df7a!important;
+  box-shadow:0 0 0 4px rgba(105,223,92,.11)!important;
+}
+
+/* Polished tactile controls */
+button,
+[role="button"],
+.action,
+.wallet-sheet-row,
+.personal-row,
+.quote-row{
+  transition:
+    transform .14s ease,
+    box-shadow .18s ease,
+    background-color .18s ease,
+    opacity .18s ease;
+}
+@media(hover:hover){
+  button:not(:disabled):hover{
+    filter:brightness(.985);
+  }
+  .wallet-sheet-row:hover,
+  .personal-row:hover{
+    background:#f6faf5;
+  }
+}
+button:not(:disabled):active,
+[role="button"]:active{
+  transform:scale(.975);
+}
+
+/* Minimum comfortable touch targets without changing compact chips */
+.home-icon-btn,
+.reference-back,
+.reference-globe,
+.personal-back,
+.wallet-action-back,
+.funding-back,
+.lang-close,
+.nexa-support-close{
+  min-width:44px;
+  min-height:44px;
+}
+
+/* Modal/sheet polish */
+.lang-menu,
+.lang-dialog,
+.follow-modal,
+.wallet-sheet,
+.deposit-network-sheet-card,
+.nexa-support-panel,
+.nx-confirm-card,
+.nx-error-card{
+  border:1px solid rgba(222,231,220,.92);
+  box-shadow:var(--nx-shadow-md)!important;
+}
+.lang-overlay,
+.follow-modal-overlay,
+.wallet-sheet-overlay,
+.funding-calendar-overlay{
+  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(5px);
+}
+.lang-menu:not(.hidden),
+.lang-overlay:not(.hidden) .lang-dialog,
+.follow-modal-overlay:not(.hidden) .follow-modal,
+.wallet-sheet-overlay:not(.hidden) .wallet-sheet,
+.nexa-support-panel:not(.hidden){
+  animation:nxModalIn .20s cubic-bezier(.2,.8,.25,1);
+}
+@keyframes nxModalIn{
+  from{opacity:0;transform:translateY(8px) scale(.985)}
+  to{opacity:1;transform:none}
+}
+/* language menu is centered with translateX, preserve it during animation */
+.lang-menu:not(.hidden){
+  animation:nxLangIn .20s cubic-bezier(.2,.8,.25,1);
+}
+@keyframes nxLangIn{
+  from{opacity:0;transform:translateX(-50%) translateY(7px) scale(.985)}
+  to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+}
+
+/* Main bottom navigation stays dark on purpose as the visual anchor */
+.nav{
+  border-top:0!important;
+  box-shadow:0 -8px 28px rgba(25,32,27,.10)!important;
+}
+
+/* More refined page transitions */
+.page.active{
+  animation:nxFinalPageIn .24s cubic-bezier(.22,.75,.24,1);
+}
+@keyframes nxFinalPageIn{
+  from{opacity:.55;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+
+/* Better scrolling on mobile */
+.page,
+.personal-overlay,
+.personal-subpage,
+.wallet-action-page,
+.funding-page{
+  -webkit-overflow-scrolling:touch;
+}
+*{
+  scrollbar-width:thin;
+  scrollbar-color:#d8e2d6 transparent;
+}
+*::-webkit-scrollbar{width:5px;height:5px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:#d8e2d6;border-radius:20px}
+
+/* Cleaner selection + placeholders */
+::selection{background:rgba(105,223,92,.22);color:#132015}
+input::placeholder,
+textarea::placeholder{color:#a8b0aa!important;opacity:1}
+
+/* Small-screen protection */
+img,svg,canvas{max-width:100%}
+input,select,textarea,button{max-width:100%}
+@media(max-width:380px){
+  #home,#quotes,#assets{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  .reference-login-shell{padding-left:22px!important;padding-right:22px!important}
+  .nx-error-actions,.nx-confirm-actions{grid-template-columns:1fr}
+}
+
+/* Desktop polish: app reads like a deliberate mobile product, not a stretched page */
+@media(min-width:620px){
+  body{background:#f5f7f4!important}
+  .app,
+  .reference-login-shell{
+    box-shadow:0 0 0 1px rgba(223,231,220,.9),0 18px 55px rgba(31,49,34,.07);
+  }
+  .app{
+    min-height:100vh;
+  }
+}
+
+/* Respect accessibility preferences */
+@media(prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    scroll-behavior:auto!important;
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
+
+
+
+/* ===== FINAL OVERRIDE — SLIM MY ASSETS BALANCE CARD ===== */
+/* Keep this block last so later theme layers cannot make the balance card thick again. */
+#assets .assets-valuation-card{
+  padding:17px 27px 18px!important;
+  margin-bottom:32px!important;
+  border-radius:26px!important;
+  min-height:0!important;
+}
+
+#assets .assets-valuation-top{
+  font-size:16px!important;
+  line-height:1.15!important;
+  min-height:0!important;
+}
+
+#assets .assets-eye-btn{
+  width:23px!important;
+  height:23px!important;
+}
+
+#assets .assets-eye-btn svg{
+  width:21px!important;
+  height:21px!important;
+}
+
+#assets .assets-balance{
+  margin-top:10px!important;
+  font-size:43px!important;
+  line-height:.98!important;
+}
+
+#assets .assets-subline{
+  margin-top:8px!important;
+  font-size:15.5px!important;
+  line-height:1.15!important;
+  gap:14px!important;
+  flex-wrap:nowrap!important;
+}
+
+@media(max-width:380px){
+  #assets .assets-valuation-card{
+    padding:15px 22px 16px!important;
+    border-radius:24px!important;
+  }
+
+  #assets .assets-balance{
+    margin-top:9px!important;
+    font-size:40px!important;
+  }
+
+  #assets .assets-subline{
+    margin-top:7px!important;
+    font-size:14.5px!important;
+    gap:11px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -7718,6 +8064,57 @@ restoreSessionOnBoot();
       btn.setAttribute("aria-label","Action");
     }
   });
+})();
+</script>
+
+
+
+<script>
+/* ===== NEXATRADE FINAL MICRO-POLISH ===== */
+(function(){
+  "use strict";
+
+  const PAGE_TITLES={
+    home:"NexaTrade",
+    quotes:"NexaTrade · Quotes",
+    trade:"NexaTrade · Trade",
+    assets:"NexaTrade · My Assets",
+    admin:"NexaTrade · Admin"
+  };
+
+  function syncActivePageMeta(){
+    const active=document.querySelector(".page.active");
+    if(active?.id && PAGE_TITLES[active.id]){
+      document.title=PAGE_TITLES[active.id];
+    }
+
+    document.querySelectorAll(".nav button").forEach(btn=>{
+      const onclick=btn.getAttribute("onclick")||"";
+      const current=active?.id && (
+        onclick.includes("'"+active.id+"'") ||
+        onclick.includes('"'+active.id+'"')
+      );
+      if(current) btn.setAttribute("aria-current","page");
+      else btn.removeAttribute("aria-current");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded",syncActivePageMeta);
+
+  const observer=new MutationObserver(mutations=>{
+    if(mutations.some(m=>m.type==="attributes" && m.attributeName==="class")){
+      syncActivePageMeta();
+    }
+  });
+
+  document.querySelectorAll(".page").forEach(page=>{
+    observer.observe(page,{attributes:true,attributeFilter:["class"]});
+  });
+
+  /* Prevent accidental horizontal drag from leaving the page visually shifted. */
+  window.addEventListener("resize",()=>{
+    if(window.scrollX!==0) window.scrollTo(0,window.scrollY);
+  },{passive:true});
 })();
 </script>
 
