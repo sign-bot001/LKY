@@ -930,6 +930,12 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
   border-radius:18px;
 }
 
+
+/* Reference-style bottom navigation icons */
+.nav .nav-icon{width:44px;height:39px;display:flex;align-items:center;justify-content:center;margin:0 auto 2px;line-height:1}
+.nav .ref-nav-svg{width:39px;height:39px;fill:none;stroke:currentColor;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;opacity:.72}
+.nav button.active .ref-nav-svg{opacity:1;stroke-width:3.7}
+
 </style>
 </head>
 <body>
@@ -1961,9 +1967,9 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 
   <nav class="nav">
     <button class="active" onclick="showPage('home',this)"><span class="nav-icon">⌂</span>Home</button>
-    <button onclick="showPage('quotes',this)"><span class="nav-icon">≋</span>Quotes</button>
-    <button onclick="showPage('trade',this)"><span class="nav-icon">⇅</span>Trade</button>
-    <button onclick="showPage('assets',this)"><span class="nav-icon">◈</span>my assets</button>
+    <button onclick="showPage('quotes',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true"><path d="M7 38h34M10 31l10-10 7 6 12-15M31 12h8v8M13 36v-5M22 36v-9M31 36v-7M40 36V19"/></svg></span>Quotes</button>
+    <button onclick="showPage('trade',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true"><path d="M36 15a16 16 0 0 0-25 1M11 9v8h8M12 33a16 16 0 0 0 25-1M37 39v-8h-8"/><path d="M24 17l7 7-7 7-7-7z"/></svg></span>Trade</button>
+    <button onclick="showPage('assets',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="15" r="8"/><path d="M10 39v-6c0-6 6-10 14-10s14 4 14 10v6c-8 3-20 3-28 0z"/></svg></span>my assets</button>
     <button id="adminNav" class="hidden" onclick="showPage('admin',this)"><span class="nav-icon">⚙</span>Admin</button>
   </nav>
 </div>
