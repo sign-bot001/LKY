@@ -789,6 +789,10 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 .deposit-confirm-summary .row:last-child{border-bottom:0}
 .deposit-confirm-summary .row span:last-child{text-align:right;font-weight:800}
 
+
+.trade-direct-note{margin-top:12px;padding:11px 13px;border-radius:11px;background:#f5f7f8;color:#777f88;font-size:12px;line-height:1.4;text-align:center}
+.trade-actions button.trade-busy{opacity:.58;pointer-events:none}
+
 </style>
 </head>
 <body>
@@ -1014,7 +1018,8 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
       <div class="trade-amount-wrap"><input id="tradeAmount" class="trade-amount" type="number" min="0" value="0"><span class="trade-unit">USDT</span></div>
       <div class="trade-available"><span>available&nbsp;&nbsp; <strong id="tradeAvailable">0.00</strong></span><span>USDT</span></div>
       <div class="trade-pcts"><button onclick="setTradePercent(1)">1%</button><button onclick="setTradePercent(50)">50%</button><button onclick="setTradePercent(75)">75%</button><button onclick="setTradePercent(100)">100%</button></div>
-      <div class="trade-actions"><button class="trade-call" onclick="prepareDirection('CALL')">CALL <span id="callPct">53.12%</span></button><button class="trade-put" onclick="prepareDirection('PUT')">PUT <span id="putPct">56.88%</span></button></div>
+      <div class="trade-actions"><button class="trade-call" onclick="placeDemoTrade('CALL')">CALL <span id="callPct">53.12%</span></button><button class="trade-put" onclick="placeDemoTrade('PUT')">PUT <span id="putPct">56.88%</span></button></div>
+      <div class="trade-direct-note">DEMO · No order code required. Winning positions add the displayed return; losing positions deduct the amount placed.</div>
       <!-- Copy Trading DEMO card removed from the visible Trade page.
            Keep this hidden message target so existing settlement/message code is not broken. -->
       <div id="tradeMessage" class="message hidden"></div>
@@ -2011,7 +2016,55 @@ function showPage(pageId,button){
 }
 
 function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2)}
-function prepareDirection(d){const msg=document.getElementById("tradeMessage");if(msg)showMessage("tradeMessage",d+" sélectionné. Entre ton code DEMO puis appuie sur TRADE.","success")}
+let placingDemoTrade=false;
+async function placeDemoTrade(direction){
+  if(placingDemoTrade)return;
+  clearMessage("tradeMessage");
+
+  const dir=String(direction||"").toUpperCase();
+  if(!["CALL","PUT"].includes(dir))return;
+
+  const amount=Number(document.getElementById("tradeAmount")?.value||0);
+  const available=Number(profile?.balance||0);
+  const duration=Number(document.getElementById("tradeDuration")?.value||60);
+  const openPrice=Number(btcPrice||0);
+
+  if(!currentUser)return showMessage("tradeMessage","Connecte-toi pour ouvrir une position DEMO.","error");
+  if(!Number.isFinite(amount)||amount<=0)return showMessage("tradeMessage","Entre un montant DEMO supérieur à 0.","error");
+  if(amount>available)return showMessage("tradeMessage","Solde DEMO insuffisant.","error");
+  if(![60,120,300,600].includes(duration))return showMessage("tradeMessage","Durée DEMO invalide.","error");
+  if(!Number.isFinite(openPrice)||openPrice<=0)return showMessage("tradeMessage","Le prix BTC est indisponible. Réessaie dans quelques secondes.","error");
+
+  placingDemoTrade=true;
+  document.querySelectorAll(".trade-actions button").forEach(b=>b.classList.add("trade-busy"));
+  try{
+    const {data,error}=await sb.rpc("open_demo_trade",{
+      p_direction:dir,
+      p_amount:amount,
+      p_duration_seconds:duration,
+      p_open_price:openPrice
+    });
+    if(error)throw error;
+
+    const trade=Array.isArray(data)?data[0]:data;
+    document.getElementById("tradeAmount").value="0";
+    showMessage("tradeMessage",`${dir} DEMO ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
+    await refreshEverything();
+    const deliveryTab=document.querySelector('.trade-order-tab[onclick*="delivery"]');
+    if(deliveryTab)showTradeOrderTab("delivery",deliveryTab);
+  }catch(err){
+    const message=String(err?.message||err||"Impossible d’ouvrir la position DEMO.");
+    if(message.includes("open_demo_trade")){
+      showMessage("tradeMessage","Le moteur de trading direct n’est pas encore installé dans Supabase. Exécute le fichier SQL de migration fourni.","error");
+    }else{
+      showMessage("tradeMessage",message,"error");
+    }
+  }finally{
+    placingDemoTrade=false;
+    document.querySelectorAll(".trade-actions button").forEach(b=>b.classList.remove("trade-busy"));
+  }
+}
+function prepareDirection(d){return placeDemoTrade(d)}
 let tradeCycleStartMs=Date.now();
 let tradeCycleEndMs=tradeCycleStartMs+Number(document.getElementById("tradeDuration")?.value||60)*1000;
 let tradeCycleDuration=Number(document.getElementById("tradeDuration")?.value||60);
@@ -2338,16 +2391,16 @@ async function useCode(){
 function activePositionHTML(t){
   return `<div class="card position" data-trade-id="${t.id}">
     <div class="position-header">
-      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${esc(t.code)}</div></div>
+      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${t.code==="DIRECT"?"Direct DEMO":esc(t.code||"Direct DEMO")}</div></div>
       <div class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</div>
     </div>
     <div class="countdown" id="countdown-${t.id}">${Math.max(0,Math.ceil((new Date(t.settle_at)-Date.now())/1000))}S</div>
     <div class="progress"><div id="progress-${t.id}" class="progress-inner"></div></div>
     <div class="trade-grid">
       <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}S</strong></div>
-      <div class="trade-detail"><span class="muted">Capital Used</span><strong>1%</strong></div>
+      <div class="trade-detail"><span class="muted">Capital Used</span><strong>${money(t.capital_pct)}%</strong></div>
       <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
-      <div class="trade-detail"><span class="muted">Yield</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
+      <div class="trade-detail"><span class="muted">Win return</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
       <div class="trade-detail"><span class="muted">Opening Price</span><strong>${price(t.open_price)}</strong></div>
       <div class="trade-detail"><span class="muted">Order Time</span><strong>${formatDate(t.opened_at)}</strong></div>
     </div>
@@ -2375,11 +2428,20 @@ async function updateCountdowns(){
 setInterval(updateCountdowns,500);
 
 async function settleTrade(id){
-  const {data,error}=await sb.rpc("settle_demo_trade",{p_trade_id:id});
+  const closePrice=Number(btcPrice||0);
+  const {data,error}=await sb.rpc("settle_demo_trade",{
+    p_trade_id:id,
+    p_close_price:closePrice>0?closePrice:null
+  });
   settlingTrades.delete(id);
   if(error){console.error(error);return}
   await refreshEverything();
-  if(data) showMessage("tradeMessage","Position DEMO réglée : +"+money(data.profit)+" USDT fictifs.","success");
+  if(data){
+    const pnl=Number(data.profit||0);
+    const prefix=pnl>0?"+":"";
+    const label=pnl>0?"Gain DEMO":(pnl<0?"Perte DEMO":"Résultat DEMO");
+    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT fictifs.`,pnl>=0?"success":"error");
+  }
 }
 
 async function settleExpiredTrades(refresh=true){
@@ -2401,7 +2463,7 @@ function renderHistory(){
       <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}s</span></div>
       <div class="trade-history-line"><span>time period</span><strong>${hm(opened)} ~ ${hm(settledAt)}</strong></div>
       <div class="trade-history-line"><span>profit and loss</span><strong class="${profitClass}">${profit>=0?"+":""}${money(profit)}</strong></div>
-      <div class="trade-history-line"><span>rate of return</span><strong class="profit-pos">${money(t.yield_pct)}%</strong></div>
+      <div class="trade-history-line"><span>rate of return</span><strong class="${profit>=0?"profit-pos":"profit-neg"}">${profit<0?"-100.00":money(t.yield_pct)}%</strong></div>
       <div class="trade-history-line"><span>order quantity</span><strong>${money(t.amount)}</strong></div>
       <div class="trade-history-line"><span>opening price</span><strong>${price(t.open_price)}</strong></div>
       <div class="trade-history-line"><span>settlement price</span><strong>${price(t.close_price)}</strong></div>
