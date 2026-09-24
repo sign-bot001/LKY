@@ -1261,7 +1261,7 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 
     <div class="card">
       <strong>Generate Guaranteed DEMO Code</strong>
-      <div class="admin-subtitle">Chaque code est utilisable une seule fois au total. Il ouvre une position DEMO gagnante avec un rendement compris entre 50 % et 57 %.</div>
+      <div class="admin-subtitle">Chaque code est utilisable une seule fois au total. Il devient valide exactement 60 secondes avant le début du trade et expire dès que l’heure du trade est atteinte. Le code doit donc être utilisé avant le début de la position.</div>
 
       <label>Position</label>
       <select id="adminDirection" class="input">
@@ -1274,18 +1274,12 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 
       <div class="admin-schedule-grid">
         <div>
-          <label>Heure précise de la position</label>
-          <input id="adminScheduledFor" class="input" type="datetime-local">
+          <label>Début précis du trade</label>
+          <input id="adminScheduledFor" class="input" type="datetime-local" step="1">
         </div>
         <div>
-          <label>Expiration après cette heure</label>
-          <select id="adminValidMinutes" class="input">
-            <option value="2">2 minutes</option>
-            <option value="5" selected>5 minutes</option>
-            <option value="10">10 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="60">1 heure</option>
-          </select>
+          <label>Fenêtre d’utilisation du code</label>
+          <div class="input" style="display:flex;align-items:center;font-weight:800">60 secondes avant le début</div>
         </div>
       </div>
 
@@ -2464,7 +2458,7 @@ function activePositionHTML(t){
       <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${t.code==="DIRECT"?"Direct DEMO":esc(t.code||"Direct DEMO")}</div></div>
       <div class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</div>
     </div>
-    <div class="countdown" id="countdown-${t.id}">${Math.max(0,Math.ceil((new Date(t.settle_at)-Date.now())/1000))}S</div>
+    <div class="countdown" id="countdown-${t.id}">${Date.now()<new Date(t.opened_at).getTime()?"Starts in "+Math.max(0,Math.ceil((new Date(t.opened_at)-Date.now())/1000))+"S":Math.max(0,Math.ceil((new Date(t.settle_at)-Date.now())/1000))+"S"}</div>
     <div class="progress"><div id="progress-${t.id}" class="progress-inner"></div></div>
     <div class="trade-grid">
       <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}S</strong></div>
@@ -2472,7 +2466,7 @@ function activePositionHTML(t){
       <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
       <div class="trade-detail"><span class="muted">Win return</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
       <div class="trade-detail"><span class="muted">Opening Price</span><strong>${price(t.open_price)}</strong></div>
-      <div class="trade-detail"><span class="muted">Order Time</span><strong>${formatDate(t.opened_at)}</strong></div>
+      <div class="trade-detail"><span class="muted">${Date.now()<new Date(t.opened_at).getTime()?"Starts at":"Order Time"}</span><strong>${formatDate(t.opened_at)}</strong></div>
     </div>
   </div>`;
 }
@@ -2484,11 +2478,24 @@ function renderPositions(){
 
 async function updateCountdowns(){
   for(const t of trades.filter(x=>x.status==="PENDING")){
-    const ms=new Date(t.settle_at).getTime()-Date.now();
-    const remaining=Math.max(0,Math.ceil(ms/1000));
+    const now=Date.now();
+    const startsAt=new Date(t.opened_at).getTime();
+    const settlesAt=new Date(t.settle_at).getTime();
     const c=document.getElementById("countdown-"+t.id), p=document.getElementById("progress-"+t.id);
+
+    if(now<startsAt){
+      const untilStart=Math.max(0,Math.ceil((startsAt-now)/1000));
+      if(c)c.textContent="Starts in "+untilStart+"S";
+      if(p)p.style.width="0%";
+      continue;
+    }
+
+    const remaining=Math.max(0,Math.ceil((settlesAt-now)/1000));
     if(c)c.textContent=remaining+"S";
-    if(p){const duration=Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000));p.style.width=Math.max(0,Math.min(100,remaining/duration*100))+"%";}
+    if(p){
+      const duration=Math.max(1,Math.round((settlesAt-startsAt)/1000));
+      p.style.width=Math.max(0,Math.min(100,remaining/duration*100))+"%";
+    }
     if(remaining<=0&&!settlingTrades.has(t.id)){
       settlingTrades.add(t.id);
       await settleTrade(t.id);
@@ -2546,7 +2553,8 @@ function initAdminScheduleDefaults(){
   const el=document.getElementById("adminScheduledFor");
   if(!el||el.value)return;
   const d=new Date(Date.now()+5*60000);
-  const local=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  d.setSeconds(0,0);
+  const local=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,19);
   el.value=local;
 }
 async function generateCode(){
@@ -2561,13 +2569,13 @@ async function generateCode(){
     p_direction:document.getElementById("adminDirection")?.value||"CALL",
     p_yield_pct:y===""?null:Number(y),
     p_scheduled_for:scheduled.toISOString(),
-    p_valid_minutes:Number(document.getElementById("adminValidMinutes")?.value||5)
+    p_valid_seconds:60
   });
   if(error)return alert(error.message);
   const r=Array.isArray(data)?data[0]:data;
   generatedBox.classList.remove("hidden");
   generatedCode.textContent=r.generated_code;
-  generatedDetails.textContent=`${r.generated_direction} · +${Number(r.generated_yield).toFixed(2)}% DEMO · ${formatDate(r.generated_scheduled_for)} → ${formatDate(r.generated_expires_at)} · usage unique`;
+  generatedDetails.textContent=`${r.generated_direction} · +${Number(r.generated_yield).toFixed(2)}% DEMO · code valide ${formatDate(r.generated_valid_from)} → ${formatDate(r.generated_scheduled_for)} · trade ${formatDate(r.generated_scheduled_for)} → ${formatDate(new Date(new Date(r.generated_scheduled_for).getTime()+60000))} · usage unique`;
   await loadAdminAll();
 }
 
@@ -2740,7 +2748,7 @@ function renderAdminCodes(){
     return `<div class="admin-code">
       <div class="row-between"><strong style="letter-spacing:2px">${esc(c.code)}</strong><span class="status ${live?"on":"off"}">${used?"USED":expired?"EXPIRED":c.active?"ACTIVE":"OFF"}</span></div>
       <div class="muted">${esc(c.direction)} · +${money(c.yield_pct)}% DEMO · usage unique</div>
-      <div class="code-schedule">Position: ${formatDate(c.scheduled_for)}<br>Expiration: ${formatDate(c.expires_at)}${used?`<br>Utilisé: ${formatDate(c.used_at)}`:""}</div>
+      <div class="code-schedule">Code valide: ${formatDate(c.valid_from||new Date(new Date(c.scheduled_for).getTime()-60000))} → ${formatDate(c.scheduled_for)}<br>Début du trade: ${formatDate(c.scheduled_for)} · Durée: 60 s${used?`<br>Utilisé: ${formatDate(c.used_at)}`:""}</div>
       <div class="inline" style="margin-top:9px">
         ${!used?`<button class="mini gray" onclick="toggleCode(${c.id},${!c.active})">${c.active?"Disable":"Enable"}</button>`:""}
         ${!used?`<button class="mini redbtn" onclick="deleteUnusedCode(${c.id})">Delete</button>`:""}
