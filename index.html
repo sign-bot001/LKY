@@ -1874,6 +1874,56 @@ body.login-gate-active{
   }
 }
 
+
+/* ===== INTERACTIVE TRADE CANDLE CHART ===== */
+.trade-chart-wrap{
+  position:relative;
+  overflow:hidden;
+}
+.trade-canvas{
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.trade-canvas.dragging{cursor:grabbing}
+.trade-chart-wrap:after{
+  content:"Pinch to zoom • Drag to move";
+  position:absolute;
+  left:50%;
+  bottom:8px;
+  transform:translateX(-50%);
+  padding:5px 9px;
+  border-radius:9px;
+  background:rgba(255,255,255,.82);
+  color:#7d867f;
+  font-size:10px;
+  font-weight:700;
+  pointer-events:none;
+  opacity:.78;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+@media(max-width:430px){
+  .trade-chart-wrap:after{
+    content:"Pinch to zoom";
+    bottom:6px;
+    font-size:9px;
+  }
+}
+
+
+/* Trade chart direction cue */
+.trade-chart-wrap{
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.trade-chart-wrap.chart-call{
+  border-color:rgba(32,189,138,.30)!important;
+}
+.trade-chart-wrap.chart-put{
+  border-color:rgba(243,55,98,.30)!important;
+}
+
 </style>
 </head>
 <body>
@@ -2133,7 +2183,10 @@ body.login-gate-active{
       <div class="trade-price-row"><div><div id="btcTrade" class="trade-live-price">-</div><div id="trade24Change" class="trade-change">--%</div></div><div><div class="trade-count">countdown<strong id="tradeCountdownTop">00:00:60</strong></div><div id="tradeWindow" class="trade-window">↘ --:-- ~ --:--</div></div></div>
     </div>
     <div class="trade-tabs"><span>time sharing</span><span class="active" onclick="setChartTimeframe(60,this)">1 min</span><span onclick="setChartTimeframe(300,this)">5 min</span><span onclick="setChartTimeframe(900,this)">15 min</span><span onclick="setChartTimeframe(1800,this)">30 min</span><span onclick="setChartTimeframe(86400,this)">1d</span><span onclick="setChartTimeframe(604800,this)">1week</span><span onclick="setChartTimeframe(2592000,this)">month</span></div>
-    <div class="trade-chart-wrap"><div id="tradeChartStatus" class="trade-chart-status">CONNECTING</div><canvas id="tradeCandleCanvas" class="trade-canvas"></canvas></div>
+    <div class="trade-chart-wrap">
+      <div id="tradeChartStatus" class="trade-chart-status">CONNECTING</div>
+      <canvas id="tradeCandleCanvas" class="trade-canvas" aria-label="Interactive BTC USDT candlestick chart"></canvas>
+    </div>
     <div class="trade-controls">
       <div class="trade-select-row"><select id="tradeDuration" class="trade-select" onchange="updateTradeTimeUI()"><option value="60">60s</option><option value="120">120s</option><option value="300">5 min</option><option value="600">10 min</option></select><select id="tradeTimeSelect" class="trade-select"><option>Next 60s</option></select></div>
       <div class="trade-amount-wrap"><input id="tradeAmount" class="trade-amount" type="number" min="0" value="0"><span class="trade-unit">USDT</span></div>
@@ -3245,6 +3298,7 @@ setInterval(async()=>{
 
 async function refreshEverything(){
   await loadProfile(); await loadTrades();
+  syncTradeChartDirectionFromOpenTrades();
   if(isCurrentUserAdmin) await loadAdminAll();
 }
 
@@ -3352,6 +3406,7 @@ async function placeDemoTrade(direction){
 
     const trade=Array.isArray(data)?data[0]:data;
     document.getElementById("tradeAmount").value="0";
+    setTradeChartDirection(dir);
     showMessage("tradeMessage",`${dir} DEMO ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
     await refreshEverything();
     const deliveryTab=document.querySelector('.trade-order-tab[onclick*="delivery"]');
@@ -3421,6 +3476,78 @@ let tradeCandles=[];
 let tradeChartGranularity=60;
 let candleBootstrapBusy=false;
 
+/* Trade direction controls the live price line:
+   CALL / achat = green
+   PUT / vente = red */
+let tradeChartDirection="CALL";
+
+function setTradeChartDirection(direction){
+  const dir=String(direction||"").toUpperCase();
+  if(dir!=="CALL" && dir!=="PUT")return;
+  tradeChartDirection=dir;
+  const wrap=document.querySelector(".trade-chart-wrap");
+  wrap?.classList.toggle("chart-call",dir==="CALL");
+  wrap?.classList.toggle("chart-put",dir==="PUT");
+  drawTradeChart();
+}
+
+function syncTradeChartDirectionFromOpenTrades(){
+  const pending=(trades||[])
+    .filter(t=>String(t.status||"").toUpperCase()==="PENDING" &&
+      ["CALL","PUT"].includes(String(t.direction||"").toUpperCase()))
+    .sort((a,b)=>new Date(b.opened_at||0)-new Date(a.opened_at||0));
+  if(pending.length)setTradeChartDirection(pending[0].direction);
+}
+
+/* Interactive chart viewport */
+let tradeChartVisibleCount=60;
+let tradeChartOffset=0; // candles back from the most recent candle
+const TRADE_CHART_MIN_CANDLES=12;
+const TRADE_CHART_MAX_CANDLES=180;
+
+function clampTradeChartView(){
+  const total=chartCandlesForTimeframe().length;
+  const maxVisible=Math.max(TRADE_CHART_MIN_CANDLES,Math.min(TRADE_CHART_MAX_CANDLES,total||TRADE_CHART_MAX_CANDLES));
+  tradeChartVisibleCount=Math.max(
+    Math.min(TRADE_CHART_MIN_CANDLES,maxVisible),
+    Math.min(maxVisible,Math.round(tradeChartVisibleCount))
+  );
+  const maxOffset=Math.max(0,total-tradeChartVisibleCount);
+  tradeChartOffset=Math.max(0,Math.min(maxOffset,Math.round(tradeChartOffset)));
+}
+
+function updateTradeChartZoomLabel(){}
+
+function zoomTradeChart(direction,anchorRatio=.5){
+  const before=tradeChartVisibleCount;
+  const factor=direction>0 ? .78 : 1.28;
+  const next=Math.round(before*factor);
+  const total=chartCandlesForTimeframe().length;
+  const maxVisible=Math.max(TRADE_CHART_MIN_CANDLES,Math.min(TRADE_CHART_MAX_CANDLES,total||TRADE_CHART_MAX_CANDLES));
+  tradeChartVisibleCount=Math.max(Math.min(TRADE_CHART_MIN_CANDLES,maxVisible),Math.min(maxVisible,next));
+
+  // Keep approximately the same candle under the cursor/fingers.
+  const delta=before-tradeChartVisibleCount;
+  tradeChartOffset=Math.max(0,tradeChartOffset+Math.round(delta*(1-anchorRatio)));
+  clampTradeChartView();
+  updateTradeChartZoomLabel();
+  drawTradeChart();
+}
+
+function resetTradeChartView(){
+  tradeChartVisibleCount=60;
+  tradeChartOffset=0;
+  clampTradeChartView();
+  updateTradeChartZoomLabel();
+  drawTradeChart();
+}
+
+function panTradeChart(candleDelta){
+  tradeChartOffset+=Math.round(candleDelta);
+  clampTradeChartView();
+  drawTradeChart();
+}
+
 function candleBucket(ts=Date.now(),seconds=tradeChartGranularity){
   const ms=seconds*1000;
   return Math.floor(ts/ms)*ms;
@@ -3466,6 +3593,10 @@ function setChartTimeframe(seconds,el){
   tradeChartGranularity=Number(seconds);
   document.querySelectorAll(".trade-tabs span").forEach(x=>x.classList.remove("active"));
   el?.classList.add("active");
+  tradeChartOffset=0;
+  tradeChartVisibleCount=60;
+  clampTradeChartView();
+  updateTradeChartZoomLabel();
   drawTradeChart();
 }
 function chartCandlesForTimeframe(){
@@ -3483,7 +3614,14 @@ function drawTradeChart(){
   const left=8,right=72,top=18,bottom=28,plotW=W-left-right,plotH=H-top-bottom;
   x.strokeStyle="#edf0f2";x.lineWidth=1;x.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.fillStyle="#7f8996";
   for(let i=0;i<=4;i++){const y=top+plotH*i/4;x.beginPath();x.moveTo(left,y);x.lineTo(W-right+4,y);x.stroke()}
-  const candles=chartCandlesForTimeframe().slice(-60);if(!candles.length)return;
+  const allCandles=chartCandlesForTimeframe();
+  if(!allCandles.length)return;
+  clampTradeChartView();
+  const end=Math.max(0,allCandles.length-tradeChartOffset);
+  const start=Math.max(0,end-tradeChartVisibleCount);
+  const candles=allCandles.slice(start,end);
+  if(!candles.length)return;
+  updateTradeChartZoomLabel();
   let min=Math.min(...candles.map(v=>v.low)),max=Math.max(...candles.map(v=>v.high));
   const span=Math.max(max-min,max*.0008);min-=span*.08;max+=span*.08;
   const yy=v=>top+(max-v)/(max-min)*plotH;
@@ -3491,9 +3629,118 @@ function drawTradeChart(){
   candles.forEach((v,i)=>{const cx=left+(i+.5)*step,up=v.close>=v.open,col=up?"#28bd89":"#f33762";x.strokeStyle=col;x.fillStyle=col;x.beginPath();x.moveTo(cx,yy(v.high));x.lineTo(cx,yy(v.low));x.stroke();const y1=yy(v.open),y2=yy(v.close);x.fillRect(cx-bw/2,Math.min(y1,y2),bw,Math.max(2,Math.abs(y1-y2)))});
   x.fillStyle="#7f8996";x.textAlign="left";
   for(let i=0;i<=4;i++){const v=max-(max-min)*i/4;x.fillText(livePriceFormat(v),W-right+8,top+plotH*i/4+4)}
-  const last=candles[candles.length-1],ly=yy(last.close);x.strokeStyle="#20bd8a";x.setLineDash([5,5]);x.beginPath();x.moveTo(left,ly);x.lineTo(W-right+4,ly);x.stroke();x.setLineDash([]);x.fillStyle="#20bd8a";x.fillRect(W-right+5,ly-10,right-8,20);x.fillStyle="#fff";x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.fillText(livePriceFormat(last.close),W-right+9,ly+4);
+  const last=candles[candles.length-1],ly=yy(last.close);
+  const directionColor=tradeChartDirection==="PUT"?"#f33762":"#20bd8a";
+  x.strokeStyle=directionColor;
+  x.lineWidth=1.4;
+  x.setLineDash([5,5]);
+  x.beginPath();
+  x.moveTo(left,ly);
+  x.lineTo(W-right+4,ly);
+  x.stroke();
+  x.setLineDash([]);
+  x.fillStyle=directionColor;
+  x.fillRect(W-right+5,ly-10,right-8,20);
+  x.fillStyle="#fff";
+  x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";
+  x.fillText(livePriceFormat(last.close),W-right+9,ly+4);
 }
 window.addEventListener("resize",drawTradeChart);
+
+(function setupTradeChartInteractions(){
+  const canvas=document.getElementById("tradeCandleCanvas");
+  if(!canvas)return;
+
+  // Desktop: mouse wheel zooms around the cursor.
+  canvas.addEventListener("wheel",e=>{
+    e.preventDefault();
+    const rect=canvas.getBoundingClientRect();
+    const anchor=Math.max(0,Math.min(1,(e.clientX-rect.left)/Math.max(1,rect.width)));
+    zoomTradeChart(e.deltaY<0?1:-1,anchor);
+  },{passive:false});
+
+  const pointers=new Map();
+  let dragStartX=0;
+  let dragStartOffset=0;
+  let pinchStartDistance=0;
+  let pinchStartVisible=tradeChartVisibleCount;
+  let lastTapAt=0;
+
+  const distance=()=>{
+    const pts=[...pointers.values()];
+    if(pts.length<2)return 0;
+    return Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+  };
+
+  canvas.addEventListener("pointerdown",e=>{
+    canvas.setPointerCapture?.(e.pointerId);
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pointers.size===1){
+      dragStartX=e.clientX;
+      dragStartOffset=tradeChartOffset;
+      canvas.classList.add("dragging");
+    }else if(pointers.size===2){
+      pinchStartDistance=distance();
+      pinchStartVisible=tradeChartVisibleCount;
+    }
+  });
+
+  canvas.addEventListener("pointermove",e=>{
+    if(!pointers.has(e.pointerId))return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+
+    if(pointers.size===2){
+      e.preventDefault();
+      const current=distance();
+      if(pinchStartDistance>0&&current>0){
+        const total=chartCandlesForTimeframe().length;
+        const maxVisible=Math.max(TRADE_CHART_MIN_CANDLES,Math.min(TRADE_CHART_MAX_CANDLES,total||TRADE_CHART_MAX_CANDLES));
+        tradeChartVisibleCount=Math.max(
+          Math.min(TRADE_CHART_MIN_CANDLES,maxVisible),
+          Math.min(maxVisible,Math.round(pinchStartVisible*(pinchStartDistance/current)))
+        );
+        clampTradeChartView();
+        updateTradeChartZoomLabel();
+        drawTradeChart();
+      }
+      return;
+    }
+
+    if(pointers.size===1){
+      const rect=canvas.getBoundingClientRect();
+      const dx=e.clientX-dragStartX;
+      const candleWidth=Math.max(4,(rect.width-80)/Math.max(1,tradeChartVisibleCount));
+      // Drag right = inspect older candles; drag left = return toward live edge.
+      tradeChartOffset=Math.max(0,dragStartOffset+Math.round(dx/candleWidth));
+      clampTradeChartView();
+      drawTradeChart();
+    }
+  });
+
+  const endPointer=e=>{
+    const wasSingle=pointers.size===1;
+    pointers.delete(e.pointerId);
+    if(pointers.size<2)pinchStartDistance=0;
+    if(pointers.size===0){
+      canvas.classList.remove("dragging");
+      if(wasSingle && e.pointerType==="touch"){
+        const now=Date.now();
+        if(now-lastTapAt<320) resetTradeChartView();
+        lastTapAt=now;
+      }
+    }else{
+      const p=[...pointers.values()][0];
+      dragStartX=p.x;
+      dragStartOffset=tradeChartOffset;
+    }
+  };
+  canvas.addEventListener("pointerup",endPointer);
+  canvas.addEventListener("pointercancel",endPointer);
+  canvas.addEventListener("lostpointercapture",endPointer);
+
+  // Double-click / double-tap style reset for desktop.
+  canvas.addEventListener("dblclick",resetTradeChartView);
+})();
 
 function showTradeOrderTab(name,el){
   document.querySelectorAll(".trade-order-tab").forEach(t=>t.classList.remove("active"));if(el)el.classList.add("active");
@@ -3545,6 +3792,7 @@ async function recognizeFollowCode(){
 
   if(input)input.value="";
   const trade=Array.isArray(data)?data[0]:data;
+  setTradeChartDirection(trade.direction);
   alert(`Code DEMO accepté · ${trade.direction} · rendement +${Number(trade.yield_pct).toFixed(2)}% · utilisation unique.`);
   await refreshEverything();
 
