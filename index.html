@@ -4605,7 +4605,9 @@ function renderNotifications(){
     return;
   }
   el.innerHTML=userNotifications.map(n=>`
-    <button class="notification-item ${n.read_at?"":"unread"}" onclick="markNotificationRead(${Number(n.id)})">
+    <button class="notification-item ${n.read_at?"":"unread"}"
+      data-notification-id="${esc(String(n.id))}"
+      onclick="markNotificationRead(this.dataset.notificationId)">
       <span class="notification-dot"></span>
       <h4>${esc(n.title||"Notification")}</h4>
       <p>${esc(n.body||"")}</p>
@@ -4622,18 +4624,63 @@ function closeNotifications(){
   document.getElementById("notificationsPage")?.classList.add("hidden");
 }
 async function markNotificationRead(id){
-  if(!currentUser)return;
-  const {error}=await sb.from("notifications").update({read_at:new Date().toISOString()})
-    .eq("id",id).eq("user_id",currentUser.id);
-  if(!error)await loadNotifications();
+  if(!currentUser||id==null)return;
+
+  const notification=userNotifications.find(n=>String(n.id)===String(id));
+  if(!notification||notification.read_at)return;
+
+  const previousReadAt=notification.read_at;
+  const readAt=new Date().toISOString();
+
+  notification.read_at=readAt;
+  renderNotificationBadge();
+  renderNotifications();
+
+  const {error}=await sb.from("notifications")
+    .update({read_at:readAt})
+    .eq("id",id)
+    .eq("user_id",currentUser.id);
+
+  if(error){
+    notification.read_at=previousReadAt;
+    renderNotificationBadge();
+    renderNotifications();
+    console.warn("notification read:",error);
+    return;
+  }
+
+  await loadNotifications();
 }
 async function markAllNotificationsRead(){
   if(!currentUser)return;
-  const unread=userNotifications.filter(n=>!n.read_at).map(n=>n.id);
+
+  const unread=userNotifications.filter(n=>!n.read_at);
   if(!unread.length)return;
-  const {error}=await sb.from("notifications").update({read_at:new Date().toISOString()})
-    .eq("user_id",currentUser.id).is("read_at",null);
-  if(!error)await loadNotifications();
+
+  const previous=unread.map(n=>({id:n.id,read_at:n.read_at}));
+  const readAt=new Date().toISOString();
+
+  unread.forEach(n=>{n.read_at=readAt});
+  renderNotificationBadge();
+  renderNotifications();
+
+  const {error}=await sb.from("notifications")
+    .update({read_at:readAt})
+    .eq("user_id",currentUser.id)
+    .is("read_at",null);
+
+  if(error){
+    previous.forEach(old=>{
+      const n=userNotifications.find(x=>String(x.id)===String(old.id));
+      if(n)n.read_at=old.read_at;
+    });
+    renderNotificationBadge();
+    renderNotifications();
+    console.warn("notifications read all:",error);
+    return;
+  }
+
+  await loadNotifications();
 }
 setInterval(()=>{if(currentUser&&!document.hidden)loadNotifications()},10000);
 
@@ -4756,7 +4803,7 @@ async function placeTrade(direction){
   placingTrade=true;
   document.querySelectorAll(".trade-actions button").forEach(b=>b.classList.add("trade-busy"));
   try{
-    const {data,error}=await sb.rpc("open__trade",{
+    const {data,error}=await sb.rpc("open_demo_trade",{
       p_direction:dir,
       p_amount:amount,
       p_duration_seconds:duration,
@@ -4773,7 +4820,7 @@ async function placeTrade(direction){
     if(deliveryTab)showTradeOrderTab("delivery",deliveryTab);
   }catch(err){
     const message=String(err?.message||err||"Impossible d’ouvrir la position .");
-    if(message.includes("open__trade")){
+    if(message.includes("open_demo_trade")){
       showMessage("tradeMessage","Le moteur de trading direct n’est pas encore installé dans Supabase. Exécute le fichier SQL de migration fourni.","error");
     }else{
       showMessage("tradeMessage",message,"error");
@@ -5230,7 +5277,7 @@ async function recognizeFollowCode(){
   if(code.length!==6)return alert("Le code doit contenir exactement 6 caractères.");
   if(!btcPrice||btcPrice<=0)return alert("Le prix BTC  n’est pas disponible.");
 
-  const {data,error}=await sb.rpc("use__code",{p_code:code,p_open_price:btcPrice});
+  const {data,error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
   if(error)return alert(error.message);
 
   if(input)input.value="";
@@ -5533,7 +5580,7 @@ setInterval(updateCountdowns,500);
 
 async function settleTrade(id){
   const closePrice=Number(btcPrice||0);
-  const {data,error}=await sb.rpc("settle__trade",{
+  const {data,error}=await sb.rpc("settle_demo_trade",{
     p_trade_id:id,
     p_close_price:closePrice>0?closePrice:null
   });
@@ -5556,7 +5603,7 @@ async function settleTrade(id){
 
 async function settleExpiredTrades(refresh=true){
   if(!currentUser)return;
-  const {data,error}=await sb.rpc("settle_expired__trades");
+  const {data,error}=await sb.rpc("settle_expired_demo_trades");
   if(error){console.error(error);return}
   if(refresh&&Number(data)>0) await refreshEverything();
 }
@@ -5599,7 +5646,7 @@ async function generateCode(){
   if(!scheduledRaw)return alert("Choisis l’heure précise de la position.");
   const scheduled=new Date(scheduledRaw);
   if(!Number.isFinite(scheduled.getTime()))return alert("Heure invalide.");
-  const {data,error}=await sb.rpc("generate__code",{
+  const {data,error}=await sb.rpc("generate_demo_code",{
     p_direction:document.getElementById("adminDirection")?.value||"CALL",
     p_yield_pct:y===""?null:Number(y),
     p_scheduled_for:scheduled.toISOString(),
@@ -5800,7 +5847,7 @@ function renderAdminCodes(){
       <div class="code-schedule">Code valide: ${formatDate(c.valid_from||new Date(new Date(c.scheduled_for).getTime()-60000))} → ${formatDate(c.scheduled_for)}<br>Début du trade: ${formatDate(c.scheduled_for)} · Durée: 60 s${used?`<br>Utilisé: ${formatDate(c.used_at)}`:""}</div>
       <div class="inline" style="margin-top:9px">
         ${!used?`<button class="mini gray" onclick="toggleCode(${c.id},${!c.active})">${c.active?"Disable":"Enable"}</button>`:""}
-        ${!used?`<button class="mini redbtn" onclick="deleteUnusedCode(${c.id})">Delete</button>`:""}
+        ${!used?`<button class="mini redbtn" onclick="deleteCode(${c.id})">Delete</button>`:""}
       </div>
     </div>`;
   }).join("");
@@ -6433,7 +6480,7 @@ async function submitWithdraw(){
   if(!validateWithdrawForm(true))return;
 
   const fee=WithdrawalFee(amount,withdrawCurrency);
-  const {data,error}=await sb.rpc("create__funding_request",{
+  const {data,error}=await sb.rpc("create_demo_funding_request",{
     p_request_type:"WITHDRAW",
     p_currency:withdrawCurrency,
     p_amount:amount,
@@ -6680,7 +6727,7 @@ async function confirmDepositSent(){
   const n=currentDepositNetwork();
   if(!n||pendingDepositAmount<=0)return;
 
-  const {data,error}=await sb.rpc("create__funding_request",{
+  const {data,error}=await sb.rpc("create_demo_funding_request",{
     p_request_type:"DEPOSIT",
     p_currency:depositCurrency,
     p_amount:pendingDepositAmount,
