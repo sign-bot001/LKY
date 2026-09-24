@@ -3190,6 +3190,16 @@ async function loadTrades(){
   if(!document.getElementById("fundingRecordsPage")?.classList.contains("hidden")) renderFundingRecords();
 }
 
+
+/* Keep the displayed DEMO balance synchronized with admin funding decisions. */
+let profileBalanceSyncBusy=false;
+setInterval(async()=>{
+  if(!currentUser || document.hidden || profileBalanceSyncBusy)return;
+  profileBalanceSyncBusy=true;
+  try{ await loadProfile(); }catch(_){}
+  finally{ profileBalanceSyncBusy=false; }
+},5000);
+
 async function refreshEverything(){
   await loadProfile(); await loadTrades();
   if(isCurrentUserAdmin) await loadAdminAll();
@@ -3923,10 +3933,13 @@ function renderAdminFundingRequests(){
 }
 
 async function adminSetFundingStatus(id,status){
-  const {error}=await sb.rpc("admin_set_funding_request_status",{p_request_id:id,p_status:status});
+  const {data,error}=await sb.rpc("admin_set_funding_request_status",{p_request_id:id,p_status:status});
   if(error)return alert(error.message);
-  await loadAdminFundingRequests();
-  updateAdminStats();
+
+  // CONFIRMED deposit => backend credits the requesting user's DEMO balance.
+  // REJECTED withdrawal => backend refunds the amount previously reserved.
+  await loadAdminAll();
+  if(currentUser && data?.user_id===currentUser.id) await loadProfile();
 }
 
 async function loadAdminCodes(){
@@ -4432,6 +4445,9 @@ async function submitWithdrawDemo(){
   });
   if(error)return alert(error.message);
 
+  // The backend reserves/deducts the DEMO amount immediately.
+  await loadProfile();
+
   addWalletRecord("Withdrawal request",withdrawCurrency,-amount,{network:withdrawNetwork,fee,status:"pending",confirmationWindowHours:48});
 
   document.getElementById("withdrawFundPassword").value="";
@@ -4457,7 +4473,9 @@ function closeWithdrawSuccess(){
 function filterRechargeCurrencies(){
   const q=(document.getElementById("rechargeSearch")?.value||"").trim().toUpperCase();
   document.querySelectorAll("#rechargeCurrencyList .wallet-currency-row").forEach(row=>{
-    row.style.display=(!q||(row.dataset.currency||"").includes(q))?"flex":"none";
+    const currency=(row.dataset.currency||"").toUpperCase();
+    // The current Supabase profile has one principal DEMO balance denominated in USDT.
+    row.style.display=(currency==="USDT" && (!q||currency.includes(q)))?"flex":"none";
   });
 }
 const DEMO_DEPOSIT_NETWORKS={
@@ -4466,8 +4484,8 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"erc20",
       name:"Ethereum (ERC20)",
       icon:"🔷",
-      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
-      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABrElEQVR4nO2ZwW7DMAxDH4f+/y9zB8mOnaFDD0OsAVIPSRMCIQRapiyZD+LrE1CjGtWoRj2KegEo7i2wLAPyfHqEV1XUC4icIMCKTNny9bQs+1P5QmCwMCNj8+kRXv8CJYQACasQr6oo5/LzLGk1eBVC5Xr0uOj6s9xUZX8qX6kmefmtGqvK/nmU1n5ImHQTYn1Rlf0hlJCQlHVrqC1fnONVEBX6SpWFV50Ki8LffnWNSA5RsIbnChvmab/Ksj/m79OkZpaijC3Sq8r+qJ+IdEULSRZ82Wd4lUYZIZlcipG5rvdvUYpW26OYGdLku/vHPYb/Wq8a++IsYlXZn/NfIElcNszhxNzrcYu5CU49bR1k6+sW4zA1zrrGphhvrsxVZX9wf8RhU/P8SwLbK+p5XmVRw65iT7UhzWayNvsnUcv5vTNpnt5CY9esyv5Qvq5JkIbpEsi4/f0t9vlQzjuwLxN2hldV1H0+FEeGypPpMSGqyv4wKlafQlY2uP3Er6iUmUNpuNfjPbb5UOyMc1bk7h9/xD4fGmdfJuZDra97bPOhR77YqEY1qlF/g/oGeSOvcvPzpKwAAAAASUVORK5CYII=',
+      address:"DEMO-USDT-ERC20-NOT-FUNDABLE",
+      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
       minimum:"USDT 0.01",
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
@@ -4478,8 +4496,8 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"trc20",
       name:"Tron (TRC20)",
       icon:"🔺",
-      address:"TEYyEs1H26SoPvM7fW5792cpZVkoeN3nsJ",
-      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABr0lEQVR4nO2Zy24EMQgEq6P9/1/uHAA7zks5RGMOeKVNxippW2gaA5b5w3r7CzTUUEMN9Sj1AlD8bwEYQN67V3R1pV5AxQjLMiAQrt0rurpSES8UMTOg/Zrlbl/1lymhCJfTm010NaJe56PDlnyqyrqqvxavjI8q2WvZ85KurlTEq8xn5QfLbEt2VX8pXtt9mevlOh5v6WpNCRBSJq8wo6TYuaerLSVAxsKyXQUY5dTe6h+njCJ3AZa00v7UXz9QznBZYCP0HfW8rp6UQCttgWyIjK+ruhpS2lnKyChyWG1lFuuq/tb7Ze/YOEsvY2TP+fgNpYhSuFKWDDmruKqrLSVhSbvRjrmO06/N1T9I5bxr9Y3VB62/l3R1pbIfWsVEfm1AM1/9uPY8J7wnU4djjVqv6GpNSZYVXSQ1Vo2GcuqJc8kfH6opYtdgE69jHfdD0Q6RqV4uk7ZVfyt/1f0QUXZpX3VMPXGu435IOJJWTMFYdu2q/ub5CFjbj1Xhjx9/o1zDinqceuJc5/1QBMx1UK7Ds6v6W/HK90llwWySpp74so7665FfHGqooYb6H+odeYaqdQLETKwAAAAASUVORK5CYII=',
+      address:"DEMO-USDT-TRC20-NOT-FUNDABLE",
+      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
       minimum:"USDT 0.1",
       arrival:"~1 minute",
       withdraw:"~2 minutes",
@@ -4492,8 +4510,8 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"solana",
       name:"Solana",
       icon:"◎",
-      address:"3JgG9kMPchc7YwnVkFS1WRWRWjFk3Dscvha3L1noGisM",
-      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFIAQAAAAAab1qeAAACEUlEQVR4nO2a22rEMAxEZ0r//5enDxrZTh9KUkhjpdqFJRsfsCxk3WwKJz8fZ8Emm2yyyX9BfgIA41l+FCiAotaRKivaQJ8QADAVS4kKlY6Rp+UsRpLTEhWa9ZsxsoWc5Uhq2qn0E3nH7G8jY39L8Zve869mfwMZ/jPcJChQEAHF4xi5afb3kaHPaYji+H4bqbKiZ0kefKSzJSDyJayDVVa0AZnxnBBEyomoxLbPi+Sy3zUSev8SCmvtfP40mfk8IUYgwtjqAkCp8/nL/tPFEFxlzjBkRd81+/vI1F5YJ5Z/tlfEvn9azlKkBLpYD0+avwLo+LSDnFVIUhDSf8oNEUB2p7vIWYB0feROUuSbIqNIytfs/X72Q+uL3uQRgcYQ239eIx3VwxbTJjM+acb9p+UsRmrYZ1qpRpnkTugWcm5PznwprZHpMjkq+d7v18hodS5elGmwAjpf+hUZpTrpip06RKi7Z38N6fNNb/HMl6xSkZniPy1nFXLW77C3dKK09uzbf54mnX+6wEyXubxE90Ou2+f446wzfaeWrL7KirbwnwAAyedweUmEo3x6XM4q5OF+SDpNzSN43xZ5XM4qZPZD8mZItpf4/fCjzIo2Itd8U2BcEPHBx05yViEzAQXlol0YNdNGcm5MHu6HzEYTEV40fGfb52lyPX07lJjZJxlBqsqKNtDnY7M32WSTTdYlvwAAXPOPgr15ugAAAABJRU5ErkJggg==',
+      address:"DEMO-BTC-SOLANA-NOT-FUNDABLE",
+      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
       minimum:"BTC 0.00000001",
       arrival:"~1 minute",
       withdraw:"~1 minute",
@@ -4504,8 +4522,8 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"bitcoin",
       name:"Bitcoin",
       icon:"₿",
-      address:"bc1qfqcg934wdtzszs4z3ukhjnvn3lxqqr27cujj9llrecvelvla3dlqj8qerf",
-      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFIAQAAAAAab1qeAAACGUlEQVR4nO1a0Y7DMAizT/v/X/Y9YNJU97JM6hp6VKqaLZZCEAFDoPDm8/MusJGNbGQj/wXyBQCMsUABzK/mmbvlrIJ8AQh9gaAoQB5RVM7cLmcVZOgTtE7DLAVQ/mvMVNnRTkgCIuLMQ3nav7X6E5Cv+cfwmuIYX7r685DWZx52COlDld70wtWfhwx9+mBTtFEO0zyOfJUdbaDP41xrvII4z5TZ0b1I+8sYEo5Hed4dlHS/nFWQRzwy5aRAWLPB7nnd6s9DcnBMjnc65RRDr3fLWQWZ+VFqkhIYfIn2pG2fq8hQHyFRIAUoGOgw3T3kLICc+LySyBORI/mJOFVmR3voM8KQXFsaFRIB7T+XkQRDd2SEH0WUEsBk+DvIWQapiEKI+hxFkGmemSrtIOf+yKzXyQVPArADxRGNup68iBRDlVRYYzIlqeufS0jzeY0vAMC1JYepzjdX+We4TNN5AJRpk6P+JnJWQTqoUxCJYKJwXOr8/QOkQoWkh3KOFF9uI2cZZNDM6f6NTKvt/OiT+hIAh6GJdboUet3qz0Oe7tzyetMFkvPFcZUdbcDnswtEo40hnWbzpUXkqT9k1JLgC+OYCC5aZUc76HMYoSBCkReFbbb/XEKe+hmcF1Ek3Mw0UvkyO9oLedx3OmPK9GgzOXdF/ukPcU/IQZvY9ZBlfU79Ich03s5z9DFV2dFG/PPrqzeykY1sZF3kL/r9+pqVFaxrAAAAAElFTkSuQmCC',
+      address:"DEMO-BTC-BITCOIN-NOT-FUNDABLE",
+      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
       minimum:"BTC 0.00003",
       arrival:"~22 minutes",
       withdraw:"~33 minutes",
@@ -4518,8 +4536,8 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"erc20",
       name:"Ethereum (ERC20)",
       icon:"◆",
-      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
-      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABrElEQVR4nO2ZwW7DMAxDH4f+/y9zB8mOnaFDD0OsAVIPSRMCIQRapiyZD+LrE1CjGtWoRj2KegEo7i2wLAPyfHqEV1XUC4icIMCKTNny9bQs+1P5QmCwMCNj8+kRXv8CJYQACasQr6oo5/LzLGk1eBVC5Xr0uOj6s9xUZX8qX6kmefmtGqvK/nmU1n5ImHQTYn1Rlf0hlJCQlHVrqC1fnONVEBX6SpWFV50Ki8LffnWNSA5RsIbnChvmab/Ksj/m79OkZpaijC3Sq8r+qJ+IdEULSRZ82Wd4lUYZIZlcipG5rvdvUYpW26OYGdLku/vHPYb/Wq8a++IsYlXZn/NfIElcNszhxNzrcYu5CU49bR1k6+sW4zA1zrrGphhvrsxVZX9wf8RhU/P8SwLbK+p5XmVRw65iT7UhzWayNvsnUcv5vTNpnt5CY9esyv5Qvq5JkIbpEsi4/f0t9vlQzjuwLxN2hldV1H0+FEeGypPpMSGqyv4wKlafQlY2uP3Er6iUmUNpuNfjPbb5UOyMc1bk7h9/xD4fGmdfJuZDra97bPOhR77YqEY1qlF/g/oGeSOvcvPzpKwAAAAASUVORK5CYII=',
+      address:"DEMO-ETH-ERC20-NOT-FUNDABLE",
+      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
       minimum:"ETH 0.00007",
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
@@ -4532,8 +4550,8 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"erc20",
       name:"Ethereum (ERC20)",
       icon:"🔷",
-      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
-      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABrElEQVR4nO2ZwW7DMAxDH4f+/y9zB8mOnaFDD0OsAVIPSRMCIQRapiyZD+LrE1CjGtWoRj2KegEo7i2wLAPyfHqEV1XUC4icIMCKTNny9bQs+1P5QmCwMCNj8+kRXv8CJYQACasQr6oo5/LzLGk1eBVC5Xr0uOj6s9xUZX8qX6kmefmtGqvK/nmU1n5ImHQTYn1Rlf0hlJCQlHVrqC1fnONVEBX6SpWFV50Ki8LffnWNSA5RsIbnChvmab/Ksj/m79OkZpaijC3Sq8r+qJ+IdEULSRZ82Wd4lUYZIZlcipG5rvdvUYpW26OYGdLku/vHPYb/Wq8a++IsYlXZn/NfIElcNszhxNzrcYu5CU49bR1k6+sW4zA1zrrGphhvrsxVZX9wf8RhU/P8SwLbK+p5XmVRw65iT7UhzWayNvsnUcv5vTNpnt5CY9esyv5Qvq5JkIbpEsi4/f0t9vlQzjuwLxN2hldV1H0+FEeGypPpMSGqyv4wKlafQlY2uP3Er6iUmUNpuNfjPbb5UOyMc1bk7h9/xD4fGmdfJuZDra97bPOhR77YqEY1qlF/g/oGeSOvcvPzpKwAAAAASUVORK5CYII=',
+      address:"DEMO-ASSET-6-NOT-FUNDABLE",
+      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
       minimum:"USDC 0.01",
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
