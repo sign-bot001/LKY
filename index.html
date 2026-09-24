@@ -1357,20 +1357,176 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
   .nav button.active:hover{color:#83f875!important}
 }
 
+
+/* ===== Reference-style login + clearer trade readiness ===== */
+.reference-login{
+  display:block!important;
+  padding:0!important;
+  background:linear-gradient(180deg,#a8ff9c 0,#dffff0 37%,#fff 67%)!important;
+  min-height:100dvh;
+}
+.reference-login-shell{
+  width:100%;
+  max-width:560px;
+  margin:0 auto;
+  min-height:100dvh;
+  padding:calc(34px + env(safe-area-inset-top)) 34px 42px;
+}
+.reference-login-head{
+  display:grid;grid-template-columns:58px 1fr 58px;align-items:center;
+  margin-bottom:105px;
+}
+.reference-login-head h1{
+  margin:0;text-align:center;font-size:28px;line-height:1;font-weight:760;color:#26332b;
+}
+.reference-back,.reference-globe{
+  border:0;background:transparent;color:#26332b;height:50px;font-size:36px;font-weight:500;
+}
+.reference-back{text-align:left}
+.reference-globe{
+  justify-self:end;width:50px;border-radius:15px;background:#2c3032;color:#87ff75;
+  font-size:24px;box-shadow:0 8px 20px rgba(24,35,27,.13);
+}
+.reference-login-form{width:100%;max-width:466px;margin:0 auto}
+.login-mode-switch{
+  width:68%;min-width:285px;margin:0 auto 70px;padding:3px;
+  display:grid;grid-template-columns:1fr 1fr;background:rgba(242,247,240,.82);border-radius:17px;
+}
+.login-mode-switch button{
+  height:50px;border:0;border-radius:15px;background:transparent;color:#171a18;font-size:19px;
+}
+.login-mode-switch button.active{background:#5bd844;color:#fff;box-shadow:0 5px 14px rgba(73,201,60,.18)}
+.reference-login-form>label,.reference-login-form #loginMailFields>label,.reference-login-form #loginPhoneFields>label{
+  display:block;margin:0 0 13px;color:#8d9590;font-size:16px;
+}
+.reference-input{
+  width:100%;height:65px;border:0!important;border-radius:18px!important;background:rgba(241,243,242,.91)!important;
+  padding:0 22px;font-size:19px;color:#202421;box-shadow:none!important;
+}
+.reference-input::placeholder{color:#c8cdca}
+#loginMailFields,#loginPhoneFields{margin-bottom:34px}
+.password-login-wrap{position:relative;margin-bottom:27px}
+.password-eye{
+  position:absolute;right:13px;top:10px;width:45px;height:45px;border:0;background:transparent;color:#919993;font-size:19px;
+}
+.phone-login-row{
+  position:relative;display:grid;grid-template-columns:auto 1fr;background:rgba(241,243,242,.91);border-radius:18px;
+}
+.phone-login-row .reference-input{background:transparent!important;border-radius:0 18px 18px 0!important;padding-left:16px}
+.country-picker-btn{
+  height:65px;padding:0 13px 0 17px;border:0;border-right:1px solid #d4d9d6;background:transparent;
+  display:flex;align-items:center;gap:7px;font-size:17px;color:#202421;white-space:nowrap;
+}
+.country-picker-btn strong{font-size:17px}.country-caret{font-size:14px;color:#929a94}
+.country-picker{
+  position:absolute;left:0;right:0;top:72px;z-index:1200;max-height:265px;overflow:auto;
+  background:#fff;border:1px solid #e1e8df;border-radius:17px;box-shadow:0 18px 45px rgba(28,47,31,.17);padding:7px;
+}
+.country-picker button{
+  width:100%;height:45px;border:0;background:#fff;border-radius:11px;display:grid;
+  grid-template-columns:32px 1fr auto;align-items:center;text-align:left;gap:8px;padding:0 10px;color:#222;
+}
+.country-picker button:active{background:#edf8ea}
+.remember-row{
+  display:flex!important;align-items:center;gap:12px!important;margin:0 0 32px!important;color:#89928c!important;font-size:16px!important;
+}
+.remember-row input{appearance:none;width:22px;height:22px;border:2px solid #bfc6c1;border-radius:7px;background:#fff}
+.remember-row input:checked{background:#5bd844;border-color:#5bd844;box-shadow:inset 0 0 0 5px #fff}
+.reference-submit{
+  width:100%;height:67px;border:0;border-radius:18px;background:#5bd844;color:#fff;font-size:21px;font-weight:800;
+  box-shadow:0 10px 22px rgba(70,194,58,.15);
+}
+.reference-login-links{display:flex;justify-content:space-between;gap:18px;margin-top:28px}
+.reference-login-links button,.download-app-login{
+  border:0;background:transparent;color:#50d43f;font-size:17px;font-weight:750;padding:4px 0;
+}
+.download-app-login{display:block;margin:42px auto 0;font-size:18px}
+.reference-login #signupForm{
+  width:100%;max-width:466px;margin:-70px auto 0;padding:24px;border-radius:25px;background:rgba(255,255,255,.92);
+  box-shadow:0 18px 45px rgba(30,70,35,.10);
+}
+.reference-login #signupForm .input{background:#f1f4f1;color:#222;border:1px solid #e1e8df}
+.reference-login #signupForm .primary{background:#5bd844}
+
+/* Trade buttons deliberately muted until a valid amount is entered. */
+.trade-actions button{
+  opacity:.48;
+  filter:saturate(.62);
+  transform:none;
+  transition:opacity .18s ease,filter .18s ease,box-shadow .18s ease,transform .16s ease;
+}
+.trade-actions button.trade-ready{
+  opacity:1;
+  filter:saturate(1.18);
+  cursor:pointer;
+}
+.trade-actions .trade-call.trade-ready{
+  background:linear-gradient(135deg,#70ed72,#3fd34d)!important;
+  box-shadow:0 10px 25px rgba(49,205,70,.28)!important;
+}
+.trade-actions .trade-put.trade-ready{
+  background:linear-gradient(135deg,#ff87aa,#ef5f8b)!important;
+  box-shadow:0 10px 25px rgba(234,88,133,.24)!important;
+}
+.trade-actions button.trade-ready:active{transform:scale(.98)}
+@media(max-width:390px){
+  .reference-login-shell{padding-left:24px;padding-right:24px}
+  .reference-login-head{margin-bottom:75px}
+  .login-mode-switch{margin-bottom:54px;width:72%;min-width:250px}
+}
+
 </style>
 </head>
 <body>
 
-<div id="authScreen" class="auth-screen">
-  <div class="auth-box">
-    <div class="brand">NexaTrade</div>
-    <div id="loginForm">
-      <h2 style="margin-top:24px">Connexion</h2>
-      <label>Email</label><input id="loginEmail" class="input" type="email">
-      <label>Mot de passe</label><input id="loginPassword" class="input" type="password">
-      <button class="primary" onclick="login()">Se connecter</button>
+<div id="authScreen" class="auth-screen reference-login">
+  <div class="reference-login-shell">
+    <div class="reference-login-head">
+      <button class="reference-back" type="button" onclick="showLogin()" aria-label="Retour">←</button>
+      <h1>log in</h1>
+      <button class="reference-globe" type="button" onclick="toggleLanguageMenu()" aria-label="Language">🌐</button>
+    </div>
+
+    <div id="loginForm" class="reference-login-form">
+      <div class="login-mode-switch">
+        <button id="loginMailTab" class="active" type="button" onclick="setLoginMode('mail')">mail</button>
+        <button id="loginPhoneTab" type="button" onclick="setLoginMode('phone')">phone</button>
+      </div>
+
+      <div id="loginMailFields">
+        <label>your mailbox</label>
+        <input id="loginEmail" class="reference-input" type="email" autocomplete="email" placeholder="mail">
+      </div>
+
+      <div id="loginPhoneFields" class="hidden">
+        <label>your phone number</label>
+        <div class="phone-login-row">
+          <button class="country-picker-btn" type="button" onclick="toggleCountryPicker()">
+            <span id="loginCountryFlag">🇨🇦</span>
+            <strong id="loginCountryDial">+1</strong>
+            <span class="country-caret">⌄</span>
+          </button>
+          <input id="loginPhone" class="reference-input phone-number-input" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="phone number">
+        </div>
+        <div id="countryPicker" class="country-picker hidden"></div>
+      </div>
+
+      <label>your password</label>
+      <div class="password-login-wrap">
+        <input id="loginPassword" class="reference-input" type="password" autocomplete="current-password" placeholder="password">
+        <button type="button" class="password-eye" onclick="toggleLoginPassword()">◉</button>
+      </div>
+
+      <label class="remember-row"><input id="rememberLogin" type="checkbox"> <span>remember my password</span></label>
+
+      <button class="reference-submit" type="button" onclick="login()">Submit</button>
       <div id="loginMessage" class="message"></div>
-      <div class="auth-switch">Pas encore de compte ? <span onclick="showSignup()">Créer un compte</span></div>
+
+      <div class="reference-login-links">
+        <button type="button" onclick="showSignup()">sign up now</button>
+        <button type="button" onclick="forgotPassword()">forget password</button>
+      </div>
+      <button class="download-app-login" type="button" onclick="installNexaTrade()">▦&nbsp; download app</button>
     </div>
 
     <div id="signupForm" class="hidden">
@@ -2528,10 +2684,116 @@ async function signup(){
   else showMessage("signupMessage","Compte créé. Vérifie obligatoirement ton email avant de pouvoir utiliser ton compte.","success");
 }
 
+
+const LOGIN_COUNTRIES=[
+  {name:"Canada",flag:"🇨🇦",dial:"+1",iso:"CA"},
+  {name:"Côte d’Ivoire",flag:"🇨🇮",dial:"+225",iso:"CI"},
+  {name:"France",flag:"🇫🇷",dial:"+33",iso:"FR"},
+  {name:"United States",flag:"🇺🇸",dial:"+1",iso:"US"},
+  {name:"United Kingdom",flag:"🇬🇧",dial:"+44",iso:"GB"},
+  {name:"Armenia",flag:"🇦🇲",dial:"+374",iso:"AM"},
+  {name:"Senegal",flag:"🇸🇳",dial:"+221",iso:"SN"},
+  {name:"Mali",flag:"🇲🇱",dial:"+223",iso:"ML"},
+  {name:"Guinea",flag:"🇬🇳",dial:"+224",iso:"GN"},
+  {name:"Cameroon",flag:"🇨🇲",dial:"+237",iso:"CM"},
+  {name:"Benin",flag:"🇧🇯",dial:"+229",iso:"BJ"},
+  {name:"Togo",flag:"🇹🇬",dial:"+228",iso:"TG"},
+  {name:"Morocco",flag:"🇲🇦",dial:"+212",iso:"MA"},
+  {name:"Algeria",flag:"🇩🇿",dial:"+213",iso:"DZ"},
+  {name:"Belgium",flag:"🇧🇪",dial:"+32",iso:"BE"},
+  {name:"Switzerland",flag:"🇨🇭",dial:"+41",iso:"CH"}
+];
+let loginMode="mail";
+let selectedLoginCountry=LOGIN_COUNTRIES[0];
+
+function setLoginMode(mode){
+  loginMode=mode==="phone"?"phone":"mail";
+  document.getElementById("loginMailTab")?.classList.toggle("active",loginMode==="mail");
+  document.getElementById("loginPhoneTab")?.classList.toggle("active",loginMode==="phone");
+  document.getElementById("loginMailFields")?.classList.toggle("hidden",loginMode!=="mail");
+  document.getElementById("loginPhoneFields")?.classList.toggle("hidden",loginMode!=="phone");
+  document.getElementById("countryPicker")?.classList.add("hidden");
+}
+function renderCountryPicker(){
+  const box=document.getElementById("countryPicker");
+  if(!box)return;
+  box.innerHTML=LOGIN_COUNTRIES.map((c,i)=>`<button type="button" onclick="selectLoginCountry(${i})"><span>${c.flag}</span><span>${c.name}</span><strong>${c.dial}</strong></button>`).join("");
+}
+function toggleCountryPicker(){
+  renderCountryPicker();
+  document.getElementById("countryPicker")?.classList.toggle("hidden");
+}
+function selectLoginCountry(i){
+  selectedLoginCountry=LOGIN_COUNTRIES[i]||LOGIN_COUNTRIES[0];
+  document.getElementById("loginCountryFlag").textContent=selectedLoginCountry.flag;
+  document.getElementById("loginCountryDial").textContent=selectedLoginCountry.dial;
+  document.getElementById("countryPicker")?.classList.add("hidden");
+}
+function normalizeLoginPhone(){
+  const raw=String(document.getElementById("loginPhone")?.value||"").replace(/[^\d]/g,"").replace(/^0+/,"");
+  return selectedLoginCountry.dial+raw;
+}
+function toggleLoginPassword(){
+  const el=document.getElementById("loginPassword");
+  if(el)el.type=el.type==="password"?"text":"password";
+}
+async function forgotPassword(){
+  clearMessage("loginMessage");
+  if(loginMode==="phone"){
+    return showMessage("loginMessage","Pour réinitialiser un compte téléphone, utilise le code SMS de récupération configuré dans Supabase Auth.","success");
+  }
+  const email=String(document.getElementById("loginEmail")?.value||"").trim();
+  if(!email)return showMessage("loginMessage","Entre d’abord ton adresse email.","error");
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error)return showMessage("loginMessage",error.message,"error");
+  showMessage("loginMessage","Email de réinitialisation envoyé.","success");
+}
+function restoreRememberedLogin(){
+  const saved=localStorage.getItem("nexaRememberLogin");
+  if(!saved)return;
+  try{
+    const v=JSON.parse(saved);
+    if(v.mode==="phone"){
+      setLoginMode("phone");
+      const c=LOGIN_COUNTRIES.find(x=>x.iso===v.country);
+      if(c)selectLoginCountry(LOGIN_COUNTRIES.indexOf(c));
+      const phone=document.getElementById("loginPhone"); if(phone)phone.value=v.identifier||"";
+    }else{
+      setLoginMode("mail");
+      const email=document.getElementById("loginEmail"); if(email)email.value=v.identifier||"";
+    }
+    const remember=document.getElementById("rememberLogin"); if(remember)remember.checked=true;
+  }catch(e){}
+}
+setTimeout(restoreRememberedLogin,0);
+
 async function login(){
   clearMessage("loginMessage");
-  const {data,error}=await sb.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});
+  const password=String(document.getElementById("loginPassword")?.value||"");
+  if(!password)return showMessage("loginMessage","Entre ton mot de passe.","error");
+
+  let credentials,rememberIdentifier="";
+  if(loginMode==="phone"){
+    const national=String(document.getElementById("loginPhone")?.value||"").trim();
+    if(!national)return showMessage("loginMessage","Entre ton numéro de téléphone.","error");
+    credentials={phone:normalizeLoginPhone(),password};
+    rememberIdentifier=national;
+  }else{
+    const email=String(document.getElementById("loginEmail")?.value||"").trim();
+    if(!email)return showMessage("loginMessage","Entre ton adresse email.","error");
+    credentials={email,password};
+    rememberIdentifier=email;
+  }
+
+  const {data,error}=await sb.auth.signInWithPassword(credentials);
   if(error)return showMessage("loginMessage","Connexion impossible : "+error.message,"error");
+
+  if(document.getElementById("rememberLogin")?.checked){
+    localStorage.setItem("nexaRememberLogin",JSON.stringify({
+      mode:loginMode,identifier:rememberIdentifier,country:selectedLoginCountry.iso
+    }));
+  }else localStorage.removeItem("nexaRememberLogin");
+
   await enterApp(data.user);
 }
 
@@ -2631,7 +2893,20 @@ function showPage(pageId,button){
   }
 }
 
-function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2)}
+
+function updateTradeActionState(){
+  const amount=Number(document.getElementById("tradeAmount")?.value||0);
+  const available=Number(profile?.balance||0);
+  const ready=Number.isFinite(amount)&&amount>0&&amount<=available&&!!currentUser;
+  document.querySelectorAll(".trade-actions button").forEach(btn=>{
+    btn.classList.toggle("trade-ready",ready);
+    btn.setAttribute("aria-disabled",ready?"false":"true");
+  });
+}
+document.addEventListener("input",e=>{
+  if(e.target?.id==="tradeAmount")updateTradeActionState();
+});
+function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2);updateTradeActionState()}
 let placingDemoTrade=false;
 async function placeDemoTrade(direction){
   if(placingDemoTrade)return;
