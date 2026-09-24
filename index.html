@@ -1475,6 +1475,362 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
   .login-mode-switch{margin-bottom:54px;width:72%;min-width:250px}
 }
 
+
+/* ===== LOGIN-FIRST ACCESS GATE ===== */
+.reference-login.hidden{display:none!important}
+#app.hidden{display:none!important}
+body.login-gate-active{overflow:hidden}
+
+
+/* =========================================================
+   DESKTOP / COMPUTER EDITION
+   Same application and features; layout changes automatically
+   at 900px and above.
+   ========================================================= */
+@media (min-width:900px){
+  html,body{
+    background:#edf3ea!important;
+    min-width:900px;
+  }
+
+  /* Desktop login */
+  .reference-login{
+    min-height:100vh!important;
+    padding:24px!important;
+    display:grid!important;
+    place-items:center;
+    background:
+      radial-gradient(circle at 18% 16%,rgba(123,255,111,.28),transparent 30%),
+      #edf3ea!important;
+  }
+  .reference-login.hidden{display:none!important}
+  .reference-login-shell{
+    width:min(1280px,calc(100vw - 48px));
+    max-width:1280px;
+    min-height:min(800px,calc(100vh - 48px));
+    margin:0;
+    padding:0;
+    display:grid;
+    grid-template-columns:minmax(420px,1.05fr) minmax(500px,.95fr);
+    grid-template-rows:105px 1fr;
+    border-radius:34px;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg,#8ff681 0%,#caffc2 47%,#ffffff 47%,#ffffff 100%);
+    box-shadow:0 28px 85px rgba(38,69,42,.16);
+    border:1px solid rgba(255,255,255,.75);
+    position:relative;
+  }
+  .reference-login-shell:before{
+    content:"NexaTrade\A\A Simple markets. Clear access.";
+    white-space:pre;
+    grid-column:1;
+    grid-row:1 / 3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:left;
+    padding:70px;
+    color:#243027;
+    font-size:22px;
+    line-height:1.45;
+    font-weight:650;
+    letter-spacing:-.3px;
+  }
+  .reference-login-shell:after{
+    content:"N";
+    position:absolute;
+    left:66px;
+    top:62px;
+    width:58px;
+    height:58px;
+    display:grid;
+    place-items:center;
+    border-radius:17px;
+    background:#2e3231;
+    color:#7cff71;
+    font-size:27px;
+    font-weight:900;
+    box-shadow:0 10px 28px rgba(31,38,33,.15);
+  }
+  .reference-login-head{
+    grid-column:2;
+    grid-row:1;
+    margin:0;
+    padding:34px 48px 0;
+  }
+  .reference-login-head h1{
+    font-size:27px;
+  }
+  .reference-login-form{
+    grid-column:2;
+    grid-row:2;
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:35px 58px 55px;
+    align-self:start;
+  }
+  .login-mode-switch{
+    width:310px;
+    min-width:0;
+    margin:0 auto 46px;
+  }
+  #loginMailFields,#loginPhoneFields{margin-bottom:27px}
+  .reference-input{height:59px}
+  .reference-submit{height:60px}
+  .reference-login-links{margin-top:24px}
+  .download-app-login{margin-top:32px}
+  .reference-login #signupForm{
+    grid-column:2;
+    grid-row:2;
+    width:auto;
+    max-width:none;
+    margin:14px 54px 48px!important;
+    align-self:start;
+    max-height:620px;
+    overflow:auto;
+  }
+
+  /* Full desktop app shell */
+  .app,
+  .app:has(#home.active),
+  .app:has(#quotes.active),
+  .app:has(#trade.active),
+  .app:has(#assets.active){
+    width:100%!important;
+    max-width:none!important;
+    min-height:100vh!important;
+    margin:0!important;
+    padding:0 0 48px 232px!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:#f6fff2!important;
+    overflow:visible!important;
+  }
+
+  /* Desktop sidebar navigation */
+  .nav,
+  .app:has(#home.active) .nav,
+  .app:has(#quotes.active) .nav,
+  .app:has(#trade.active) .nav,
+  .app:has(#assets.active) .nav{
+    position:fixed!important;
+    left:0!important;
+    top:0!important;
+    bottom:0!important;
+    transform:none!important;
+    width:216px!important;
+    max-width:none!important;
+    height:100vh!important;
+    margin:0!important;
+    padding:104px 14px 24px!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-auto-rows:64px;
+    align-content:start;
+    gap:8px;
+    border-radius:0!important;
+    border:0!important;
+    border-right:1px solid rgba(255,255,255,.08)!important;
+    background:linear-gradient(180deg,#292c2f,#242729)!important;
+    box-shadow:10px 0 35px rgba(35,42,37,.08)!important;
+    z-index:900;
+  }
+  .nav:before{
+    content:"NexaTrade";
+    position:absolute;
+    left:24px;
+    top:33px;
+    color:#fff;
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:-.7px;
+  }
+  .nav:after{
+    content:"";
+    position:absolute;
+    left:24px;
+    top:68px;
+    width:34px;
+    height:4px;
+    border-radius:8px;
+    background:#70ed67;
+  }
+  .nav:has(#adminNav:not(.hidden)){grid-template-columns:1fr!important}
+  .nav button{
+    min-height:64px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:13px;
+    padding:0 15px!important;
+    border-radius:15px!important;
+    font-size:13px!important;
+    text-align:left;
+  }
+  .nav .nav-icon{
+    width:36px!important;
+    height:36px!important;
+    margin:0!important;
+    flex:0 0 36px;
+  }
+  .nav .ref-nav-svg{
+    width:30px!important;
+    height:30px!important;
+  }
+  .nav button.active{
+    background:rgba(118,246,107,.10)!important;
+  }
+  .nav button.active:after{
+    left:auto!important;
+    right:8px!important;
+    bottom:50%!important;
+    transform:translateY(50%)!important;
+    width:5px!important;
+    height:26px!important;
+    border-radius:8px!important;
+  }
+
+  /* Common desktop content width */
+  #home,#quotes,#trade,#assets,#admin{
+    width:100%;
+    max-width:1180px!important;
+    margin:0 auto!important;
+    min-height:100vh;
+  }
+
+  /* Home */
+  #home{
+    padding:42px 48px 70px!important;
+  }
+  .home-top{margin-bottom:28px}
+  .currency-banner{max-width:100%}
+  .hot-panel{padding:26px 24px 27px;margin-bottom:38px}
+  .hot-cards{
+    grid-template-columns:repeat(3,1fr)!important;
+    gap:18px;
+  }
+  .hot-card:nth-child(3){grid-column:auto!important}
+  .hot-card{min-height:210px}
+  .crypto-list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  .crypto-card{margin:0!important}
+
+  /* Quotes */
+  #quotes{
+    padding:42px 48px 80px!important;
+  }
+  .quotes-top{margin-bottom:28px}
+  .quotes-list{
+    background:#fff;
+    border:1px solid #e1e9df;
+    border-radius:25px;
+    padding:6px 22px;
+    box-shadow:0 10px 28px rgba(27,50,31,.06);
+  }
+  .quote-row{min-height:82px}
+
+  /* Trade */
+  #trade{
+    padding:40px 42px 80px!important;
+    background:#fff!important;
+  }
+  .trade-topbar{margin:0 0 22px!important}
+  .trade-market{
+    padding:22px 8px 0!important;
+  }
+  .trade-chart-wrap{
+    min-height:390px;
+    border:1px solid #e5ebe3;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 8px 24px rgba(33,50,35,.05);
+  }
+  .trade-canvas{height:350px!important}
+  .trade-controls{
+    max-width:860px;
+    margin:24px auto 0;
+    padding:25px!important;
+    border:1px solid #e2e9e0;
+    border-radius:24px;
+    box-shadow:0 10px 30px rgba(32,52,35,.06);
+  }
+  .trade-actions{
+    gap:18px!important;
+  }
+  .trade-actions button{
+    min-height:70px;
+    font-size:20px!important;
+  }
+  .trade-order-tabs{
+    max-width:900px;
+    margin:32px auto 0!important;
+  }
+  .trade-history-panel{
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  /* Assets */
+  #assets{
+    padding:48px 48px 80px!important;
+  }
+  .assets-head{margin:0 0 28px!important}
+  .assets-valuation-card{
+    margin:0 0 30px!important;
+  }
+  .assets-actions-card{
+    margin:0 0 38px!important;
+  }
+  .assets-account-title,
+  .assets-account-list{
+    margin-left:0!important;
+    margin-right:0!important;
+  }
+  .assets-account-list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:15px;
+  }
+  .assets-account-card{margin:0!important}
+
+  /* Admin */
+  #admin{
+    padding:42px 38px 80px!important;
+  }
+  #admin .card{margin-left:0;margin-right:0}
+  #admin .stats-grid{
+    grid-template-columns:repeat(4,1fr)!important;
+  }
+  #admin .admin-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  /* Top application header on desktop pages where it is visible */
+  .app>.header{
+    margin:0 auto;
+    max-width:1180px;
+    padding:24px 38px 0;
+    background:transparent;
+  }
+
+  /* Support bubble */
+  .ai-fab{
+    right:28px!important;
+    bottom:28px!important;
+  }
+  .ai-panel{
+    right:28px!important;
+    bottom:94px!important;
+    width:390px!important;
+    max-height:620px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2801,11 +3157,15 @@ async function logout(){
   await sb.auth.signOut();
   currentUser=null;profile=null;trades=[];isCurrentUserAdmin=false;
   app.classList.add("hidden");authScreen.classList.remove("hidden");
+  document.body.classList.add("login-gate-active");
+  showLogin();
+  window.scrollTo({top:0,behavior:"instant"});
 }
 
 async function enterApp(user){
-  currentUser=user;userEmail.textContent=user.email||"Utilisateur";
+  currentUser=user;userEmail.textContent=user.email||user.phone||"Utilisateur";
   authScreen.classList.add("hidden");app.classList.remove("hidden");
+  document.body.classList.remove("login-gate-active");
   await checkAdmin();
   await settleExpiredTrades(false);
   await refreshEverything();
@@ -5346,13 +5706,39 @@ function clearNexaCache(){
 }
 
 
-async function checkSession(){
-  const {data:{session}}=await sb.auth.getSession();
-  if(session?.user)await enterApp(session.user);
+async function showLoginGateOnBoot(){
+  // Every new visit starts at the login screen.
+  // A previous browser session is cleared locally so the account cannot
+  // be displayed before the user authenticates again.
+  app.classList.add("hidden");
+  authScreen.classList.remove("hidden");
+  document.body.classList.add("login-gate-active");
+
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(session){
+      await sb.auth.signOut({scope:"local"});
+    }
+  }catch(err){
+    console.warn("Login gate initialization:",err);
+  }
+
+  currentUser=null;
+  profile=null;
+  trades=[];
+  isCurrentUserAdmin=false;
 }
-sb.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")currentUser=null});
+
+sb.auth.onAuthStateChange((event)=>{
+  if(event==="SIGNED_OUT"){
+    currentUser=null;
+    app.classList.add("hidden");
+    authScreen.classList.remove("hidden");
+    document.body.classList.add("login-gate-active");
+  }
+});
 if(document.readyState!=="loading") setLanguage(localStorage.getItem("nexaLanguage")||"en");
-checkSession();
+showLoginGateOnBoot();
 </script>
 </body>
 </html>
