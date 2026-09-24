@@ -766,6 +766,7 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 .deposit-info-row strong{font-weight:800}
 .deposit-info-row span{color:#686868;text-align:right}
 .deposit-warning{background:#f6f6f6;border:1px solid #dedede;border-radius:15px;padding:15px 17px;line-height:1.45;margin:18px 0 8px;font-size:14px}
+#depositWarning:empty{display:none}
 .deposit-network-sheet{position:fixed;z-index:1000;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .deposit-network-sheet-card{width:min(560px,100%);background:#fff;border-radius:28px 28px 0 0;padding:20px 22px 38px}
 .deposit-network-sheet-title{font-size:24px;font-weight:900;margin:8px 0 15px}
@@ -6486,7 +6487,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***SYWa",
-      warning:" privé — adresse fictive USDT/TRON fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+      warning:""
     },
     {
       id:"ethereum",
@@ -6498,7 +6499,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive USDT/Ethereum fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+      warning:""
     },
     {
       id:"solana",
@@ -6510,7 +6511,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~1 minute",
       contract:"***JU4qt",
-      warning:" privé — adresse fictive USDT/Solana fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+      warning:""
     }
   ],
   BTC:[
@@ -6524,7 +6525,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~10 minutes",
       withdraw:"~20 minutes",
       contract:"—",
-      warning:" privé — adresse fictive BTC/Taproot fournie pour cette simulation."
+      warning:""
     },
     {
       id:"legacy",
@@ -6536,7 +6537,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~10 minutes",
       withdraw:"~20 minutes",
       contract:"—",
-      warning:" privé — adresse fictive BTC/Héritage fournie pour cette simulation."
+      warning:""
     }
   ],
   ETH:[
@@ -6550,7 +6551,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive ETH/Ethereum fournie pour cette simulation."
+      warning:""
     },
     {
       id:"xlayer",
@@ -6562,7 +6563,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive ETH/X Layer fournie pour cette simulation."
+      warning:""
     }
   ],
   SOL:[
@@ -6576,7 +6577,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~1 minute",
       contract:"—",
-      warning:" privé — adresse fictive SOL/Solana fournie pour cette simulation."
+      warning:""
     },
     {
       id:"xlayer",
@@ -6588,7 +6589,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive SOL/X Layer fournie pour cette simulation."
+      warning:""
     }
   ],
   USDC:[
@@ -6602,7 +6603,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***831ec7",
-      warning:" — adresse fictive reproduite pour l’interface. N’envoyez aucun USDC réel."
+      warning:""
     }
   ]
 };
