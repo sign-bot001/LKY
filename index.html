@@ -2276,15 +2276,374 @@ body{
   cursor:pointer;
 }
 
+
+/* ===== MY ASSETS — SLIM BALANCE CARD ===== */
+@media (max-width:600px){
+  #assets .assets-valuation-card{
+    padding:18px 28px 19px!important;
+    border-radius:28px!important;
+    margin-bottom:38px!important;
+  }
+
+  #assets .assets-valuation-top{
+    font-size:17px!important;
+    line-height:1.15!important;
+  }
+
+  #assets .assets-eye-btn{
+    width:23px!important;
+    height:23px!important;
+  }
+
+  #assets .assets-eye-btn svg{
+    width:21px!important;
+    height:21px!important;
+  }
+
+  #assets .assets-balance{
+    margin-top:12px!important;
+    font-size:44px!important;
+    line-height:1!important;
+  }
+
+  #assets .assets-subline{
+    margin-top:11px!important;
+    font-size:16px!important;
+    line-height:1.15!important;
+    gap:16px!important;
+    flex-wrap:nowrap!important;
+  }
+}
+
+
+/* ===== PROFESSIONAL PREVIEW LOADER ===== */
+.page-loader{
+  position:fixed!important;
+  inset:0!important;
+  z-index:5000!important;
+  display:block!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  color:#171a1f!important;
+}
+
+.page-loader.hidden{
+  display:none!important;
+}
+
+.professional-loader-preview{
+  position:absolute;
+  inset:0;
+  width:min(560px,100%);
+  margin:0 auto;
+  padding:72px 22px 118px;
+  background:#fff;
+  overflow:hidden;
+}
+
+.loader-preview-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:32px;
+}
+
+.loader-preview-title{
+  width:180px;
+  height:43px;
+  border-radius:14px;
+  background:#ecefeb;
+}
+
+.loader-preview-menu{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  background:#303236;
+}
+
+.loader-preview-balance{
+  height:205px;
+  border-radius:30px;
+  background:#303236;
+  padding:28px 30px;
+  box-shadow:0 18px 46px rgba(37,40,38,.12);
+}
+
+.loader-preview-line{
+  height:16px;
+  border-radius:999px;
+  background:rgba(255,255,255,.18);
+}
+
+.loader-preview-line.short{width:42%}
+.loader-preview-line.medium{width:66%}
+
+.loader-preview-amount{
+  width:58%;
+  height:48px;
+  border-radius:13px;
+  background:#6cf26b;
+  opacity:.75;
+  margin:28px 0 26px;
+}
+
+.loader-preview-actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin:34px 0;
+  padding:20px 15px;
+  border-radius:27px;
+  background:#f2f6f0;
+}
+
+.loader-preview-actions span{
+  width:58px;
+  height:58px;
+  max-width:100%;
+  margin:auto;
+  border-radius:50%;
+  background:#dfe7dd;
+}
+
+.loader-preview-card{
+  border:1px solid #edf0eb;
+  border-radius:28px;
+  padding:25px;
+  background:#fff;
+  box-shadow:0 14px 40px rgba(31,34,32,.06);
+}
+
+.loader-preview-card .loader-preview-line{
+  background:#e9ede8;
+  margin-bottom:22px;
+}
+
+.loader-preview-row{
+  height:58px;
+  border-radius:17px;
+  background:#f2f4f1;
+  margin-top:12px;
+}
+
+.loader-preview-nav{
+  position:absolute;
+  left:16px;
+  right:16px;
+  bottom:18px;
+  height:88px;
+  border-radius:30px;
+  background:#303236;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  align-items:center;
+  padding:0 20px;
+}
+
+.loader-preview-nav span{
+  width:31px;
+  height:31px;
+  border-radius:10px;
+  margin:auto;
+  background:rgba(255,255,255,.26);
+}
+
+.professional-loader-preview:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,.22);
+  backdrop-filter:blur(2px);
+  -webkit-backdrop-filter:blur(2px);
+}
+
+.professional-loader-center{
+  position:absolute;
+  z-index:2;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(235px,calc(100% - 48px));
+  padding:22px 22px 20px;
+  border-radius:27px;
+  text-align:center;
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(223,228,222,.95);
+  box-shadow:0 22px 70px rgba(22,28,23,.18);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+
+.professional-loader-center strong{
+  display:block;
+  margin-top:12px;
+  font-size:17px;
+  letter-spacing:-.15px;
+}
+
+.professional-spinner,
+.destination-spinner{
+  position:relative;
+  width:52px;
+  height:52px;
+  margin:0 auto;
+  border-radius:50%;
+  border:4px solid #e6eae5;
+  border-top-color:#65e65c;
+  animation:nexaProfessionalSpin .82s linear infinite;
+}
+
+.professional-spinner span,
+.destination-spinner span{
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  border:3px solid transparent;
+  border-bottom-color:#303236;
+  animation:nexaProfessionalSpinReverse 1.15s linear infinite;
+}
+
+.page-loader-text{
+  margin-top:5px;
+  color:#8a918d;
+  font-size:12px;
+  line-height:1.35;
+}
+
+@keyframes nexaProfessionalSpin{
+  to{transform:rotate(360deg)}
+}
+@keyframes nexaProfessionalSpinReverse{
+  to{transform:rotate(-360deg)}
+}
+
+/* The real target screen stays visible behind this loader. */
+.destination-loader{
+  position:fixed;
+  inset:0;
+  z-index:4850;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(255,255,255,.19);
+  backdrop-filter:blur(1.7px) saturate(.96);
+  -webkit-backdrop-filter:blur(1.7px) saturate(.96);
+  opacity:1;
+  transition:opacity .18s ease;
+}
+
+.destination-loader.hidden{
+  display:none!important;
+}
+
+.destination-loader.leaving{
+  opacity:0;
+  pointer-events:none;
+}
+
+.destination-loader-center{
+  width:min(220px,calc(100% - 46px));
+  padding:21px 20px 19px;
+  border-radius:26px;
+  text-align:center;
+  background:rgba(255,255,255,.93);
+  border:1px solid rgba(226,231,225,.95);
+  box-shadow:0 20px 65px rgba(23,27,24,.17);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+.destination-loader-center strong{
+  display:block;
+  margin-top:12px;
+  font-size:16px;
+  color:#222724;
+}
+
+.destination-loader-center small{
+  display:block;
+  margin-top:4px;
+  font-size:11px;
+  color:#929994;
+}
+
+.destination-spinner{
+  width:48px;
+  height:48px;
+}
+
+/* A soft shimmer on the page while the destination settles. */
+.app.nexa-page-loading .page.active{
+  animation:nexaPagePreviewIn .3s ease both;
+}
+
+@keyframes nexaPagePreviewIn{
+  from{opacity:.76;transform:translateY(3px)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:380px){
+  .professional-loader-preview{
+    padding-left:16px;
+    padding-right:16px;
+  }
+  .loader-preview-balance{height:190px}
+  .loader-preview-title{width:155px}
+}
+
 </style>
 </head>
 <body>
 
 <div id="pageLoader" class="page-loader" role="status" aria-live="polite">
-  <div class="page-loader-card">
-    <div class="page-loader-logo">NexaTrade</div>
-    <div class="page-loader-spinner" aria-hidden="true"></div>
-    <div id="pageLoaderText" class="page-loader-text">Chargement sécurisé…</div>
+  <div class="professional-loader-preview" aria-hidden="true">
+    <div class="loader-preview-header">
+      <div class="loader-preview-title"></div>
+      <div class="loader-preview-menu"></div>
+    </div>
+
+    <div class="loader-preview-balance">
+      <div class="loader-preview-line short"></div>
+      <div class="loader-preview-amount"></div>
+      <div class="loader-preview-line medium"></div>
+    </div>
+
+    <div class="loader-preview-actions">
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="loader-preview-card">
+      <div class="loader-preview-line medium"></div>
+      <div class="loader-preview-row"></div>
+      <div class="loader-preview-row"></div>
+      <div class="loader-preview-row"></div>
+    </div>
+
+    <div class="loader-preview-nav">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="professional-loader-center">
+    <div class="professional-spinner" aria-hidden="true">
+      <span></span>
+    </div>
+    <strong>Chargement</strong>
+    <div id="pageLoaderText" class="page-loader-text">Préparation de votre espace…</div>
+  </div>
+</div>
+</div>
+
+
+<div id="destinationLoader" class="destination-loader hidden" role="status" aria-live="polite">
+  <div class="destination-loader-center">
+    <div class="destination-spinner" aria-hidden="true">
+      <span></span>
+    </div>
+    <strong id="destinationLoaderTitle">Chargement</strong>
+    <small id="destinationLoaderText">Préparation de la page…</small>
   </div>
 </div>
 
@@ -4075,6 +4434,11 @@ async function enterApp(user){
   await settleExpiredTrades(false);
   await refreshEverything();
   hidePageLoader();
+  const firstPage=document.querySelector(".page.active")?.id||"home";
+  const firstStarted=performance.now();
+  const firstToken=beginDestinationLoader(firstPage);
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  await finishDestinationLoader(firstToken,firstStarted,430);
 }
 
 async function checkAdmin(){
@@ -4260,18 +4624,101 @@ function filterQuotes(){
   });
 }
 
-function showPage(pageId,button){
+
+let nexaDestinationLoadToken=0;
+
+function destinationPageName(pageId){
+  return ({
+    home:"Accueil",
+    quotes:"Cours",
+    trade:"Trading",
+    assets:"Mes actifs",
+    admin:"Administration"
+  })[pageId]||"Page";
+}
+
+function beginDestinationLoader(pageId){
+  const overlay=document.getElementById("destinationLoader");
+  if(!overlay)return 0;
+
+  const token=++nexaDestinationLoadToken;
+  const title=document.getElementById("destinationLoaderTitle");
+  const subtitle=document.getElementById("destinationLoaderText");
+
+  if(title)title.textContent=destinationPageName(pageId);
+  if(subtitle)subtitle.textContent="Chargement de la page…";
+
+  overlay.classList.remove("hidden","leaving");
+  document.getElementById("app")?.classList.add("nexa-page-loading");
+  return token;
+}
+
+async function finishDestinationLoader(token,startedAt,minDuration=520){
+  const elapsed=performance.now()-startedAt;
+  if(elapsed<minDuration){
+    await new Promise(resolve=>setTimeout(resolve,minDuration-elapsed));
+  }
+
+  if(token!==nexaDestinationLoadToken)return;
+
+  const overlay=document.getElementById("destinationLoader");
+  document.getElementById("app")?.classList.remove("nexa-page-loading");
+  if(!overlay)return;
+
+  overlay.classList.add("leaving");
+  setTimeout(()=>{
+    if(token===nexaDestinationLoadToken){
+      overlay.classList.add("hidden");
+      overlay.classList.remove("leaving");
+    }
+  },180);
+}
+
+
+async function showPage(pageId,button){
+  const target=document.getElementById(pageId);
+  if(!target)return;
+
+  const current=document.querySelector(".page.active");
+  const samePage=current?.id===pageId;
+
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(pageId).classList.add("active");
-  if(button){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));button.classList.add("active")}
-  if(pageId==="admin"&&isCurrentUserAdmin) loadAdminAll();
+  target.classList.add("active");
+
+  if(button){
+    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+    button.classList.add("active");
+  }
+
+  // Do not flash a loader when the user taps the tab already open.
+  if(samePage){
+    if(pageId==="admin"&&isCurrentUserAdmin)await loadAdminAll();
+    return;
+  }
+
+  const startedAt=performance.now();
+  const token=beginDestinationLoader(pageId);
+  const pending=[];
+
+  if(pageId==="admin"&&isCurrentUserAdmin){
+    pending.push(loadAdminAll());
+  }
+
   if(pageId==="home"||pageId==="quotes"||pageId==="trade"){
     Object.keys(LIVE_MARKET).forEach(symbol=>{
       updateHomeFromMarket(symbol);
       updateQuotesFromMarket(symbol);
     });
     updateTradeFromMarket();
-    refreshLiveMarket();
+    pending.push(refreshLiveMarket());
+  }
+
+  try{
+    if(pending.length)await Promise.allSettled(pending);
+    // Give the browser one frame to paint the actual destination behind the loader.
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  }finally{
+    await finishDestinationLoader(token,startedAt,520);
   }
 }
 
@@ -4335,7 +4782,7 @@ async function placeTrade(direction){
   placingTrade=true;
   document.querySelectorAll(".trade-actions button").forEach(b=>b.classList.add("trade-busy"));
   try{
-    const {data,error}=await sb.rpc("open__trade",{
+    const {data,error}=await sb.rpc("open_demo_trade",{
       p_direction:dir,
       p_amount:amount,
       p_duration_seconds:duration,
@@ -4344,16 +4791,51 @@ async function placeTrade(direction){
     if(error)throw error;
 
     const trade=Array.isArray(data)?data[0]:data;
+
+    if(trade?.id!=null){
+      directTradeDurationCache.set(String(trade.id),duration);
+
+      // Immediate UI feedback: the position appears as soon as Supabase accepts it.
+      const nowIso=new Date().toISOString();
+      const immediateTrade={
+        ...trade,
+        status:trade.status||"PENDING",
+        symbol:trade.symbol||"BTCUSDT",
+        direction:trade.direction||dir,
+        amount:Number(trade.amount??amount),
+        open_price:Number(trade.open_price??openPrice),
+        opened_at:trade.opened_at||nowIso,
+        settle_at:trade.settle_at||new Date(Date.now()+duration*1000).toISOString(),
+        duration_seconds:Number(trade.duration_seconds||duration),
+        code:trade.code||"DIRECT"
+      };
+
+      const index=trades.findIndex(x=>String(x.id)===String(immediateTrade.id));
+      if(index>=0)trades[index]=immediateTrade;
+      else trades.unshift(immediateTrade);
+      renderPositions();
+      updateCountdowns();
+    }
+
     document.getElementById("tradeAmount").value="0";
     setTradeChartDirection(dir);
-    showMessage("tradeMessage",`${dir}  ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
+    showMessage("tradeMessage",`${dir} ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
+
     await refreshEverything();
+
+    const refreshed=trades.find(x=>trade?.id!=null&&String(x.id)===String(trade.id));
+    if(refreshed?.id!=null){
+      directTradeDurationCache.set(String(refreshed.id),duration);
+      refreshed.duration_seconds=Number(refreshed.duration_seconds||duration);
+      renderPositions();
+    }
+
     const deliveryTab=document.querySelector('.trade-order-tab[onclick*="delivery"]');
     if(deliveryTab)showTradeOrderTab("delivery",deliveryTab);
   }catch(err){
     const message=String(err?.message||err||"Impossible d’ouvrir la position .");
-    if(message.includes("open__trade")){
-      showMessage("tradeMessage","Le moteur de trading direct n’est pas encore installé dans Supabase. Exécute le fichier SQL de migration fourni.","error");
+    if(message.includes("open_demo_trade")){
+      showMessage("tradeMessage","Le moteur de trading Supabase n’est pas disponible. Vérifie que les fonctions SQL de trading sont bien déployées.","error");
     }else{
       showMessage("tradeMessage",message,"error");
     }
@@ -4807,7 +5289,7 @@ async function recognizeFollowCode(){
   if(code.length!==6)return alert("Le code doit contenir exactement 6 caractères.");
   if(!btcPrice||btcPrice<=0)return alert("Le prix BTC  n’est pas disponible.");
 
-  const {data,error}=await sb.rpc("use__code",{p_code:code,p_open_price:btcPrice});
+  const {data,error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
   if(error)return alert(error.message);
 
   if(input)input.value="";
@@ -5055,22 +5537,69 @@ function updateProfessionalPortfolio(){
   setTradeRiskPercent(tradeRiskPercent);
 }
 
+
+const directTradeDurationCache=new Map();
+
+function normalizedTradeTiming(t){
+  const rawStart=new Date(t?.opened_at||t?.created_at||Date.now()).getTime();
+  const start=Number.isFinite(rawStart)?rawStart:Date.now();
+
+  let duration=Number(
+    t?.duration_seconds ??
+    t?.duration ??
+    directTradeDurationCache.get(String(t?.id)) ??
+    0
+  );
+
+  const rawSettle=new Date(t?.settle_at||0).getTime();
+
+  if(!Number.isFinite(duration) || duration<=0){
+    if(Number.isFinite(rawSettle) && rawSettle>start){
+      duration=Math.max(1,Math.round((rawSettle-start)/1000));
+    }else{
+      duration=60;
+    }
+  }
+
+  // For direct positions, the selected duration is the source of truth
+  // whenever the backend did not return a valid settlement timestamp.
+  let settle=rawSettle;
+  if(!Number.isFinite(settle) || settle<=start){
+    settle=start+(duration*1000);
+  }
+
+  return {start,settle,duration};
+}
+
+function positionCountdownLabel(ms){
+  const seconds=Math.max(0,Math.ceil(ms/1000));
+  return formatTradeCountdown(seconds);
+}
+
+
 function activePositionHTML(t){
+  const timing=normalizedTradeTiming(t);
+  const now=Date.now();
+  const waiting=now<timing.start;
+  const countdown=waiting
+    ? "Starts in "+positionCountdownLabel(timing.start-now)
+    : positionCountdownLabel(timing.settle-now);
+
   return `<div class="card position" data-trade-id="${t.id}">
     <div class="position-header">
-      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${t.code==="DIRECT"?"Direct ":esc(t.code||"Direct ")}</div></div>
+      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${t.code==="DIRECT"?"Direct":esc(t.code||"Direct")}</div></div>
       <div class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</div>
     </div>
-    <div class="countdown" id="countdown-${t.id}">${Date.now()<new Date(t.opened_at).getTime()?"Starts in "+Math.max(0,Math.ceil((new Date(t.opened_at)-Date.now())/1000))+"S":Math.max(0,Math.ceil((new Date(t.settle_at)-Date.now())/1000))+"S"}</div>
+    <div class="countdown" id="countdown-${t.id}">${countdown}</div>
     <div class="progress"><div id="progress-${t.id}" class="progress-inner"></div></div>
     <div class="trade-grid">
-      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}S</strong></div>
+      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${timing.duration}S</strong></div>
       <div class="trade-detail"><span class="muted">Capital Used</span><strong>${money(t.capital_pct)}%</strong></div>
       <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
       <div class="trade-detail"><span class="muted">Live P/L</span><strong id="live-pnl-${t.id}">0.00 USDT</strong></div>
       <div class="trade-detail"><span class="muted">Market move</span><strong id="live-move-${t.id}">0.000%</strong></div>
       <div class="trade-detail"><span class="muted">Opening Price</span><strong>${price(t.open_price)}</strong></div>
-      <div class="trade-detail"><span class="muted">${Date.now()<new Date(t.opened_at).getTime()?"Starts at":"Order Time"}</span><strong>${formatDate(t.opened_at)}</strong></div>
+      <div class="trade-detail"><span class="muted">${waiting?"Starts at":"Order Time"}</span><strong>${formatDate(new Date(timing.start).toISOString())}</strong></div>
     </div>
   </div>`;
 }
@@ -5083,34 +5612,38 @@ function renderPositions(){
 async function updateCountdowns(){
   for(const t of trades.filter(x=>x.status==="PENDING")){
     const now=Date.now();
-    const startsAt=new Date(t.opened_at).getTime();
-    const settlesAt=new Date(t.settle_at).getTime();
-    const c=document.getElementById("countdown-"+t.id), p=document.getElementById("progress-"+t.id);
+    const timing=normalizedTradeTiming(t);
+    const c=document.getElementById("countdown-"+t.id);
+    const p=document.getElementById("progress-"+t.id);
 
-    if(now<startsAt){
-      const untilStart=Math.max(0,Math.ceil((startsAt-now)/1000));
-      if(c)c.textContent="Starts in "+untilStart+"S";
+    if(now<timing.start){
+      const untilStart=Math.max(0,timing.start-now);
+      if(c)c.textContent="Starts in "+positionCountdownLabel(untilStart);
       if(p)p.style.width="0%";
       continue;
     }
 
-    const remaining=Math.max(0,Math.ceil((settlesAt-now)/1000));
-    if(c)c.textContent=remaining+"S";
+    const remainingMs=Math.max(0,timing.settle-now);
+    if(c)c.textContent=positionCountdownLabel(remainingMs);
+
     if(p){
-      const duration=Math.max(1,Math.round((settlesAt-startsAt)/1000));
-      p.style.width=Math.max(0,Math.min(100,remaining/duration*100))+"%";
+      const elapsed=Math.max(0,now-timing.start);
+      const total=Math.max(1000,timing.duration*1000);
+      const completed=Math.max(0,Math.min(100,(elapsed/total)*100));
+      p.style.width=(100-completed)+"%";
     }
-    if(remaining<=0&&!settlingTrades.has(t.id)){
+
+    if(remainingMs<=0&&!settlingTrades.has(t.id)){
       settlingTrades.add(t.id);
       await settleTrade(t.id);
     }
   }
 }
-setInterval(updateCountdowns,500);
+setInterval(updateCountdowns,250);
 
 async function settleTrade(id){
   const closePrice=Number(btcPrice||0);
-  const {data,error}=await sb.rpc("settle__trade",{
+  const {data,error}=await sb.rpc("settle_demo_trade",{
     p_trade_id:id,
     p_close_price:closePrice>0?closePrice:null
   });
@@ -5127,13 +5660,13 @@ async function settleTrade(id){
     const pnl=Number(data.profit||0);
     const prefix=pnl>0?"+":"";
     const label=pnl>0?"Gain ":(pnl<0?"Perte ":"Résultat ");
-    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT fictifs.`,pnl>=0?"success":"error");
+    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT.`,pnl>=0?"success":"error");
   }
 }
 
 async function settleExpiredTrades(refresh=true){
   if(!currentUser)return;
-  const {data,error}=await sb.rpc("settle_expired__trades");
+  const {data,error}=await sb.rpc("settle_expired_demo_trades");
   if(error){console.error(error);return}
   if(refresh&&Number(data)>0) await refreshEverything();
 }
@@ -5147,7 +5680,7 @@ function renderHistory(){
     const hm=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
     const profit=Number(t.profit||0),profitClass=profit>=0?"profit-pos":"profit-neg";
     return `<div class="trade-history-card">
-      <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}s</span></div>
+      <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${normalizedTradeTiming(t).duration}s</span></div>
       <div class="trade-history-line"><span>time period</span><strong>${hm(opened)} ~ ${hm(settledAt)}</strong></div>
       <div class="trade-history-line"><span>profit and loss</span><strong class="${profitClass}">${profit>=0?"+":""}${money(profit)}</strong></div>
       <div class="trade-history-line"><span>return on position</span><strong class="${profit>=0?"profit-pos":"profit-neg"}">${Number(t.amount)>0?((profit/Number(t.amount))*100).toFixed(3):"0.000"}%</strong></div>
