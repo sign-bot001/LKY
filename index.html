@@ -793,6 +793,23 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 .trade-direct-note{margin-top:12px;padding:11px 13px;border-radius:11px;background:#f5f7f8;color:#777f88;font-size:12px;line-height:1.4;text-align:center}
 .trade-actions button.trade-busy{opacity:.58;pointer-events:none}
 
+
+/* ===== ADMIN COMPLETE — DEMO ONLY ===== */
+.admin-subtitle{color:#8290a0;font-size:12px;line-height:1.45;margin:6px 0 14px}
+.admin-schedule-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-request{background:#091624;border-radius:13px;padding:14px;margin-top:10px}
+.admin-request-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.admin-request-grid div{background:#0b1b2c;border-radius:10px;padding:9px}
+.admin-request-grid span{display:block;color:#8295aa;font-size:10px;margin-bottom:3px}
+.admin-request-grid strong{font-size:12px;word-break:break-word}
+.admin-request-actions{display:flex;gap:8px;margin-top:10px}
+.admin-request-actions button{flex:1}
+.admin-create-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-idline{font-size:11px;color:#8295aa;word-break:break-all;margin-top:4px}
+.admin-referral-note{margin-top:10px;padding:10px;border-radius:10px;background:#0b1b2c;color:#a8b7c7;font-size:11px;line-height:1.45}
+.code-schedule{margin-top:5px;color:#9fb0c2;font-size:11px;line-height:1.45}
+@media(max-width:520px){.admin-schedule-grid,.admin-create-grid,.admin-request-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -811,7 +828,9 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 
     <div id="signupForm" class="hidden">
       <h2 style="margin-top:24px">Créer un compte</h2>
+      <label>Nom du compte</label><input id="signupName" class="input" type="text" placeholder="Nom affiché">
       <label>Email</label><input id="signupEmail" class="input" type="email">
+      <label>Code d’invitation (optionnel)</label><input id="signupInviteCode" class="input" type="text" maxlength="20" placeholder="Code d’invitation">
       <label>Mot de passe</label><input id="signupPassword" class="input" type="password">
       <label>Confirmer</label><input id="signupPassword2" class="input" type="password">
       <button class="primary" onclick="signup()">Créer mon compte</button>
@@ -1228,7 +1247,7 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 
   <section id="admin" class="page">
     <div class="section-title">Admin Dashboard</div>
-    <div class="warning">Administration de la simulation uniquement.</div>
+    <div class="warning">Administration de la simulation uniquement · aucun argent réel.</div>
 
     <div class="card">
       <strong>Overview</strong>
@@ -1236,29 +1255,60 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
         <div class="stat"><div class="muted">Users</div><strong id="statUsers">0</strong></div>
         <div class="stat"><div class="muted">Active Codes</div><strong id="statCodes">0</strong></div>
         <div class="stat"><div class="muted">Pending Trades</div><strong id="statPending">0</strong></div>
-        <div class="stat"><div class="muted">Settled Trades</div><strong id="statSettled">0</strong></div>
+        <div class="stat"><div class="muted">Funding Requests</div><strong id="statFunding">0</strong></div>
       </div>
     </div>
 
     <div class="card">
-      <strong>Generate Code</strong>
-      <label>Direction</label>
+      <strong>Generate Guaranteed DEMO Code</strong>
+      <div class="admin-subtitle">Chaque code est utilisable une seule fois au total. Il ouvre une position DEMO gagnante avec un rendement compris entre 50 % et 57 %.</div>
+
+      <label>Position</label>
       <select id="adminDirection" class="input">
-        <option value="">Random</option><option value="CALL">CALL</option><option value="PUT">PUT</option>
+        <option value="CALL">CALL</option>
+        <option value="PUT">PUT</option>
       </select>
+
       <label>Rendement DEMO</label>
       <input id="adminYield" class="input" type="number" min="50" max="57" step="0.01" placeholder="Automatique 50–57">
-      <label>Expiration</label>
-      <select id="adminExpiry" class="input">
-        <option value="60">1 heure</option><option value="360">6 heures</option><option value="1440" selected>24 heures</option><option value="10080">7 jours</option>
-      </select>
+
+      <div class="admin-schedule-grid">
+        <div>
+          <label>Heure précise de la position</label>
+          <input id="adminScheduledFor" class="input" type="datetime-local">
+        </div>
+        <div>
+          <label>Expiration après cette heure</label>
+          <select id="adminValidMinutes" class="input">
+            <option value="2">2 minutes</option>
+            <option value="5" selected>5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="60">1 heure</option>
+          </select>
+        </div>
+      </div>
+
       <button class="primary" onclick="generateCode()">Generate Code</button>
       <div id="generatedBox" class="admin-code hidden">
-        <div class="muted center">Nouveau code</div>
+        <div class="muted center">Nouveau code DEMO</div>
         <div id="generatedCode" class="generated-code">------</div>
         <div id="generatedDetails" class="center muted">-</div>
         <button class="secondary" onclick="copyGeneratedCode()">Copier le code</button>
       </div>
+    </div>
+
+    <div class="card">
+      <strong>Create User</strong>
+      <div class="admin-subtitle">Création via une fonction Edge protégée. La clé service_role ne doit jamais être placée dans ce fichier HTML.</div>
+      <div class="admin-create-grid">
+        <input id="adminNewUserName" class="input" type="text" placeholder="Nom du compte">
+        <input id="adminNewUserEmail" class="input" type="email" placeholder="Email">
+        <input id="adminNewUserPassword" class="input" type="password" placeholder="Mot de passe temporaire">
+        <input id="adminNewUserInvite" class="input" type="text" placeholder="Code d’invitation (optionnel)">
+      </div>
+      <button class="primary" onclick="adminCreateUser()">Créer l’utilisateur</button>
+      <div id="adminCreateUserMsg" class="message"></div>
     </div>
 
     <div class="card">
@@ -1268,21 +1318,24 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
         <input id="initialBalanceInput" class="input" type="number" min="0" step="100" value="10000">
         <button class="mini" onclick="updateInitialBalance()">Save</button>
       </div>
+      <div class="admin-referral-note">Parrainage : lorsqu’un administrateur ajoute pour la première fois du solde fictif à un nouvel utilisateur parrainé, le parrain reçoit automatiquement 100 USDT DEMO, une seule fois.</div>
     </div>
+
+    <div class="section-title">Funding Requests</div>
+    <div id="adminFundingRequests" class="card"><div class="muted center">Chargement...</div></div>
 
     <div class="section-title">Codes</div>
     <div id="adminCodes" class="card"><div class="muted center">Chargement...</div></div>
 
     <div class="section-title">Users</div>
     <div class="card">
-      <input id="userSearch" class="input search" placeholder="Rechercher par email..." oninput="renderAdminUsers()">
+      <input id="userSearch" class="input search" placeholder="Rechercher par nom, ID ou email..." oninput="renderAdminUsers()">
       <div id="adminUsers"><div class="muted center">Chargement...</div></div>
     </div>
 
     <div class="section-title">Recent Trades</div>
     <div id="adminTrades" class="card"><div class="muted center">Chargement...</div></div>
   </section>
-
 
   <div id="fundingRecordsPage" class="funding-page hidden">
     <div class="funding-inner">
@@ -1374,8 +1427,8 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
   <div id="withdrawSuccessPage" class="withdraw-success-page hidden">
     <div class="withdraw-success-inner">
       <div class="withdraw-success-icon">✓</div>
-      <div class="withdraw-success-title">Withdrawal confirmed</div>
-      <div class="withdraw-success-copy">Your withdrawal request has been confirmed.</div>
+      <div class="withdraw-success-title">Withdrawal request submitted</div>
+      <div class="withdraw-success-copy">Your DEMO withdrawal request has been sent to the administrator.</div>
 
       <div class="withdraw-success-wait">
         Confirmation may take up to
@@ -1385,7 +1438,7 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
       <div class="withdraw-success-details">
         <div class="withdraw-success-row"><span>Amount</span><strong id="withdrawSuccessAmount">-</strong></div>
         <div class="withdraw-success-row"><span>Network</span><strong id="withdrawSuccessNetwork">-</strong></div>
-        <div class="withdraw-success-row"><span>Status</span><strong>Confirmed</strong></div>
+        <div class="withdraw-success-row"><span>Status</span><strong>Pending</strong></div>
       </div>
 
       <button class="withdraw-success-done" onclick="closeWithdrawSuccess()">Done</button>
@@ -1807,7 +1860,7 @@ const SUPABASE_KEY = "sb_publishable_iGxqDljv0d0t0nYgQVyyFQ_CXXdKpOu";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false;
-let adminUsers=[], adminCodes=[], adminTrades=[];
+let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[];
 let btcPrice=112840.00, ethPrice=4410.00, settlingTrades=new Set();
 let chartValues=Array.from({length:28},(_,i)=>112600+i*8+Math.random()*90);
 
@@ -1897,16 +1950,30 @@ function updateClock(){
 }
 setInterval(updateClock,1000); updateClock();
 
-function showSignup(){loginForm.classList.add("hidden");signupForm.classList.remove("hidden")}
+function showSignup(){loginForm.classList.add("hidden");signupForm.classList.remove("hidden");prefillInviteFromUrl()}
+
+function prefillInviteFromUrl(){
+  const code=(new URLSearchParams(location.search).get("code")||"").trim();
+  const el=document.getElementById("signupInviteCode");
+  if(code&&el)el.value=code;
+}
+setTimeout(prefillInviteFromUrl,0);
+
 function showLogin(){signupForm.classList.add("hidden");loginForm.classList.remove("hidden")}
 
 async function signup(){
   clearMessage("signupMessage");
+  const displayName=(document.getElementById("signupName")?.value||"").trim();
+  const inviteCode=(document.getElementById("signupInviteCode")?.value||"").trim().toLowerCase();
   const email=signupEmail.value.trim(), password=signupPassword.value, p2=signupPassword2.value;
+  if(!displayName)return showMessage("signupMessage","Entre le nom du compte.","error");
   if(!email)return showMessage("signupMessage","Entre ton adresse email.","error");
   if(password.length<6)return showMessage("signupMessage","Mot de passe: minimum 6 caractères.","error");
   if(password!==p2)return showMessage("signupMessage","Les mots de passe ne correspondent pas.","error");
-  const {data,error}=await sb.auth.signUp({email,password});
+  const {data,error}=await sb.auth.signUp({
+    email,password,
+    options:{data:{display_name:displayName,referral_code:inviteCode||null}}
+  });
   if(error)return showMessage("signupMessage",error.message,"error");
   if(data.session) await enterApp(data.user);
   else showMessage("signupMessage","Compte créé. Vérifie ton email si la confirmation est activée.","success");
@@ -2230,10 +2297,22 @@ function showFollowSubtab(name,el){
   if(name==="copy-history"||name==="release-history") renderFollowHistory();
 }
 
-function recognizeFollowCode(){
-  const code=(document.getElementById("followOrderCode")?.value||"").trim().toUpperCase();
+async function recognizeFollowCode(){
+  const input=document.getElementById("followOrderCode");
+  const code=(input?.value||"").trim().toUpperCase();
   if(code.length!==6)return alert("Le code doit contenir exactement 6 caractères.");
-  openFollowModal("copy",code);
+  if(!btcPrice||btcPrice<=0)return alert("Le prix BTC DEMO n’est pas disponible.");
+
+  const {data,error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
+  if(error)return alert(error.message);
+
+  if(input)input.value="";
+  const trade=Array.isArray(data)?data[0]:data;
+  alert(`Code DEMO accepté · ${trade.direction} · rendement +${Number(trade.yield_pct).toFixed(2)}% · utilisation unique.`);
+  await refreshEverything();
+
+  const delivery=document.querySelector('.trade-order-tab[onclick*="delivery"]');
+  if(delivery)showTradeOrderTab("delivery",delivery);
 }
 
 function openFollowModal(source="copy",code=""){
@@ -2377,16 +2456,7 @@ function renderFollowHistory(){
 }
 
 
-async function useCode(){
-  clearMessage("tradeMessage");
-  const code=userCode.value.trim().toUpperCase();
-  if(code.length!==6)return showMessage("tradeMessage","Le code doit contenir exactement 6 caractères.","error");
-  const {error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
-  if(error)return showMessage("tradeMessage",error.message,"error");
-  userCode.value="";
-  showMessage("tradeMessage","Position DEMO ouverte pour 60 secondes.","success");
-  await refreshEverything();
-}
+async function useCode(){return recognizeFollowCode()}
 
 function activePositionHTML(t){
   return `<div class="card position" data-trade-id="${t.id}">
@@ -2472,19 +2542,32 @@ function renderHistory(){
   }).join("");
 }
 
+function initAdminScheduleDefaults(){
+  const el=document.getElementById("adminScheduledFor");
+  if(!el||el.value)return;
+  const d=new Date(Date.now()+5*60000);
+  const local=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  el.value=local;
+}
 async function generateCode(){
   if(!isCurrentUserAdmin)return;
-  const y=adminYield.value.trim();
+  initAdminScheduleDefaults();
+  const y=(document.getElementById("adminYield")?.value||"").trim();
+  const scheduledRaw=document.getElementById("adminScheduledFor")?.value;
+  if(!scheduledRaw)return alert("Choisis l’heure précise de la position.");
+  const scheduled=new Date(scheduledRaw);
+  if(!Number.isFinite(scheduled.getTime()))return alert("Heure invalide.");
   const {data,error}=await sb.rpc("generate_demo_code",{
-    p_direction:adminDirection.value||null,
+    p_direction:document.getElementById("adminDirection")?.value||"CALL",
     p_yield_pct:y===""?null:Number(y),
-    p_expires_minutes:Number(adminExpiry.value)
+    p_scheduled_for:scheduled.toISOString(),
+    p_valid_minutes:Number(document.getElementById("adminValidMinutes")?.value||5)
   });
   if(error)return alert(error.message);
   const r=Array.isArray(data)?data[0]:data;
   generatedBox.classList.remove("hidden");
   generatedCode.textContent=r.generated_code;
-  generatedDetails.textContent=`${r.generated_direction} · 60S · 1% capital · +${Number(r.generated_yield).toFixed(2)}% DEMO`;
+  generatedDetails.textContent=`${r.generated_direction} · +${Number(r.generated_yield).toFixed(2)}% DEMO · ${formatDate(r.generated_scheduled_for)} → ${formatDate(r.generated_expires_at)} · usage unique`;
   await loadAdminAll();
 }
 
@@ -2494,37 +2577,41 @@ async function copyGeneratedCode(){
 }
 
 async function loadAdminAll(){
-  await Promise.all([loadAdminUsers(),loadAdminCodes(),loadAdminTrades(),loadSettings()]);
+  await Promise.all([loadAdminUsers(),loadAdminCodes(),loadAdminTrades(),loadAdminFundingRequests(),loadSettings()]);
+  initAdminScheduleDefaults();
   updateAdminStats();
 }
 
 async function loadAdminUsers(){
-  const {data,error}=await sb.from("profiles").select("user_id,email,balance,suspended,created_at").order("created_at",{ascending:false});
+  const {data,error}=await sb.from("profiles").select("user_id,email,display_name,account_id,referral_code,balance,suspended,created_at").order("created_at",{ascending:false});
   if(error){console.error(error);return}
   adminUsers=data||[];renderAdminUsers();
 }
 
 function renderAdminUsers(){
-  const q=(userSearch?.value||"").trim().toLowerCase();
-  const list=adminUsers.filter(u=>(u.email||"").toLowerCase().includes(q));
-  adminUsersEl=document.getElementById("adminUsers");
+  const q=(document.getElementById("userSearch")?.value||"").trim().toLowerCase();
+  const list=adminUsers.filter(u=>[u.email,u.display_name,u.account_id].some(v=>(v||"").toLowerCase().includes(q)));
+  const adminUsersEl=document.getElementById("adminUsers");
   if(!list.length){adminUsersEl.innerHTML=`<div class="muted center" style="padding-top:12px">Aucun utilisateur.</div>`;return}
   adminUsersEl.innerHTML=list.map(u=>`
     <div class="admin-user">
       <div class="row-between">
-        <div class="admin-user-email">${esc(u.email||"No email")}</div>
-        <span class="status ${u.suspended?"off":"on"}">${u.suspended?"SUSPENDED":"ACTIVE"}</span>
+        <div>
+          <div class="admin-user-email">${esc(u.display_name||u.email||"No name")}</div>
+          <div class="admin-idline">ID ${esc(u.account_id||"-")} · ${esc(u.email||"-")}</div>
+        </div>
+        <span class="status ${u.suspended?"off":"on"}">${u.suspended?"BLOCKED":"ACTIVE"}</span>
       </div>
       <div class="muted" style="margin-top:7px">Balance DEMO</div>
       <strong>${money(u.balance)} USDT</strong>
       <div class="inline" style="margin-top:10px">
         <input id="adjust-${u.user_id}" class="input" type="number" min="0" step="100" value="1000">
-        <button class="mini" onclick="adjustBalance('${u.user_id}',1)">+</button>
-        <button class="mini redbtn" onclick="adjustBalance('${u.user_id}',-1)">−</button>
+        <button class="mini" onclick="adjustBalance('${u.user_id}',1)">+ Ajouter</button>
+        <button class="mini redbtn" onclick="adjustBalance('${u.user_id}',-1)">− Retirer</button>
       </div>
       <div class="inline" style="margin-top:8px">
-        <button class="mini gray" onclick="setExactBalance('${u.user_id}')">Set exact</button>
-        <button class="mini ${u.suspended?"":"redbtn"}" onclick="toggleSuspend('${u.user_id}',${!u.suspended})">${u.suspended?"Reactivate":"Suspend"}</button>
+        <button class="mini gray" onclick="setExactBalance('${u.user_id}')">Solde exact</button>
+        <button class="mini ${u.suspended?"":"redbtn"}" onclick="toggleSuspend('${u.user_id}',${!u.suspended})">${u.suspended?"Débloquer":"Bloquer"}</button>
       </div>
     </div>`).join("");
 }
@@ -2551,6 +2638,87 @@ async function toggleSuspend(userId,suspended){
   await loadAdminAll();
 }
 
+
+async function adminCreateUser(){
+  if(!isCurrentUserAdmin)return;
+  const msg=document.getElementById("adminCreateUserMsg");
+  if(msg){msg.className="message";msg.textContent=""}
+  const display_name=(document.getElementById("adminNewUserName")?.value||"").trim();
+  const email=(document.getElementById("adminNewUserEmail")?.value||"").trim();
+  const password=document.getElementById("adminNewUserPassword")?.value||"";
+  const referral_code=(document.getElementById("adminNewUserInvite")?.value||"").trim().toLowerCase();
+  if(!display_name||!email||password.length<6){
+    if(msg){msg.className="message error";msg.textContent="Nom, email et mot de passe temporaire de 6 caractères minimum requis."}
+    return;
+  }
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.access_token)return;
+  try{
+    const res=await fetch(`${SUPABASE_URL}/functions/v1/admin-create-user`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+session.access_token
+      },
+      body:JSON.stringify({display_name,email,password,referral_code:referral_code||null})
+    });
+    const body=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(body.error||"Unable to create user");
+    if(msg){msg.className="message success";msg.textContent=`Utilisateur DEMO créé · ${body.account_id||body.user_id||email}`;}
+    ["adminNewUserName","adminNewUserEmail","adminNewUserPassword","adminNewUserInvite"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
+    await loadAdminAll();
+  }catch(err){
+    if(msg){msg.className="message error";msg.textContent=String(err?.message||err)}
+  }
+}
+
+async function loadAdminFundingRequests(){
+  const {data,error}=await sb.from("funding_requests")
+    .select("*,profiles(display_name,account_id,email)")
+    .order("requested_at",{ascending:false})
+    .limit(100);
+  if(error){console.error(error);return}
+  adminFunding=data||[];
+  renderAdminFundingRequests();
+}
+
+function renderAdminFundingRequests(){
+  const el=document.getElementById("adminFundingRequests");
+  if(!el)return;
+  if(!adminFunding.length){
+    el.innerHTML=`<div class="muted center">Aucune demande.</div>`;
+    return;
+  }
+  el.innerHTML=adminFunding.map(r=>{
+    const p=r.profiles||{};
+    const type=r.request_type==="DEPOSIT"?"DÉPÔT":"RETRAIT";
+    return `<div class="admin-request">
+      <div class="row-between">
+        <strong>${type} · ${money(r.amount)} ${esc(r.currency)}</strong>
+        <span class="status ${r.status==="PENDING"?"off":"on"}">${esc(r.status)}</span>
+      </div>
+      <div class="admin-idline">${esc(p.display_name||p.email||"Compte")} · ID ${esc(p.account_id||"-")}</div>
+      <div class="admin-request-grid">
+        <div><span>Network</span><strong>${esc(r.network||"-")}</strong></div>
+        <div><span>Request ID</span><strong>#${r.id}</strong></div>
+        <div><span>Requested</span><strong>${formatDate(r.requested_at)}</strong></div>
+        <div><span>Expected arrival</span><strong>${formatDate(r.expected_arrival_at)}</strong></div>
+      </div>
+      ${r.status==="PENDING"?`<div class="admin-request-actions">
+        <button class="mini" onclick="adminSetFundingStatus(${r.id},'CONFIRMED')">Confirmer</button>
+        <button class="mini redbtn" onclick="adminSetFundingStatus(${r.id},'REJECTED')">Rejeter</button>
+      </div>`:""}
+    </div>`;
+  }).join("");
+}
+
+async function adminSetFundingStatus(id,status){
+  const {error}=await sb.rpc("admin_set_funding_request_status",{p_request_id:id,p_status:status});
+  if(error)return alert(error.message);
+  await loadAdminFundingRequests();
+  updateAdminStats();
+}
+
 async function loadAdminCodes(){
   const [{data:codes,error},{data:uses,error:usesErr}]=await Promise.all([
     sb.from("demo_codes").select("*").order("created_at",{ascending:false}).limit(100),
@@ -2567,17 +2735,15 @@ function renderAdminCodes(){
   if(!adminCodes.length){el.innerHTML=`<div class="muted center">Aucun code.</div>`;return}
   el.innerHTML=adminCodes.map(c=>{
     const expired=c.expires_at&&new Date(c.expires_at)<=new Date();
+    const used=!!c.used_at;
+    const live=c.active&&!expired&&!used;
     return `<div class="admin-code">
-      <div class="row-between">
-        <strong style="font-size:20px;letter-spacing:3px">${esc(c.code)}</strong>
-        <span class="direction ${c.direction==="CALL"?"call":"put"}">${esc(c.direction)}</span>
-      </div>
-      <div class="muted" style="margin-top:7px">60S · 1% capital · +${money(c.yield_pct)}% · ${c.use_count} utilisation(s)</div>
-      <div class="muted">Expiration : ${formatDate(c.expires_at)}</div>
-      <div class="muted">Statut : ${expired?"EXPIRÉ":(c.active?"ACTIVE":"DISABLED")}</div>
+      <div class="row-between"><strong style="letter-spacing:2px">${esc(c.code)}</strong><span class="status ${live?"on":"off"}">${used?"USED":expired?"EXPIRED":c.active?"ACTIVE":"OFF"}</span></div>
+      <div class="muted">${esc(c.direction)} · +${money(c.yield_pct)}% DEMO · usage unique</div>
+      <div class="code-schedule">Position: ${formatDate(c.scheduled_for)}<br>Expiration: ${formatDate(c.expires_at)}${used?`<br>Utilisé: ${formatDate(c.used_at)}`:""}</div>
       <div class="inline" style="margin-top:9px">
-        <button class="mini ${c.active?"redbtn":""}" onclick="toggleCode(${c.id},${!c.active})">${c.active?"Disable":"Enable"}</button>
-        <button class="mini gray" onclick="deleteCode(${c.id})">Delete unused</button>
+        ${!used?`<button class="mini gray" onclick="toggleCode(${c.id},${!c.active})">${c.active?"Disable":"Enable"}</button>`:""}
+        ${!used?`<button class="mini redbtn" onclick="deleteUnusedCode(${c.id})">Delete</button>`:""}
       </div>
     </div>`;
   }).join("");
@@ -2625,10 +2791,14 @@ async function updateInitialBalance(){
 }
 
 function updateAdminStats(){
-  statUsers.textContent=adminUsers.length;
-  statCodes.textContent=adminCodes.filter(c=>c.active&&(!c.expires_at||new Date(c.expires_at)>new Date())).length;
-  statPending.textContent=adminTrades.filter(t=>t.status==="PENDING").length;
-  statSettled.textContent=adminTrades.filter(t=>t.status==="SETTLED").length;
+  const statUsers=document.getElementById("statUsers");
+  const statCodes=document.getElementById("statCodes");
+  const statPending=document.getElementById("statPending");
+  const statFunding=document.getElementById("statFunding");
+  if(statUsers)statUsers.textContent=adminUsers.length;
+  if(statCodes)statCodes.textContent=adminCodes.filter(c=>c.active&&!c.used_at&&(!c.expires_at||new Date(c.expires_at)>new Date())).length;
+  if(statPending)statPending.textContent=adminTrades.filter(t=>t.status==="PENDING").length;
+  if(statFunding)statFunding.textContent=adminFunding.filter(r=>r.status==="PENDING").length;
 }
 
 /* ===== MY ASSETS / WALLET DEMO LOGIC ===== */
@@ -3008,7 +3178,7 @@ function updateWithdrawFee(){
   const el=document.getElementById("withdrawFee");
   if(el)el.textContent=amount>0?`(${money(fee)} ${withdrawCurrency})`:`(-- ${withdrawCurrency})`;
 }
-function submitWithdrawDemo(){
+async function submitWithdrawDemo(){
   const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
   const address=(document.getElementById("withdrawAddress")?.value||"").trim();
   const pass=(document.getElementById("withdrawFundPassword")?.value||"").trim();
@@ -3020,7 +3190,16 @@ function submitWithdrawDemo(){
   if(!pass)return alert("Enter your fund password.");
 
   const fee=demoWithdrawalFee(amount,withdrawCurrency);
-  addWalletRecord("Withdrawal",withdrawCurrency,-amount,{network:withdrawNetwork,fee,status:"confirmed",confirmationWindowHours:48});
+  const {data,error}=await sb.rpc("create_demo_funding_request",{
+    p_request_type:"WITHDRAW",
+    p_currency:withdrawCurrency,
+    p_amount:amount,
+    p_network:withdrawNetwork,
+    p_wallet_address:address
+  });
+  if(error)return alert(error.message);
+
+  addWalletRecord("Withdrawal request",withdrawCurrency,-amount,{network:withdrawNetwork,fee,status:"pending",confirmationWindowHours:48});
 
   document.getElementById("withdrawFundPassword").value="";
   document.getElementById("withdrawSuccessAmount").textContent=`${money(amount)} ${withdrawCurrency}`;
@@ -3196,14 +3375,24 @@ function continueToDepositWallet(){
   document.getElementById("depositWalletStep")?.classList.remove("hidden");
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function confirmDemoDepositSent(){
+async function confirmDemoDepositSent(){
   const n=currentDepositNetwork();
   if(!n||pendingDepositAmount<=0)return;
+
+  const {data,error}=await sb.rpc("create_demo_funding_request",{
+    p_request_type:"DEPOSIT",
+    p_currency:depositCurrency,
+    p_amount:pendingDepositAmount,
+    p_network:n.name,
+    p_wallet_address:n.address
+  });
+  if(error)return alert(error.message);
+
   document.getElementById("depositConfirmAmount").textContent=`${pendingDepositAmount} ${depositCurrency}`;
   document.getElementById("depositConfirmNetwork").textContent=n.name;
   document.getElementById("depositWalletStep")?.classList.add("hidden");
   document.getElementById("depositConfirmationStep")?.classList.remove("hidden");
-  addWalletRecord("DEMO deposit pending",depositCurrency,pendingDepositAmount);
+  addWalletRecord("DEMO deposit pending",depositCurrency,pendingDepositAmount,{requestId:data?.id||null,status:"pending"});
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function finishDepositFlow(){
@@ -3988,6 +4177,7 @@ startLiveMarket();
 
 /* ===== PERSONAL CENTER V1 ===== */
 function nexaDisplayId(){
+  if(profile?.account_id)return profile.account_id;
   if(!currentUser?.id)return "------------";
   const raw=currentUser.id.replace(/-/g,"").toUpperCase();
   return (raw.slice(0,10)+"00").slice(0,12);
@@ -4254,7 +4444,7 @@ function choosePersonalLanguage(lang){
   openLanguageDialog();setTimeout(closeLanguageDialog,180);
 }
 function openSharePage(){
-  const code=nexaDisplayId().toLowerCase();
+  const code=(profile?.referral_code||nexaDisplayId()).toLowerCase();
   const link=location.origin+location.pathname+"?code="+encodeURIComponent(code);
   document.getElementById("shareCode").textContent=code;
   document.getElementById("shareLink").textContent=link;
