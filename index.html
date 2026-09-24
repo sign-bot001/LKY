@@ -1479,7 +1479,12 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 /* ===== LOGIN-FIRST ACCESS GATE ===== */
 .reference-login.hidden{display:none!important}
 #app.hidden{display:none!important}
-body.login-gate-active{overflow:hidden}
+body.login-gate-active{
+  overflow-x:hidden;
+  overflow-y:auto;
+  min-height:100dvh;
+  overscroll-behavior-y:auto;
+}
 
 
 /* =========================================================
@@ -1828,6 +1833,44 @@ body.login-gate-active{overflow:hidden}
     bottom:94px!important;
     width:390px!important;
     max-height:620px!important;
+  }
+}
+
+
+/* ===== LOGIN SCREEN SCROLL / MOBILE KEYBOARD FIX ===== */
+.reference-login{
+  height:auto!important;
+  min-height:100dvh!important;
+  overflow:visible!important;
+}
+.reference-login-shell{
+  height:auto!important;
+  min-height:100dvh!important;
+  overflow:visible!important;
+}
+.reference-login-form{
+  padding-bottom:calc(42px + env(safe-area-inset-bottom))!important;
+}
+.reference-login #signupForm{
+  margin-bottom:calc(42px + env(safe-area-inset-bottom))!important;
+}
+@media(max-width:899px){
+  body.login-gate-active{
+    position:static!important;
+    height:auto!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .reference-login{
+    display:block!important;
+    min-height:100dvh!important;
+  }
+  .reference-login-shell{
+    min-height:100dvh!important;
+    padding-bottom:calc(52px + env(safe-area-inset-bottom))!important;
+  }
+  .reference-login-head{
+    position:relative;
   }
 }
 
