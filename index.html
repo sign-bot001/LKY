@@ -5112,9 +5112,7 @@ function drawTradeChart(){
  let lx=left+4,legendY=volTop+13;
  const legend=(label,val,col)=>{const t=label+": "+(val==null?"--":compact(val));x.fillStyle=col;x.fillText(t,lx,legendY);lx+=x.measureText(t).width+7};
  legend("MA5",avgVol(li,5),"#ff8a00");
- legend("MA10",avgVol(li,10),"#9867d7");
  legend("MA20",avgVol(li,20),"#287cf5");
- legend("VOLUME",vols[li],"#28bd89");
 
  // Volume levels on right: dynamically displays K/M values such as 30K, 300K, 1.5M.
  x.fillStyle="#7f8996";x.textAlign="left";
@@ -5124,15 +5122,19 @@ function drawTradeChart(){
  x.fillStyle="#7f8996";x.textAlign="center";
  [.15,.5,.85].forEach(q=>{const i=Math.min(li,Math.max(0,Math.round(li*q))),dt=new Date(candles[i].time);x.fillText(dt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:false}),left+plotW*q,H-7)});
 
- // Current live-price dashed line follows the active / last candle color like a real trading chart.
- const last=candles[li],ly=yy(last.close);
- const lastCandleUp=Number(last.close) >= Number(last.open);
- const liveLineColor=lastCandleUp ? "#20bd8a" : "#f33762";
- x.strokeStyle=liveLineColor;x.lineWidth=1.4;x.setLineDash([5,5]);
- x.beginPath();x.moveTo(left,ly);x.lineTo(W-right+4,ly);x.stroke();x.setLineDash([]);
- x.fillStyle=liveLineColor;x.fillRect(W-right+4,ly-11,right-6,22);
- x.fillStyle="#fff";x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="left";
- x.fillText(livePriceFormat(last.close),W-right+8,ly+4);
+ // Current live-price line is shown only at the real live edge.
+ // When the user pans into history, do not relabel an old candle as "live".
+ if(tradeChartOffset===0){
+   const liveCandle=all[all.length-1];
+   const ly=yy(liveCandle.close);
+   const liveCandleUp=Number(liveCandle.close) >= Number(liveCandle.open);
+   const liveLineColor=liveCandleUp ? "#20bd8a" : "#f33762";
+   x.strokeStyle=liveLineColor;x.lineWidth=1.4;x.setLineDash([5,5]);
+   x.beginPath();x.moveTo(left,ly);x.lineTo(W-right+4,ly);x.stroke();x.setLineDash([]);
+   x.fillStyle=liveLineColor;x.fillRect(W-right+4,ly-11,right-6,22);
+   x.fillStyle="#fff";x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="left";
+   x.fillText(livePriceFormat(liveCandle.close),W-right+8,ly+4);
+ }
  updateTradeChartZoomLabel();
 }
 window.addEventListener("resize",drawTradeChart);
