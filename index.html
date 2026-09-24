@@ -2121,6 +2121,13 @@ body.login-gate-active{
   .pro-portfolio-card,.pro-stats-card{margin-left:0;margin-right:0}
 }
 
+
+/* ===== robust form validation ===== */
+.field-error{margin:-20px 4px 20px;color:#d73f52;font-size:12px;font-weight:750;line-height:1.35}
+.form-error-box{margin:0 0 18px;padding:12px 14px;border-radius:12px;background:#fff0f2;border:1px solid #f2c5cc;color:#c93649;font-size:12px;font-weight:750;line-height:1.4}
+.wallet-input.input-invalid,.personal-input.input-invalid{border:1.5px solid #e34a5f!important;background:#fff7f8!important;box-shadow:0 0 0 3px rgba(227,74,95,.07)!important}
+.wallet-input.input-valid,.personal-input.input-valid{border:1.5px solid #69d860!important;background:#fbfff9!important}
+
 </style>
 </head>
 <body>
@@ -2846,17 +2853,21 @@ body.login-gate-active{
       </button>
 
       <div class="wallet-label"><span>withdrawal address</span></div>
-      <input id="withdrawAddress" class="wallet-field wallet-input" placeholder="DEMO wallet address only">
+      <input id="withdrawAddress" class="wallet-field wallet-input" placeholder="DEMO wallet address only" maxlength="90" oninput="validateWithdrawForm(false)">
+      <div id="withdrawAddressError" class="field-error hidden"></div>
 
       <div class="wallet-label"><span>fund password</span></div>
-      <input id="withdrawFundPassword" class="wallet-field wallet-input" type="password" autocomplete="off" placeholder="DEMO only — do not enter a real password">
+      <input id="withdrawFundPassword" class="wallet-field wallet-input" type="password" minlength="6" maxlength="64" autocomplete="off" placeholder="DEMO only — do not enter a real password" oninput="validateWithdrawForm(false)">
+      <div id="withdrawPasswordError" class="field-error hidden"></div>
 
       <div class="wallet-label"><span>quantity</span><span>available: <strong id="withdrawAvailable">0.00</strong></span></div>
       <div class="wallet-quantity">
-        <input id="withdrawQuantity" class="wallet-field wallet-input" type="number" min="0" step="0.01" value="0" oninput="updateWithdrawFee()">
+        <input id="withdrawQuantity" class="wallet-field wallet-input" type="number" min="0.01" step="0.01" value="0" oninput="updateWithdrawFee();validateWithdrawForm(false)">
         <button class="wallet-max" onclick="setWithdrawMaximum()">maximum</button>
       </div>
+      <div id="withdrawAmountError" class="field-error hidden"></div>
       <div class="wallet-fee">handling fee&nbsp; <strong id="withdrawFee">(-- USDT)</strong></div>
+      <div id="withdrawFormError" class="form-error-box hidden"></div>
 
       <div class="wallet-notice">
         <h3>important notice</h3>
@@ -4136,6 +4147,11 @@ function ingestBtcTick(rawPrice,ts=Date.now(),cumulativeVolume=null,volumeSource
     c.volume=Number(c.volume||0)+volumeDelta;
   }
   drawTradeChart();
+  const headerPrice=document.getElementById("btcTrade");
+  if(headerPrice){
+    const active=tradeCandles[tradeCandles.length-1];
+    if(active)headerPrice.style.color=Number(active.close)>=Number(active.open)?"#20bd8a":"#f33762";
+  }
 }
 
 async function bootstrapTradeCandles(){
@@ -5337,11 +5353,17 @@ function isIdentityVerified(){
 function routeFundingVerification(action){
   localStorage.setItem("nexaPendingFundingAction",action||"");
   if(!isEmailVerified()){
-    alert("Vérifie d’abord ton adresse email. Le dépôt et le retrait restent verrouillés tant que ton email n’est pas confirmé.");
+    alert("Adresse e-mail non vérifiée. Ouvre le message de confirmation envoyé à ton adresse e-mail puis clique sur le lien de vérification avant de continuer.");
     return false;
   }
-  if(!isIdentityVerified()){
-    alert("Vérifie ton identité avant d’effectuer un dépôt ou un retrait.");
+  const identity=String(profile?.identity_status||"").toUpperCase();
+  if(identity==="SUBMITTED"||identity==="PENDING"){
+    alert("Ta vérification d’identité a déjà été envoyée et attend encore la validation de l’administrateur.");
+    openAuthentication();
+    return false;
+  }
+  if(identity!=="VERIFIED"){
+    alert("Vérification d’identité requise. Complète tous les champs, ajoute ton document et valide ton selfie avant d’effectuer un dépôt ou un retrait.");
     openAuthentication();
     return false;
   }
@@ -5448,6 +5470,7 @@ function selectWithdrawNetwork(network){
   withdrawNetwork=network;
   document.getElementById("withdrawNetworkText").textContent=network;
   closeWalletSheet("walletNetworkSheetOverlay");
+  validateWithdrawForm(false);
 }
 function setWithdrawMaximum(){
   const el=document.getElementById("withdrawQuantity");
@@ -5465,6 +5488,63 @@ function updateWithdrawFee(){
   const el=document.getElementById("withdrawFee");
   if(el)el.textContent=amount>0?`(${money(fee)} ${withdrawCurrency})`:`(-- ${withdrawCurrency})`;
 }
+
+function setFieldValidation(inputId,errorId,message,valid){
+  const input=document.getElementById(inputId),err=document.getElementById(errorId);
+  if(input){input.classList.toggle("input-invalid",!valid);input.classList.toggle("input-valid",valid&&String(input.value||"").trim()!=="")}
+  if(err){err.textContent=message||"";err.classList.toggle("hidden",valid||!message)}
+}
+function walletAddressValidation(address,network,currency){
+  const a=String(address||"").trim();
+  if(!a)return {ok:false,message:"L’adresse wallet est obligatoire."};
+  if(/\s/.test(a))return {ok:false,message:"L’adresse wallet ne doit contenir aucun espace."};
+
+  const n=String(network||"").toUpperCase(),c=String(currency||"").toUpperCase();
+  if(n==="TRC20"){
+    if(a.length!==34)return {ok:false,message:"Une adresse TRC20 doit contenir exactement 34 caractères."};
+    if(!/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(a))return {ok:false,message:"Format TRC20 invalide : l’adresse doit commencer par T et utiliser le format Base58."};
+    return {ok:true,message:""};
+  }
+  if(n==="ERC20"||c==="ETH"){
+    if(a.length!==42)return {ok:false,message:"Une adresse ERC20/Ethereum doit contenir exactement 42 caractères (0x + 40 caractères hexadécimaux)."};
+    if(!/^0x[a-fA-F0-9]{40}$/.test(a))return {ok:false,message:"Format ERC20/Ethereum invalide. Exemple de structure : 0x suivi de 40 caractères hexadécimaux."};
+    return {ok:true,message:""};
+  }
+  if(n==="BTC"||c==="BTC"){
+    const legacy=/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+    const segwit=/^bc1[ac-hj-np-z02-9]{11,71}$/i;
+    if(!legacy.test(a)&&!segwit.test(a))return {ok:false,message:"Format Bitcoin invalide. Utilise une adresse BTC valide de type 1…, 3… ou bc1…."};
+    return {ok:true,message:""};
+  }
+  if(a.length<20||a.length>90)return {ok:false,message:"L’adresse wallet doit contenir entre 20 et 90 caractères."};
+  return {ok:true,message:""};
+}
+function validateWithdrawForm(showSummary=true){
+  const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
+  const address=(document.getElementById("withdrawAddress")?.value||"").trim();
+  const pass=(document.getElementById("withdrawFundPassword")?.value||"").trim();
+  const available=walletAvailableFor(withdrawCurrency);
+  const addr=walletAddressValidation(address,withdrawNetwork,withdrawCurrency);
+
+  let amountMsg="";
+  if(!Number.isFinite(amount)||amount<=0)amountMsg="Entre un montant supérieur à 0.";
+  else if(amount>available)amountMsg=`Fonds insuffisants. Solde disponible : ${money(available)} ${withdrawCurrency}.`;
+  setFieldValidation("withdrawQuantity","withdrawAmountError",amountMsg,!amountMsg);
+
+  setFieldValidation("withdrawAddress","withdrawAddressError",addr.message,addr.ok);
+
+  let passMsg="";
+  if(!pass)passMsg="Le mot de passe de fonds est obligatoire.";
+  else if(pass.length<6)passMsg="Le mot de passe de fonds doit contenir au moins 6 caractères.";
+  else if(pass.length>64)passMsg="Le mot de passe de fonds ne peut pas dépasser 64 caractères.";
+  setFieldValidation("withdrawFundPassword","withdrawPasswordError",passMsg,!passMsg);
+
+  const errors=[amountMsg,addr.message,passMsg].filter(Boolean);
+  const summary=document.getElementById("withdrawFormError");
+  if(summary){summary.textContent=showSummary&&errors.length?"Corrige les champs indiqués avant de continuer.":"";summary.classList.toggle("hidden",!showSummary||!errors.length)}
+  return errors.length===0;
+}
+
 async function submitWithdrawDemo(){
   if(!routeFundingVerification("withdraw"))return;
   const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
@@ -5472,10 +5552,7 @@ async function submitWithdrawDemo(){
   const pass=(document.getElementById("withdrawFundPassword")?.value||"").trim();
   const available=walletAvailableFor(withdrawCurrency);
 
-  if(amount<=0)return alert("Enter a quantity greater than 0.");
-  if(amount>available)return alert("Available balance is insufficient.");
-  if(!address)return alert("Enter a wallet address.");
-  if(!pass)return alert("Enter your fund password.");
+  if(!validateWithdrawForm(true))return;
 
   const fee=demoWithdrawalFee(amount,withdrawCurrency);
   const {data,error}=await sb.rpc("create_demo_funding_request",{
@@ -5520,31 +5597,44 @@ function filterRechargeCurrencies(){
     row.style.display=(currency==="USDT" && (!q||currency.includes(q)))?"flex":"none";
   });
 }
+// Private DEMO configuration — addresses below are the fictitious test addresses supplied for this simulation.
 const DEMO_DEPOSIT_NETWORKS={
   USDT:[
     {
-      id:"erc20",
-      name:"Ethereum (ERC20)",
-      icon:"🔷",
-      address:"DEMO-USDT-ERC20-NOT-FUNDABLE",
-      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
-      minimum:"USDT 0.01",
-      arrival:"~7 minutes",
-      withdraw:"~20 minutes",
-      contract:"***831ec7",
-      warning:"DEMO — adresse fictive reproduite pour l’interface. N’envoyez aucune cryptomonnaie réelle."
-    },
-    {
-      id:"trc20",
-      name:"Tron (TRC20)",
+      id:"tron",
+      name:"TRON",
       icon:"🔺",
-      address:"DEMO-USDT-TRC20-NOT-FUNDABLE",
-      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
+      address:"TMWCpFnfYfUc9J9hhQZrpbzatcdqfySYWa",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOoAAADqCAIAAAAj9k4ZAAAEj0lEQVR42u3dy47cIBAF0Djy///yZBupN4TULcruc9YzdhtfIcA8rp+fn1/wTL8VAeIL4gvii/iC+IL4gvgiviC+IL6IL4gviC+IL+IL4gv17r1/u67r4I9eWSGS+4VVd/+8zud/7d1rbwXN/Heq9kXjAcQXxBfxhQe6qy6U2y9ipUe819Pv/IV7ZbgyqpB7rvklpvZF4wHEF8QX8YXx7tyl93qXZ3u7K33/qt/cOS/ire9U7YvGA4gviC/iC+PdiuD/+9ErowGdIxjTxivUviC+iC+IL4gvX8zIQ0EPvWqcIbdjw1vPTlX7Ir4gviC+iC+MFxx5ONvbrdqbsWosovPue/ea/07Vvmg8gPiC+CK+8EBlIw9nT0ao6n13/k3nc731nap90XgA8QXxRXxhvM2Rh2nfvqt+T24Ph7MrIKrmaah9QXxBfBFfEF/4R9e0b/G57+zzV0DkRgNy53rk3oXaF40HEF8QXxBfXmFzzkPVqMLnf1VdJ6dzp4WqGRdVT5EbCdm7stoXjQcQXxBfxBfGuzq/1+d632f7/nvl09mv3zP/lE+1LxoPIL4gvogvjHdN+4rdeZ3O9Q65HnrnSopp+22qfdF4APEF8UV8YbxxIw8rV97TucvE2VGXqlKdv3+F2heNBxBfEF/EF8YLrrbI9Tf3+uzT1nqslE9uVYs5D6DxAOKL+IL4Qos7d+lpcx6qnmKvH312Z8jOMrTPA4gv4gviC+ILfwmOPFT1QHPf9Kv647kxhKrRm3fMbFH7ovEA4gvii/jCAz1gh8m9vu33nGRR9XbO7tRhzgMaDyC+IL4gvrxU65yHlf7m2fGB3PkXufkV83fPqFppovZF4wHEF8QX8YUHuqadfbni7PmYuT0Tcj30qrt37oGp9kXjAcQXxBfEl1com/MwbcVB54kPVb+ws8RyYzWdpar2ReMBxBfEF/GF8TZHHqrWF+S+qlc919nZHVWjClUrIDrXlah90XgA8QXxBfHlFYJzHnLnSObGNHJ7FFTdPVdiZ59U7YvGA4gviC+IL0YeJo8hVMl9r9+7cm4Xhc+/OTt2ZJ8HNB5AfEF8QXx5qevsyQh7/9XZHz87ypHb/3P+fAa1LxoPIL4gviC+vMI1bdeCqr7t2R0vz574MO1EjFw5q33ReADxBfFFfGG84A6Tub5tVU9/5TqdX/nP3mtF55iG2heNBxBfEF8QX16hdZ+HKiu95tzshaqVC7ldHzv30+j8L7UvGg8gviC+iC88UNnZFtN2few8r7NqT4m9cl7ZK/LsG1T7gvgiviC+IL58sTt36c7+b9XZDXtPsXcaZm63itzbqXpfal8QX8QXxBfEl69xK4J/7Vnn1lbs3T03fnL23Aq1LxoPIL4gviC+vMJLRh46z9lcuXvVGo3O0ugsMbUviC/iC+IL4svXCI48TDv/orNn/cTzL544L0Lti8YDiC+IL+IL45WNPEw7b3HaeZR7JZYbVeg8HyT3XGpfNB5AfEF8EV8Y73riiQag9kV8QXxBfBFfEF8QXxBfxBfEF8QX8VUEiC+IL4gv4gviCzF/ABIDCs0a7Q8RAAAAAElFTkSuQmCC',
       minimum:"USDT 0.1",
       arrival:"~1 minute",
       withdraw:"~2 minutes",
-      contract:"***gjLj6t",
-      warning:"DEMO — adresse fictive reproduite pour l’interface. N’envoyez aucun USDT réel."
+      contract:"***SYWa",
+      warning:"DEMO privé — adresse fictive USDT/TRON fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+    },
+    {
+      id:"ethereum",
+      name:"Ethereum",
+      icon:"🔷",
+      address:"0x5ef2929f53e44bb2aaf322f4ff4ad872224dea8a",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFYUlEQVR42u3dSW4rORAFQKqh+1/ZvdDuGwaIdE6SI9Z2qQY9UJUgk4+vr68Df9t/bgGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAfzrGfu3x+MxeNLfV8x9P5+sv5k959izyDrOzVXs/24YDUAMQAxADEAM4Noz60B1/Y6yKg83Z7itdnTzX3U1qJtnEbur274bRgMQAxADEAMQAzjnJFaKst7iY1WFulk0sc+6OfK2OTydVbLO74bRAMQAxADEAMQArj0/4zLqVpZlHSfrDGOzemZX3hkNQAxADEAMQAzgTTz/zqXOriyLyaoLbbsuowGIAYgBiAGIAaxUWCn61KpC51yguupW3cyod/xuGA1ADEAMQAxADOCck1gp2r92qXP919/5m8/4bhgNQAxADEAMQAzg9RL/qTN/Zvs8z3ZJytoNLavnttEAxADEAMQAxADeRGuforpuzDeyZhBlma2xdO4+NlslMxqAGIAYgBiAGMC1YKUoazVT7MidYudcd39mZxndXHvWPcy6dqMBiAGIAYgBiAHcv+jX7dIV09k/p7OCMVstyarRdc6wqqu2GQ1ADEAMQAxADOCn8sDseqLgSZfNVqqrC832lM7yGTUxowGIAYgBiAGIAfygsE9RZ1UhpnMnr7rVZ3V3rHM9mtVn4EcRiAGIAYgBLBCsFNV1HNrWp+jm2rM6Y2fVoOoqPLN9sOu+CUYDEAMQAxADEAM455R2tN42byT2WXW9cWJnGHsWseeVdQ+zzrnum2A0ADEAMQAxADGA18t33XyPbVWX2R5E267iRmenIKMBiAGIAYgBiAEs8OjsMr1tF7P985duriLr/sSect3TybrPRgMQAxADEAMQA7iWtvrs5m/q1jfVzerZ33O7s74U+6zOGU1GAxADEAMQAxAD+IVHXffjmNm94zvnJnXO5so6zrZVbFnXbjQAMQAxADEAMYBzTuLeZ52di+pmEHXu1/aO1aS670bs/hgNQAxADEAMQAwgVeucos660LYzrOtEXfcEZ7udx45sNAAxADEAMQAxgF8o3Pus802/85xjZrtV7684zX6jjAYgBiAGIAYgBnDOCa8+u3lnnz3yTTfmbX2wZ3s0ddbxZtcYGg1ADEAMQAxADOCnV/bZOUU3OusVnZ9ed3+21WGy7nzd8zIagBiAGIAYgBjA6+W7sz5wdUKNu6p1ns/sfmSde7rF7sbsjnJGAxADEAMQAxADOOckrj67EZvHMrvean+Pnf3PYrZKZjQAMQAxADEAMYD71/HO1WdZ1YDOekXwtpatrorZVoOqW71oThH4UQRiAGIAYgC/EJxT9BlroOo+Peuc61bM1d3DrLvaWd0yGoAYgBiAGIAYwOsFvXNv9G07zm/r5j17XVnPfZY5ReBHEYgBiAGIAfzm1X9bR+vgZYx2Y745n6zP6lyvl3U36u5P1vkYDUAMQAxADEAM4JwTXn02O7ck1nd620ybunVts7Wjul7ZOlqDH0UgBiAGIAZQLG3vs211mM6+QLEj1+2YltXzZ3ans6xnajQAMQAxADEAMYBrz7pD76/V1F1X3cyfm/OZ7QHe+bzMKQI/ikAMQAxADCDV8zMuo65a0rmuLWuVVudquKzjdNaFjAYgBiAGIAYgBvCDD6kU7V9dtW1f+Kz7nDXD6uZu6FMEfhSBGIAYgBhAscJK0Wzdo7Ovctan719Htu26sr5jRgMQAxADEAMQAzjnJFaKZndD+27bWqpYtaRuL/vO55X16XUzvowGIAYgBiAGIAbwevnev+IJjAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBtDufx6L1y+6mUjpAAAAAElFTkSuQmCC',
+      minimum:"USDT 0.01",
+      arrival:"~7 minutes",
+      withdraw:"~20 minutes",
+      contract:"***dea8a",
+      warning:"DEMO privé — adresse fictive USDT/Ethereum fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+    },
+    {
+      id:"solana",
+      name:"Solana",
+      icon:"◎",
+      address:"DXKPTVQXvpCiu5uK75UhqUYFNqwsaaLPnuMMUckJU4qt",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFUUlEQVR42u3dQY4iMQwF0NSI+1+5Z8FuGKTI2I6pfm/dDZWCr1BW4lw/Pz8Lfrc/bgGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAfzrEfu367oOXvTrjrnX69nZVVc3ip0r7HydnVfOMu27YTYAMQAxADEAMYBtj6wXumvlofP+TBtprP72jd8NswGIAYgBiAGIAay1EitFWU/xWbWIurU3O/WTurHH7s/O9WTVhaZ9N8wGIAYgBiAGIAaw7XGPYXRWOerefad+0rmqp+56zAYgBiAGIAYgBjDS464Di1U5Ote61FW3OtdTmQ1ADEAMQAxADOBGCitFZ1ebxPoCna2N1NWOOvfQzf9umA1ADEAMQAxADOCNtErR/NUmsdpIrH4Sq/lkXU/n39zju2E2ADEAMQAxADGA50P8PfrM/GdgoVpN3Vn288+7n9Zl2mwAYgBiAGIAYgDtrvmdn+tqPmerHJ19sHfMP+ms7jM1G4AYgBiAGIAYwFqrtE9R1i6t2IqdaTunOqtSZytOdWOvu4dmAxADEAMQAxADWGuFK0Vn+zzH/qZu91mn+fva6j4va4rAjyIQAxADEAMolramKLby51Vnf6GskWbpXCs17f50/pfZAMQAxADEAMQA3ghWiuZ3N+qsqGStdcnaZ5d1hWf3o9WdMWc2ADEAMQAxADGANx6db1ZX98iqctS9Tuc9zBrp2VPVzAYgBiAGIAYgBtAurU9RbJ9UZx2mru6R1VEnq+f2/DPdpq0TMxuAGIAYgBiAGMBaq/nss7MVjNgVdp7bVbeeatrOss7XMRuAGIAYgBiAGMC2q3OlTecrZ63qqevCXXfNO+quMPZeZ++82QDEAMQAxADEAJ6P2tN6U087Ma3zDPppo+jsthS7Y2YDEAMQAxADEAPIfWS/a0+bnfd61dlxKGsUnXvWsu5zHWuKwI8iEAMQAxAD+MC4s8/q+kXv/E3nu+/cn6y72unsWimzAYgBiAGIAYgBfOBwR+vO/WixK4yNdEdWj+tpvrHeZTYAMQAxADEAMYDnA/o99kB1dlqOmbbSpm711PwO5GYDEAMQAxADEAN44yZriupqCGdfOfZfdVfYqa6XuNkAxADEAMQAxADeuDrPt/rGU+nPyvp0stZc1a2wqvuOmQ1ADEAMQAxADGBb4ZqizmrA/J5IsapLZ1fnzhVEZzuHmw1ADEAMQAxADODdI/vZ1R11XXfOvs7hD3VYvWv+PTQbgBiAGIAYgBjA80G/s6N17JV3qHd9fg+z7mpdxUlHa/CjCMQAxADEAIpdv2eP2M41x3T2Vqob17RT8MwGIAYgBiAGIAbQLtinKKvGktWrp+4Kz9Zz6s67r1ub1Nkn3Joi8KMIxADEAMQAch+153fd2RpGWX+hafvRznYKOruaq+67ajYAMQAxADEAMYC11vE1RTGvFYNp1Ztp3YTq1m7F7s/OKF5fp64eaDYAMQAxADEAMYC1VrhSlPWEvuPsPrK6CkZn/6VYrSb2WXSuUst6L7MBiAGIAYgBiAGstRIrRa+m7TCadgr82S5A085ZyxqFNUXgRxGIAYgBiAF84HGPYWTVc+pOZ6sb1/x+R3X70cwGIAYgBiAGIAaQ6iaVoli94uxZ7Z2nyZ+tiWX9V13tyGwAYgBiAGIAYgBrrdJK0dlT1WJVjli36rM7uTq7G9Xd1bN7Fc0GIAYgBiAGIAbwfEDvPOU8S1Z9oLNzUWwUZ1c9nb1jdRU5swGIAYgBiAGIAbx79D9beQCzAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBjPQXgy+hES6f6W0AAAAASUVORK5CYII=',
+      minimum:"USDT 0.1",
+      arrival:"~1 minute",
+      withdraw:"~1 minute",
+      contract:"***JU4qt",
+      warning:"DEMO privé — adresse fictive USDT/Solana fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
     }
   ],
   BTC:[
@@ -5552,25 +5642,25 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"solana",
       name:"Solana",
       icon:"◎",
-      address:"DEMO-BTC-SOLANA-NOT-FUNDABLE",
-      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
+      address:"3JgG9kMPchc7YwnVkFS1WRWRWjFk3Dscvha3L1noGisM",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFfElEQVR42u3dy47iMBAFUGeU///lngWb0SAkq6iHoc9Zd0MccmUo2eXr5+dnwe/2xy0AMQAxADEAMQAxADEAMQAxADEAMQAxADEAMQAxADEAMYD/3bF/u65r8KKfd8w9X0/sb3ZGGvuvnVHM3vm6Ozb7bJgNQAxADEAMQAxg2531QnX9jmJVl856RWcNKus+19WyTns2zAYgBiAGIAYgBrDtrnvp2K/4zpU2WXWGrJU2sdpR1jXXrcuafTbMBiAGIAYgBiAGsO3+jmE4we1fsfVCnSuazAYgBiAGIAYgBnCkL6kUZa1RydqTlbVaKbbOJ3bNsVF8R+3IbABiAGIAYgBiAGut0kpRZw0hq09R3es8y9rJtXPNs3dj9tkwG4AYgBiAGIAYwLa0StHsiVdZa2+yevXU9fOpu566T3D22TAbgBiAGIAYgBjAtmCl6Pw9R53doXfuz2wv6E6fuB/NbABiAGIAYgBiAGutA/sU1XVjzjrLfnbsO3cjtnoq9l6x+3za2i2zAYgBiAGIAYgBrLXClaK63UxZ1ZvZ8+U7ryfrvWKfV93arc79cWYDEAMQAxADEANYayXuPuvcXdVZQ+h8r+8Y6c6TUPf8mA1ADEAMQAxADOAN9/mXONv3ZvYM+tPW+cQ+r/NPTDMbgBiAGIAYgBjA40f8aSt/TusF3bnXLKuTUmddqO6udt55swGIAYgBiAGIAay1Djz77LRz4c+vw9RVVGJj76zwZH0WZgMQAxADEAMQA3j8iD+t5lNXH5itn9S9e90oZldhOfsMfCkCMQAxADGAdml9irJ+s2dVrurWFGWZ7epcd0JZ1udV94yZDUAMQAxADEAM4IW0SlFW3aNuldFptazYPcy687ETymKf12n748wGIAYgBiAGIAbwQrBSNNt7ua46kbWCqPO0r6zVOHX70c7vGWU2ADEAMQAxADGAx4/v2f7MdSeqPzutKlU3itnzyDo7X2V9ymYDEAMQAxADEANYa5WuKapbV1O3Nim2AytrFHXXXFfPqeueHRuX2QDEAMQAxADEAN5wdXYkzlK3+mX2hLK6UZw20qxnzO4z8KUIxADEAMQAUt11Lz27m6mu703n6pfzT0PbGWln1yazAYgBiAGIAYgBvKG1T1HwEhtrR886zyOrG8XOFcbeK6smVvc6ZgMQAxADEAMQA9h2dfYfnu2HvHOFMZ27q+rqJ6fVhTqfBLMBiAGIAYgBiAE8fqCftj6ns6NO5zliWdcTe53Z9+p8NqwpAl+KQAxADEAM4A1pfYpO26W1817POvsz1/VEijntrLq6k87MBiAGIAYgBiAG8EJrR+uY0yoYWaPoXGE1u2IndjfMBiAGIAYgBiAG0O7ufLO6tSV1J3DVrWPJOp2ts/NzbBSxa+5c32U2ADEAMQAxADGAtVZppSirylG3+mX2NLTYPeysL2VVpTqrbfoUgS9FIAYgBiAG8IZgpSi2Fij2NzGdlZCs64ndn9k1RbMd0c0GIAYgBiAGIAaQKlgpqquo7Mjq6jxbTarbk1U39tgrd55MZ00R+FIEYgBiAGIAbyg8+yxL5w61nd1ep3V+rrs/p638MRuAGIAYgBiAGECx1j5FO2J1hs5zxGZPMcu6G7OfcuyVs9aSmQ1ADEAMQAxADOCF+zcPvm5/0+x5bbGRdnYcynp3swGIAYgBiAGIAaT61ZWi83v+1HW0ztox19lNqO6VzQYgBiAGIAYgBrDWKq0Uza4S6ewm1HnNOzp31dWNq/PTMRuAGIAYgBiAGMBaK7FSNHsa2s71dJ7klVUb+cQz6M+vC5kNQAxADEAMQAzghesTT6oCswGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIART7C9JFxSbGuOFGAAAAAElFTkSuQmCC',
       minimum:"BTC 0.00000001",
       arrival:"~1 minute",
       withdraw:"~1 minute",
       contract:"***aznnkn",
-      warning:"DEMO — exemple d’un dépôt BTC via Solana. Aucun dépôt, conversion ou crédit blockchain réel n’est effectué."
+      warning:"DEMO privé — adresse fictive BTC/Solana fournie pour cette simulation. Aucun transfert réel n’est attendu."
     },
     {
       id:"bitcoin",
       name:"Bitcoin",
       icon:"₿",
-      address:"DEMO-BTC-BITCOIN-NOT-FUNDABLE",
-      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
+      address:"bc1qfqcg934wdtzszs4z3ukhjnvn3lxqqr27cujj9llrecvelvla3dlqj8qerf",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATIAAAEyCAIAAAD2pMuSAAAHVUlEQVR42u3dW27jMAwFUHvg/W+5s4C0gEDwocjnfDe2peZCAqHQ98/PzwXs5J8pALEExBLEEhBLEEtALEEsAbEExBLEEhBLEEtALEEsAbEEsQT28sQ+dt/34EN/dlT4fJ5Y14W6ccWeOWtcdf/llWfOmrGVJ6x7nrpRWC3BJhYQSxBLQCzhBZ6sC9VVCOvqgZ+fyrrOyihi96p7ntisdtaTs64z+121WoJNLCCWIJaAWMIrPXWXjlWlZmt0Wc+TdZ1YTXVlNupqzlmj2O30b913w2oJNrGAWIJYAmIJL/CcMYzOU6l1J05XdHYMyLpXXceA2fqt1RJsYgGxBMQSxBJYdkgldreaYdbZ0boKauyZV87fxuzW39VqCYgliCUgliCWQKrCSmzn6cS6062dv+Kvm9XZmvP+7ybb7SSt1RJsYgGxBLEExBKOk1aJnT3BmFXri9UDO+8VG3tM1jvF6uYnNvb9T9taLUEsAbEEsQTEEo4TrMTu343zPd1Kd3s32cr8ZD1P1t9YLQGxBLEExBLEEih271anmv3t/27PXHd6s64uXXdytbMzw+w5Z6sl2MQCYgliCYglHKf1jV1ZZyPraoaxUdT9ij9rXCtv2sqqPdadRt6/q0DWf9BqCTaxgFiCWAJiCce5Z6uRde+NqjuHmTWurI6mnSeEO/+ndXar7VstwSYWEEsQS0As4QUK39hVV2XNesLYvWLPs1uX2s6OClmnbTu/LboTAGIJYgmIJYglkOrufE/TGZW9ujOxdSdOO7vU7nbWt66CWtdfwmoJNrGAWIJYAmIJx7nranSdNd6Y2XOYu1WGY+Pq/F3//meqs+5utQSbWEAsQSwBsYTj3J1dRn+5/WZ9WWPPHHuelU/VPU/nlev6J2R9E5yJBcQSxBIQSxBLoNh2b+zKunvdp1ZGUdctITaHs+dvg1/Nxr6sWf93qyXYxAJiCWIJiCXwh+Ezsb880BFv9Zqdjdgz7392dLeTq3XfFqsl2MQCYgliCYglHOeQM7ErvrE7Qee50N1O/+52nRiVWLCJBcQSxBIQS+C6rut6Yh97T901a+xZ6u61Mq6Vu8+eK+48sVz3TbBagk0sIJYgloBYwnEKuxPs/8v62efJmrHObrdZn6obRSd9YsEmFhBLQCxBLIFlwTOxsUpjrGpXV0Hd/5f1sf9Fp9n3ss32GajrQGu1BJtYQCxBLAGxhONsdya2s8dp3UhnT8BmzU/duGZPLM/+L6yWYBMLiCWIJSCW8EpP1oU6z3zOVmuznierGlk3P3V117rZyBpX5zfBagk2sYBYglgCYgkv8NRdurODaNansmqhWc/TOT+dnSJWapiddeCsK2fVZq2WYBMLiCWIJSCWcJx79jf7s30+Y6NYuXLnOd662ditQ+83fn+slmATC4gliCUglsB1XYlv7Ip9arY6uvKprOep62lQd6+su3d+N2bnx5lYsIkFxBLEEhBL4A/bnYmt+5uVJ/zUed61rp/DbrXrrP9FbFZnP2W1BJtYQCxBLAGxhFc6tk/sp6zK52yNt7M2mzWrWTp7EWR9f5yJBZtYQCxBLAGxBK7rKq3Efqp7S9RsV4G6E7mxWc0aRefd6+rSdedd6yrDVkuwiQXEEsQSEEs4TmEltrMCttsZ1LqqZt0Tzo49a6SzvQiyxm61BJtYQCxBLAGxhOPcnW+E3/83+50jzXrC3cYem5/OXruzvX+tlmATC4gliCUglvBKrWdiY5+K1bI6f0v+jW+J6uxF0DnPs310vbELbGIBsQSxBMQS+MPd+T6s2HU+7XaON6az7nrGzHd26J3971gtwSYWEEsQS0As4Tj37InK2X4Fu73rqrPD6mx3gqxvVJ3ZObRagk0sIJYgloBYwnGC3QnqalC7dRXo7FubNfOz1eO6bhJ1Y5/tLmu1BJtYQCxBLAGxhBco7E4Q0/mmpNnf4+/W8bVzNmY768bG1VmbtVqCTSwgliCWgFjCce79K5+dvQiCk1h292/8zf7sp+pGmpUCqyXYxAJiCWIJiCW80r1bv9DgMMpqYlknTjuvHLvX7Inc2f/7btexWoJNLCCWIJaAWMJxgn1iZ89qxrq5rlwnS6wiFxtFZ5eDulF0jmu3OrDVEmxiAbEEsQTEEl7gybrQ7G//6/oexK7TKesNWSuzmvW/yPpU3fzM/k+tlmATC4gliCUglnCcp+7Snb9br+sGsHKdzj6odaOom+fOThGdFd26e1ktwSYWEEsQS0As4TjPmwdf19Og7vztit26wtadPc6a584qvdUSbGIBsQSxBMQSXunYSmxdT4OV66x0sl25V2dNNevMZ+fZ0dkeAlZLsIkFxBIQSxBLYFlhJbauc+ys3foD7NZ1obOHQOc7zuq6LlgtwSYWEEsQS0As4QXub3yfUeczz/5GPutTnT17687xzn4Ps/7LVkuwiQXEEsQSEEt4pfvUk6tgtQTEEsQSEEsQS0AsAbEEsQTEEsQSEEsQS0AsAbEEsQTEEsQSSPIfnGGNoobUvvwAAAAASUVORK5CYII=',
       minimum:"BTC 0.00003",
       arrival:"~22 minutes",
       withdraw:"~33 minutes",
       contract:"—",
-      warning:"DEMO — utilisez cette adresse uniquement dans la simulation. N’envoyez aucun BTC, NFT, inscription ou autre actif réel."
+      warning:"DEMO privé — adresse fictive Bitcoin fournie pour cette simulation. Aucun transfert réel n’est attendu."
     }
   ],
   ETH:[
@@ -5578,13 +5668,13 @@ const DEMO_DEPOSIT_NETWORKS={
       id:"erc20",
       name:"Ethereum (ERC20)",
       icon:"◆",
-      address:"DEMO-ETH-ERC20-NOT-FUNDABLE",
+      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
       qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
       minimum:"ETH 0.00007",
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***831ec7",
-      warning:"DEMO — adresse fictive reproduite pour l’interface. N’envoyez aucun ETH réel."
+      warning:"DEMO privé — adresse fictive fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
     }
   ],
   USDC:[
@@ -6158,7 +6248,14 @@ function updateTradeFromMarket(){
   const tradeEl=document.getElementById("btcTrade");
   const changeEl=document.getElementById("trade24Change");
 
-  if(tradeEl) tradeEl.textContent=livePriceFormat(market.price);
+  if(tradeEl){
+    tradeEl.textContent=livePriceFormat(market.price);
+    // The large BTC price follows the currently forming candle:
+    // green when close >= open, red when close < open.
+    const activeCandle=tradeCandles?.[tradeCandles.length-1];
+    const candleUp=!activeCandle || Number(activeCandle.close)>=Number(activeCandle.open);
+    tradeEl.style.color=candleUp?"#20bd8a":"#f33762";
+  }
 
   if(changeEl){
     changeEl.textContent=(market.change>=0?"+":"")+market.change.toFixed(2)+"%";
@@ -6639,10 +6736,12 @@ function openAuthentication(){
 }
 function refreshPersonalVerification(){
   const saved=JSON.parse(localStorage.getItem(kycStorageKey())||"{}");
-  const status=saved.status||"not verified";
+  const serverStatus=String(profile?.identity_status||"").toUpperCase();
+  const status=serverStatus==="VERIFIED"?"verified":
+    (["SUBMITTED","PENDING"].includes(serverStatus)?"submitted":(saved.status||"not verified"));
   const p=document.getElementById("personalVerifyStatus"), k=document.getElementById("kycStatusText");
   if(p){p.textContent=status;p.classList.toggle("verified",status==="verified")}
-  if(k)k.textContent=status==="verified"?"Verified":status==="submitted"?"Submitted — review/matching required":status;
+  if(k)k.textContent=status==="verified"?"Verified":status==="submitted"?"Submitted — awaiting administrator verification":status;
 }
 
 let kycCameraStream=null;
@@ -6801,11 +6900,14 @@ async function submitDemoIdentity(){
   msg.className="personal-msg";
   msg.textContent="";
 
-  if(name.length<3||!dob||country.length<2||!doc){
-    msg.classList.add("err");
-    msg.textContent="Complete your identity information and select an identity document.";
-    return;
-  }
+  if(!name){msg.classList.add("err");msg.textContent="Le nom légal complet est obligatoire.";return}
+  if(name.length<3){msg.classList.add("err");msg.textContent="Le nom légal doit contenir au moins 3 caractères.";return}
+  if(name.length>100){msg.classList.add("err");msg.textContent="Le nom légal ne peut pas dépasser 100 caractères.";return}
+  if(!dob){msg.classList.add("err");msg.textContent="La date de naissance est obligatoire.";return}
+  if(!country){msg.classList.add("err");msg.textContent="Le pays est obligatoire.";return}
+  if(country.length<2){msg.classList.add("err");msg.textContent="Le nom du pays doit contenir au moins 2 caractères.";return}
+  if(!doc){msg.classList.add("err");msg.textContent="Ajoute un document d’identité avant de continuer.";return}
+  if(doc.size>10*1024*1024){msg.classList.add("err");msg.textContent="Le document d’identité ne doit pas dépasser 10 Mo.";return}
   if(!kycCapturedSelfieBlob||!kycSelfieAccepted){
     msg.classList.add("err");
     msg.textContent="Take a live selfie and press “use photo” before submitting.";
@@ -6834,9 +6936,22 @@ async function submitDemoIdentity(){
     selfieCapturedLive:true,
     checkedAt:new Date().toISOString()
   }));
+
+  // Synchronize the verification workflow with the account profile.
+  // VERIFIED is still reserved for an administrator decision.
+  const {error:statusError}=await sb.from("profiles")
+    .update({identity_status:"SUBMITTED"})
+    .eq("user_id",currentUser.id);
+  if(statusError){
+    console.warn("Identity status sync:",statusError);
+    msg.classList.add("err");
+    msg.textContent="Les informations ont été contrôlées, mais le statut du compte n’a pas pu être enregistré. Réessaie ou contacte le support.";
+    return;
+  }
+  await loadProfile();
   refreshPersonalVerification();
   msg.classList.add("ok");
-  msg.textContent="Identity information and live selfie captured successfully. Automated face/document matching is not yet enabled.";
+  msg.textContent="Vérification envoyée avec succès. Ton compte est maintenant en attente de validation par l’administrateur.";
 }
 function openLanguageDialog(){
   const ov=document.getElementById("personalLanguageOverlay");ov?.classList.remove("hidden");
