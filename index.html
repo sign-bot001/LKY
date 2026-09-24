@@ -1999,6 +1999,128 @@ body.login-gate-active{
  .trade-chart-wrap{min-height:370px!important}
  .trade-canvas{height:370px!important}
 }
+
+/* ===== PROFESSIONAL PORTFOLIO / RISK / NOTIFICATIONS ===== */
+.home-top-actions{display:flex;gap:10px;align-items:center}
+.notification-bell-btn{position:relative;font-size:23px}
+.notification-badge{
+  position:absolute;right:-5px;top:-5px;min-width:19px;height:19px;padding:0 5px;
+  display:grid;place-items:center;border-radius:20px;background:#ef4767;color:#fff;
+  font-size:10px;font-weight:900;border:2px solid #f6fff2;
+}
+
+.risk-panel{
+  margin:14px 0 12px;padding:17px;border:1px solid #dce8da;border-radius:18px;
+  background:linear-gradient(145deg,#f9fff7,#eef9ec);
+}
+.risk-panel-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-end}
+.risk-panel-head>div:first-child{display:flex;flex-direction:column;gap:2px}
+.risk-panel-head strong{font-size:26px;letter-spacing:-.6px;color:#263229}
+.risk-kicker{font-size:10px;font-weight:900;letter-spacing:1px;color:#69a96b}
+.risk-estimate{text-align:right;display:flex;flex-direction:column;gap:3px}
+.risk-estimate span{font-size:11px;color:#879188}
+.risk-estimate strong{font-size:16px}
+.risk-slider{width:100%;margin:17px 0 12px;accent-color:#50d64a}
+.risk-custom-row{display:flex;flex-direction:column;gap:10px}
+.risk-custom-field{
+  height:48px;display:flex;align-items:center;border:1px solid #dce5da;border-radius:13px;
+  background:#fff;overflow:hidden;
+}
+.risk-custom-field input{width:88px;height:100%;border:0;padding:0 13px;font-size:16px;font-weight:800;outline:0}
+.risk-custom-field span{font-size:12px;color:#818b84}
+.risk-presets{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.risk-presets button{
+  height:34px;border:1px solid #bfe5bd;border-radius:9px;background:#fff;color:#35b63a;font-weight:800;
+}
+.trade-amount[readonly]{background:#f3f6f3;color:#69736d}
+.trade-direct-note{line-height:1.45}
+
+.pro-portfolio-card,.pro-stats-card{
+  margin:0 22px 22px;padding:21px;border-radius:24px;background:#fff;
+  border:1px solid #dce8da;box-shadow:0 9px 26px rgba(37,78,41,.065);
+}
+.pro-card-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:19px}
+.pro-card-head h3{margin:3px 0 0;font-size:19px;color:#1e2921}
+.pro-eyebrow{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#69a96b}
+.portfolio-exposure-badge,.pro-period{
+  padding:7px 10px;border-radius:999px;background:#edf9eb;color:#38ad3e;font-size:10px;font-weight:900;
+}
+.portfolio-equity-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:20px}
+.portfolio-equity-row>div{padding:13px;border-radius:15px;background:#f5faf4}
+.portfolio-equity-row span{display:block;font-size:11px;color:#7f8a82;margin-bottom:5px}
+.portfolio-equity-row strong{font-size:17px;color:#202b23}
+.portfolio-allocation-bar{
+  height:11px;display:flex;overflow:hidden;border-radius:999px;background:#edf1ec;margin-bottom:13px;
+}
+.portfolio-available-bar{background:#62d95a}
+.portfolio-open-bar{background:#30383b}
+.portfolio-legend{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11px;color:#737f76}
+.portfolio-legend strong{color:#273129;margin-left:3px}
+.portfolio-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.portfolio-legend .dot.available{background:#62d95a}
+.portfolio-legend .dot.open{background:#30383b}
+.pro-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.pro-stats-grid>div{padding:13px 9px;border-radius:14px;background:#f6faf5;min-width:0}
+.pro-stats-grid span{display:block;font-size:10px;color:#849087;margin-bottom:6px}
+.pro-stats-grid strong{display:block;font-size:14px;color:#202a22;overflow-wrap:anywhere}
+
+.notifications-read-all{border:0;background:transparent;color:#43c541;font-weight:800;font-size:12px}
+.notifications-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.notifications-summary>div{padding:17px;border-radius:17px;background:#fff;border:1px solid #dfe9dc}
+.notifications-summary strong{display:block;font-size:22px;color:#263029}
+.notifications-summary span{font-size:11px;color:#849087}
+.notification-item{
+  position:relative;padding:16px 16px 16px 44px;margin-bottom:10px;border-radius:18px;
+  background:#fff;border:1px solid #e0e9de;box-shadow:0 5px 16px rgba(33,58,36,.04);
+}
+.notification-item.unread{border-color:#bee8ba;background:#fbfff9}
+.notification-dot{
+  position:absolute;left:17px;top:20px;width:10px;height:10px;border-radius:50%;background:#61d759;
+}
+.notification-item:not(.unread) .notification-dot{background:#d5ddd3}
+.notification-item h4{margin:0 0 5px;font-size:14px;color:#263029}
+.notification-item p{margin:0;color:#6f7a72;font-size:12px;line-height:1.45}
+.notification-item time{display:block;margin-top:8px;color:#9aa39c;font-size:10px}
+.notification-empty{text-align:center;color:#9ba49e;padding:55px 15px}
+
+.account-status-card{
+  display:grid;grid-template-columns:54px 1fr auto;gap:13px;align-items:center;
+  padding:18px;margin:12px 0 18px;border-radius:20px;background:#2d3133;color:#fff;
+}
+.account-avatar-lg{width:54px;height:54px;border-radius:16px;background:#66e259;color:#1f2c20;display:grid;place-items:center;font-weight:900;font-size:22px}
+.account-status-card strong{display:block;font-size:15px}
+.account-status-card span{display:block;font-size:11px;color:#b8c0bb;margin-top:4px}
+.account-verify-pill{padding:7px 9px!important;border-radius:999px;background:rgba(105,225,91,.13);color:#72ef68!important;font-weight:900}
+.account-info-row{display:flex;justify-content:space-between;gap:15px;padding:13px 0;border-bottom:1px solid #e8eee6}
+.account-info-row:last-child{border-bottom:0}
+.account-info-row span{color:#818c84;font-size:12px}
+.account-info-row strong{font-size:12px;color:#263029;text-align:right;overflow-wrap:anywhere}
+.personal-secondary-danger{
+  width:100%;height:50px;margin-top:16px;border:1px solid #f0ccd1;border-radius:14px;
+  background:#fff4f5;color:#d04958;font-weight:800;
+}
+
+.monitoring-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.monitoring-pill{padding:7px 10px;border-radius:999px;font-size:10px;font-weight:900}
+.monitoring-pill.ok{background:#e8f8e7;color:#289a34}
+.monitoring-pill.warn{background:#fff4da;color:#a66d16}
+.monitoring-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}
+.monitoring-grid>div{padding:12px;border-radius:13px;background:#f3faf2;border:1px solid #dfeddd}
+.monitoring-grid span{display:block;font-size:10px;color:#819084;margin-bottom:5px}
+.monitoring-grid strong{font-size:12px;color:#233027}
+
+.live-pnl-positive{color:#22aa52!important}
+.live-pnl-negative{color:#ef4767!important}
+
+@media(max-width:430px){
+  .pro-stats-grid{grid-template-columns:repeat(2,1fr)}
+  .monitoring-grid{grid-template-columns:repeat(2,1fr)}
+  .risk-presets{grid-template-columns:repeat(5,1fr)}
+}
+@media(min-width:900px){
+  .pro-portfolio-card,.pro-stats-card{margin-left:0;margin-right:0}
+}
+
 </style>
 </head>
 <body>
@@ -2083,7 +2205,13 @@ body.login-gate-active{
 
   <div class="home-top">
     <button class="home-icon-btn" onclick="toggleLanguageMenu()" aria-label="Language">🌐</button>
-    <button class="home-icon-btn home-profile-emoji" onclick="openPersonalCenter()" aria-label="Profile">👨🏻‍💼</button>
+    <div class="home-top-actions">
+      <button class="home-icon-btn notification-bell-btn" onclick="openNotifications()" aria-label="Notifications">
+        ♢
+        <span id="notificationBadge" class="notification-badge hidden">0</span>
+      </button>
+      <button class="home-icon-btn home-profile-emoji" onclick="openPersonalCenter()" aria-label="Profile">👨🏻‍💼</button>
+    </div>
   </div>
 
   <div class="currency-banner" data-i18n="digitalCurrency">Digital Currency</div>
@@ -2264,11 +2392,43 @@ body.login-gate-active{
     </div>
     <div class="trade-controls">
       <div class="trade-select-row"><select id="tradeDuration" class="trade-select" onchange="updateTradeTimeUI()"><option value="60">60s</option><option value="120">120s</option><option value="300">5 min</option><option value="600">10 min</option></select><select id="tradeTimeSelect" class="trade-select"><option>Next 60s</option></select></div>
-      <div class="trade-amount-wrap"><input id="tradeAmount" class="trade-amount" type="number" min="0" value="0"><span class="trade-unit">USDT</span></div>
+      <div class="risk-panel">
+        <div class="risk-panel-head">
+          <div>
+            <span class="risk-kicker">CAPITAL RISK</span>
+            <strong><span id="tradeRiskPctLabel">10</span>%</strong>
+          </div>
+          <div class="risk-estimate">
+            <span>Position size</span>
+            <strong><span id="tradeRiskAmount">0.00</span> USDT</strong>
+          </div>
+        </div>
+        <input id="tradeRiskSlider" class="risk-slider" type="range" min="1" max="100" step="1" value="10" oninput="setTradeRiskPercent(this.value)">
+        <div class="risk-custom-row">
+          <div class="risk-custom-field">
+            <input id="tradeRiskInput" type="number" min="0.1" max="100" step="0.1" value="10" oninput="setTradeRiskPercent(this.value,'input')">
+            <span>% du capital</span>
+          </div>
+          <div class="risk-presets">
+            <button onclick="setTradeRiskPercent(5)">5%</button>
+            <button onclick="setTradeRiskPercent(10)">10%</button>
+            <button onclick="setTradeRiskPercent(25)">25%</button>
+            <button onclick="setTradeRiskPercent(50)">50%</button>
+            <button onclick="setTradeRiskPercent(100)">100%</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="trade-amount-wrap">
+        <input id="tradeAmount" class="trade-amount" type="number" min="0" value="0" readonly>
+        <span class="trade-unit">USDT</span>
+      </div>
       <div class="trade-available"><span>available&nbsp;&nbsp; <strong id="tradeAvailable">0.00</strong></span><span>USDT</span></div>
-      <div class="trade-pcts"><button onclick="setTradePercent(1)">1%</button><button onclick="setTradePercent(50)">50%</button><button onclick="setTradePercent(75)">75%</button><button onclick="setTradePercent(100)">100%</button></div>
-      <div class="trade-actions"><button class="trade-call" onclick="placeDemoTrade('CALL')">CALL <span id="callPct">53.12%</span></button><button class="trade-put" onclick="placeDemoTrade('PUT')">PUT <span id="putPct">56.88%</span></button></div>
-      <div class="trade-direct-note">DEMO · No order code required. Winning positions add the displayed return; losing positions deduct the amount placed.</div>
+      <div class="trade-actions">
+        <button class="trade-call" onclick="placeDemoTrade('CALL')">CALL</button>
+        <button class="trade-put" onclick="placeDemoTrade('PUT')">PUT</button>
+      </div>
+      <div class="trade-direct-note">DEMO · Le montant engagé correspond au pourcentage de capital choisi. Le P/L suit le mouvement réel affiché du BTC entre l’ouverture et la clôture de la position (exposition 1×).</div>
       <!-- Copy Trading DEMO card removed from the visible Trade page.
            Keep this hidden message target so existing settlement/message code is not broken. -->
       <div id="tradeMessage" class="message hidden"></div>
@@ -2423,6 +2583,50 @@ body.login-gate-active{
       </div>
     </div>
 
+    <div class="pro-portfolio-card">
+      <div class="pro-card-head">
+        <div>
+          <span class="pro-eyebrow">PORTFOLIO</span>
+          <h3>Portfolio overview</h3>
+        </div>
+        <span id="portfolioExposureBadge" class="portfolio-exposure-badge">0% exposed</span>
+      </div>
+
+      <div class="portfolio-equity-row">
+        <div><span>Total equity</span><strong id="portfolioEquity">0.00 USDT</strong></div>
+        <div><span>Unrealized P/L</span><strong id="portfolioUnrealized">0.00 USDT</strong></div>
+      </div>
+
+      <div class="portfolio-allocation">
+        <div class="portfolio-allocation-bar">
+          <span id="portfolioAvailableBar" class="portfolio-available-bar" style="width:100%"></span>
+          <span id="portfolioOpenBar" class="portfolio-open-bar" style="width:0%"></span>
+        </div>
+        <div class="portfolio-legend">
+          <span><i class="dot available"></i>Available <strong id="portfolioAvailable">0.00</strong></span>
+          <span><i class="dot open"></i>Open positions <strong id="portfolioOpen">0.00</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pro-stats-card">
+      <div class="pro-card-head">
+        <div>
+          <span class="pro-eyebrow">STATISTICS</span>
+          <h3>Trading performance</h3>
+        </div>
+        <span class="pro-period">All time</span>
+      </div>
+      <div class="pro-stats-grid">
+        <div><span>Realized P/L</span><strong id="statRealizedPnl">0.00</strong></div>
+        <div><span>Trade ROI</span><strong id="statTradeRoi">0.00%</strong></div>
+        <div><span>Win rate</span><strong id="statWinRateUser">0.00%</strong></div>
+        <div><span>Trades</span><strong id="statTradeCountUser">0</strong></div>
+        <div><span>Avg. P/L</span><strong id="statAveragePnl">0.00</strong></div>
+        <div><span>Max drawdown</span><strong id="statMaxDrawdown">0.00%</strong></div>
+      </div>
+    </div>
+
     <div class="assets-actions-card">
       <button class="assets-action" onclick="openAssetAction('withdraw')">
         <span class="assets-action-icon">⇧</span>
@@ -2478,6 +2682,24 @@ body.login-gate-active{
   <section id="admin" class="page">
     <div class="section-title" style="color:#28b43f">Admin Dashboard</div>
     <div class="warning">Administration de la simulation uniquement · aucun argent réel.</div>
+
+    <div class="card monitoring-card">
+      <div class="monitoring-head">
+        <div>
+          <strong>Monitoring</strong>
+          <div class="admin-subtitle">État opérationnel de la simulation et des services connectés.</div>
+        </div>
+        <span id="monitoringOverall" class="monitoring-pill ok">Operational</span>
+      </div>
+      <div class="monitoring-grid">
+        <div><span>Supabase session</span><strong id="monitorAuth">Connected</strong></div>
+        <div><span>Market feed</span><strong id="monitorMarket">Checking…</strong></div>
+        <div><span>Last BTC tick</span><strong id="monitorTick">—</strong></div>
+        <div><span>Open positions</span><strong id="monitorPositions">0</strong></div>
+        <div><span>Pending funding</span><strong id="monitorFunding">0</strong></div>
+        <div><span>Unread notifications</span><strong id="monitorNotifications">0</strong></div>
+      </div>
+    </div>
 
     <div class="card">
       <strong>Overview</strong>
@@ -2894,6 +3116,22 @@ body.login-gate-active{
 
 
 
+  <!-- Notifications -->
+  <div id="notificationsPage" class="personal-subpage hidden"><div class="personal-sub-inner">
+    <div class="personal-head">
+      <button class="personal-back" onclick="closeNotifications()">←</button>
+      <div class="personal-title">notifications</div>
+      <button class="notifications-read-all" onclick="markAllNotificationsRead()">Read all</button>
+    </div>
+    <div class="notifications-summary">
+      <div><strong id="notificationUnreadCount">0</strong><span>Unread</span></div>
+      <div><strong id="notificationTotalCount">0</strong><span>Total</span></div>
+    </div>
+    <div id="notificationsList" class="notifications-list">
+      <div class="notification-empty">No notifications yet.</div>
+    </div>
+  </div></div>
+
   <!-- Personal Center -->
   <div id="personalCenter" class="personal-overlay hidden">
     <div class="personal-inner">
@@ -2908,6 +3146,7 @@ body.login-gate-active{
         <div id="personalVerifyStatus" class="personal-status">not verified</div>
       </div>
       <div class="personal-menu">
+        <button class="personal-row" onclick="openAccountDetails()"><span>account</span><span class="chev">›</span></button>
         <button class="personal-row" onclick="openPersonalSub('securityPage')"><span>security center</span><span class="chev">›</span></button>
         <button class="personal-row" onclick="openAuthentication()"><span>authentication</span><span class="chev">›</span></button>
         <button class="personal-row" onclick="openLanguageDialog()"><span>language</span><span class="chev">›</span></button>
@@ -2921,6 +3160,41 @@ body.login-gate-active{
       </div>
     </div>
   </div>
+
+  <div id="accountPage" class="personal-subpage hidden"><div class="personal-sub-inner">
+    <div class="personal-head"><button class="personal-back" onclick="closePersonalSub('accountPage')">←</button><div class="personal-title">account</div><div></div></div>
+    <div class="account-status-card">
+      <div class="account-avatar-lg">N</div>
+      <div>
+        <strong id="accountDisplayTitle">NexaTrade account</strong>
+        <span id="accountIdSummary">ID —</span>
+      </div>
+      <span id="accountVerifyPill" class="account-verify-pill">Unverified</span>
+    </div>
+
+    <div class="personal-form-card">
+      <h2>Profile</h2>
+      <label>Display name</label>
+      <input id="accountDisplayName" class="personal-input" maxlength="60">
+      <button class="personal-primary" onclick="saveAccountDisplayName()">save profile</button>
+      <div id="accountProfileMsg" class="personal-msg"></div>
+    </div>
+
+    <div class="personal-form-card">
+      <h2>Contact & verification</h2>
+      <div class="account-info-row"><span>Email</span><strong id="accountEmail">—</strong></div>
+      <div class="account-info-row"><span>Email status</span><strong id="accountEmailStatus">—</strong></div>
+      <div class="account-info-row"><span>Identity</span><strong id="accountIdentityStatus">—</strong></div>
+      <div class="account-info-row"><span>Member since</span><strong id="accountCreatedAt">—</strong></div>
+    </div>
+
+    <div class="personal-form-card">
+      <h2>Current session</h2>
+      <div class="account-info-row"><span>Device</span><strong id="accountDevice">—</strong></div>
+      <div class="account-info-row"><span>Session</span><strong class="green">Active</strong></div>
+      <button class="personal-secondary-danger" onclick="logout()">log out this device</button>
+    </div>
+  </div></div>
 
   <div id="securityPage" class="personal-subpage hidden"><div class="personal-sub-inner">
     <div class="personal-head"><button class="personal-back" onclick="closePersonalSub('securityPage')">←</button><div class="personal-title">security center</div><div></div></div>
@@ -3444,7 +3718,11 @@ async function loadProfile(){
 async function loadTrades(){
   const {data,error}=await sb.from("trades").select("*").eq("user_id",currentUser.id).order("opened_at",{ascending:false});
   if(error){console.error(error);return}
-  trades=data||[];renderPositions();renderHistory();updateAssetsTodayEarnings();
+  trades=data||[];
+  renderPositions();
+  renderHistory();
+  updateAssetsTodayEarnings();
+  updateProfessionalPortfolio();
   if(!document.getElementById("fundingRecordsPage")?.classList.contains("hidden")) renderFundingRecords();
 }
 
@@ -3459,10 +3737,84 @@ setInterval(async()=>{
 },5000);
 
 async function refreshEverything(){
-  await loadProfile(); await loadTrades();
+  await loadProfile();
+  await loadTrades();
+  await loadNotifications();
   syncTradeChartDirectionFromOpenTrades();
   if(isCurrentUserAdmin) await loadAdminAll();
+  updateMonitoringUI();
 }
+
+
+let userNotifications=[];
+
+async function loadNotifications(){
+  if(!currentUser)return;
+  const {data,error}=await sb.from("notifications")
+    .select("*")
+    .eq("user_id",currentUser.id)
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  // The table may not exist until the SQL patch is installed.
+  if(error){
+    if(!String(error.message||"").toLowerCase().includes("notifications"))console.warn(error);
+    return;
+  }
+  userNotifications=data||[];
+  renderNotificationBadge();
+  renderNotifications();
+}
+
+function renderNotificationBadge(){
+  const unread=userNotifications.filter(n=>!n.read_at).length;
+  const badge=document.getElementById("notificationBadge");
+  if(badge){
+    badge.textContent=unread>99?"99+":String(unread);
+    badge.classList.toggle("hidden",unread===0);
+  }
+  const uc=document.getElementById("notificationUnreadCount");if(uc)uc.textContent=String(unread);
+  const tc=document.getElementById("notificationTotalCount");if(tc)tc.textContent=String(userNotifications.length);
+}
+
+function renderNotifications(){
+  const el=document.getElementById("notificationsList");if(!el)return;
+  if(!userNotifications.length){
+    el.innerHTML='<div class="notification-empty">No notifications yet.</div>';
+    return;
+  }
+  el.innerHTML=userNotifications.map(n=>`
+    <button class="notification-item ${n.read_at?"":"unread"}" onclick="markNotificationRead(${Number(n.id)})">
+      <span class="notification-dot"></span>
+      <h4>${esc(n.title||"Notification")}</h4>
+      <p>${esc(n.body||"")}</p>
+      <time>${formatDate(n.created_at)}</time>
+    </button>
+  `).join("");
+}
+
+async function openNotifications(){
+  document.getElementById("notificationsPage")?.classList.remove("hidden");
+  await loadNotifications();
+}
+function closeNotifications(){
+  document.getElementById("notificationsPage")?.classList.add("hidden");
+}
+async function markNotificationRead(id){
+  if(!currentUser)return;
+  const {error}=await sb.from("notifications").update({read_at:new Date().toISOString()})
+    .eq("id",id).eq("user_id",currentUser.id);
+  if(!error)await loadNotifications();
+}
+async function markAllNotificationsRead(){
+  if(!currentUser)return;
+  const unread=userNotifications.filter(n=>!n.read_at).map(n=>n.id);
+  if(!unread.length)return;
+  const {error}=await sb.from("notifications").update({read_at:new Date().toISOString()})
+    .eq("user_id",currentUser.id).is("read_at",null);
+  if(!error)await loadNotifications();
+}
+setInterval(()=>{if(currentUser&&!document.hidden)loadNotifications()},10000);
 
 function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== */
   const b=Number(profile?.balance||0);
@@ -3523,6 +3875,33 @@ function showPage(pageId,button){
 }
 
 
+let tradeRiskPercent=10;
+
+function setTradeRiskPercent(value,source="slider"){
+  let pct=Number(value);
+  if(!Number.isFinite(pct))pct=tradeRiskPercent||10;
+  pct=Math.max(.1,Math.min(100,pct));
+  tradeRiskPercent=pct;
+
+  const slider=document.getElementById("tradeRiskSlider");
+  const input=document.getElementById("tradeRiskInput");
+  const label=document.getElementById("tradeRiskPctLabel");
+
+  if(slider && source!=="slider")slider.value=String(Math.max(1,Math.round(pct)));
+  if(input && source!=="input")input.value=Number(pct.toFixed(1)).toString();
+  if(label)label.textContent=Number(pct.toFixed(1)).toString();
+
+  const available=Number(profile?.balance||0);
+  const amount=Math.max(0,available*pct/100);
+  const amountInput=document.getElementById("tradeAmount");
+  if(amountInput)amountInput.value=amount.toFixed(2);
+  const riskAmount=document.getElementById("tradeRiskAmount");
+  if(riskAmount)riskAmount.textContent=money(amount);
+
+  updateTradeActionState();
+}
+function setTradePercent(p){setTradeRiskPercent(p)}
+
 function updateTradeActionState(){
   const amount=Number(document.getElementById("tradeAmount")?.value||0);
   const available=Number(profile?.balance||0);
@@ -3532,10 +3911,6 @@ function updateTradeActionState(){
     btn.setAttribute("aria-disabled",ready?"false":"true");
   });
 }
-document.addEventListener("input",e=>{
-  if(e.target?.id==="tradeAmount")updateTradeActionState();
-});
-function setTradePercent(p){const b=Number(profile?.balance||0);const el=document.getElementById("tradeAmount");if(el)el.value=(b*p/100).toFixed(2);updateTradeActionState()}
 let placingDemoTrade=false;
 async function placeDemoTrade(direction){
   if(placingDemoTrade)return;
@@ -4184,6 +4559,96 @@ function renderFollowHistory(){
 
 async function useCode(){return recognizeFollowCode()}
 
+
+function liveMarketPnlForTrade(t,marketPrice=Number(btcPrice||0)){
+  if(!t || String(t.code||"")==="DIRECT" && (!Number.isFinite(marketPrice)||marketPrice<=0))return 0;
+  const open=Number(t.open_price||0),amount=Number(t.amount||0);
+  if(open<=0||amount<=0)return 0;
+  const direction=String(t.direction||"").toUpperCase();
+  let move=0;
+  if(direction==="CALL")move=(marketPrice-open)/open;
+  else if(direction==="PUT")move=(open-marketPrice)/open;
+  return Math.max(-amount,amount*move);
+}
+
+function calculateUserTradingStats(){
+  const settled=(trades||[]).filter(t=>String(t.status).toUpperCase()==="SETTLED");
+  const pending=(trades||[]).filter(t=>String(t.status).toUpperCase()==="PENDING");
+  const realized=settled.reduce((a,t)=>a+Number(t.profit||0),0);
+  const turnover=settled.reduce((a,t)=>a+Number(t.amount||0),0);
+  const wins=settled.filter(t=>Number(t.profit||0)>0).length;
+  const winRate=settled.length?wins/settled.length*100:0;
+  const roi=turnover?realized/turnover*100:0;
+  const avg=settled.length?realized/settled.length:0;
+  const openCapital=pending.reduce((a,t)=>a+Number(t.amount||0),0);
+  const unrealized=pending.reduce((a,t)=>a+liveMarketPnlForTrade(t),0);
+  const available=Number(profile?.balance||0);
+  const equity=available+openCapital+unrealized;
+
+  // Reconstruct an approximate equity curve from realized P/L to estimate max drawdown.
+  const chronological=[...settled].sort((a,b)=>new Date(a.settled_at||a.settle_at)-new Date(b.settled_at||b.settle_at));
+  const startEquity=Math.max(1,equity-realized-unrealized);
+  let curve=startEquity,peak=startEquity,maxDd=0;
+  chronological.forEach(t=>{
+    curve+=Number(t.profit||0);
+    peak=Math.max(peak,curve);
+    if(peak>0)maxDd=Math.max(maxDd,(peak-curve)/peak*100);
+  });
+
+  return {settled,pending,realized,turnover,wins,winRate,roi,avg,openCapital,unrealized,available,equity,maxDd};
+}
+
+function paintPnl(el,value,suffix=""){
+  if(!el)return;
+  const v=Number(value||0);
+  el.textContent=(v>0?"+":"")+money(v)+suffix;
+  el.classList.toggle("live-pnl-positive",v>0);
+  el.classList.toggle("live-pnl-negative",v<0);
+}
+
+function updateProfessionalPortfolio(){
+  const st=calculateUserTradingStats();
+
+  const equity=document.getElementById("portfolioEquity");
+  if(equity)equity.textContent=money(st.equity)+" USDT";
+  paintPnl(document.getElementById("portfolioUnrealized"),st.unrealized," USDT");
+
+  const av=document.getElementById("portfolioAvailable");
+  const op=document.getElementById("portfolioOpen");
+  if(av)av.textContent=money(st.available);
+  if(op)op.textContent=money(st.openCapital);
+
+  const denom=Math.max(.000001,st.available+st.openCapital);
+  const exposedPct=Math.max(0,Math.min(100,st.openCapital/denom*100));
+  const badge=document.getElementById("portfolioExposureBadge");
+  if(badge)badge.textContent=exposedPct.toFixed(1)+"% exposed";
+  const availableBar=document.getElementById("portfolioAvailableBar");
+  const openBar=document.getElementById("portfolioOpenBar");
+  if(availableBar)availableBar.style.width=(100-exposedPct)+"%";
+  if(openBar)openBar.style.width=exposedPct+"%";
+
+  paintPnl(document.getElementById("statRealizedPnl"),st.realized);
+  const roi=document.getElementById("statTradeRoi");
+  if(roi){roi.textContent=(st.roi>0?"+":"")+st.roi.toFixed(2)+"%";roi.classList.toggle("live-pnl-positive",st.roi>0);roi.classList.toggle("live-pnl-negative",st.roi<0)}
+  const wr=document.getElementById("statWinRateUser");if(wr)wr.textContent=st.winRate.toFixed(2)+"%";
+  const tc=document.getElementById("statTradeCountUser");if(tc)tc.textContent=String(st.settled.length);
+  paintPnl(document.getElementById("statAveragePnl"),st.avg);
+  const dd=document.getElementById("statMaxDrawdown");if(dd)dd.textContent=st.maxDd.toFixed(2)+"%";
+
+  // Live P/L for currently rendered order cards.
+  st.pending.forEach(t=>{
+    const pnl=liveMarketPnlForTrade(t);
+    const move=Number(t.open_price)>0
+      ? ((Number(btcPrice||0)-Number(t.open_price))/Number(t.open_price))*100
+      : 0;
+    paintPnl(document.getElementById("live-pnl-"+t.id),pnl," USDT");
+    const m=document.getElementById("live-move-"+t.id);
+    if(m)m.textContent=(move>0?"+":"")+move.toFixed(3)+"%";
+  });
+
+  setTradeRiskPercent(tradeRiskPercent);
+}
+
 function activePositionHTML(t){
   return `<div class="card position" data-trade-id="${t.id}">
     <div class="position-header">
@@ -4196,7 +4661,8 @@ function activePositionHTML(t){
       <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}S</strong></div>
       <div class="trade-detail"><span class="muted">Capital Used</span><strong>${money(t.capital_pct)}%</strong></div>
       <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
-      <div class="trade-detail"><span class="muted">Win return</span><strong class="green">+${money(t.yield_pct)}%</strong></div>
+      <div class="trade-detail"><span class="muted">Live P/L</span><strong id="live-pnl-${t.id}">0.00 USDT</strong></div>
+      <div class="trade-detail"><span class="muted">Market move</span><strong id="live-move-${t.id}">0.000%</strong></div>
       <div class="trade-detail"><span class="muted">Opening Price</span><strong>${price(t.open_price)}</strong></div>
       <div class="trade-detail"><span class="muted">${Date.now()<new Date(t.opened_at).getTime()?"Starts at":"Order Time"}</span><strong>${formatDate(t.opened_at)}</strong></div>
     </div>
@@ -4243,7 +4709,13 @@ async function settleTrade(id){
     p_close_price:closePrice>0?closePrice:null
   });
   settlingTrades.delete(id);
-  if(error){console.error(error);return}
+  if(error){
+    console.error(error);
+    if(String(error.message||"").includes("LIVE_MARKET_PRICE_REQUIRED")){
+      showMessage("tradeMessage","Position arrivée à échéance : attente du prochain prix BTC live pour le règlement.","error");
+    }
+    return;
+  }
   await refreshEverything();
   if(data){
     const pnl=Number(data.profit||0);
@@ -4272,7 +4744,8 @@ function renderHistory(){
       <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}s</span></div>
       <div class="trade-history-line"><span>time period</span><strong>${hm(opened)} ~ ${hm(settledAt)}</strong></div>
       <div class="trade-history-line"><span>profit and loss</span><strong class="${profitClass}">${profit>=0?"+":""}${money(profit)}</strong></div>
-      <div class="trade-history-line"><span>rate of return</span><strong class="${profit>=0?"profit-pos":"profit-neg"}">${profit<0?"-100.00":money(t.yield_pct)}%</strong></div>
+      <div class="trade-history-line"><span>return on position</span><strong class="${profit>=0?"profit-pos":"profit-neg"}">${Number(t.amount)>0?((profit/Number(t.amount))*100).toFixed(3):"0.000"}%</strong></div>
+      <div class="trade-history-line"><span>capital risk</span><strong>${money(t.capital_pct)}%</strong></div>
       <div class="trade-history-line"><span>order quantity</span><strong>${money(t.amount)}</strong></div>
       <div class="trade-history-line"><span>opening price</span><strong>${price(t.open_price)}</strong></div>
       <div class="trade-history-line"><span>settlement price</span><strong>${price(t.close_price)}</strong></div>
@@ -4545,6 +5018,36 @@ async function updateInitialBalance(){
   alert("Nouveau solde initial DEMO enregistré.");
 }
 
+
+function updateMonitoringUI(){
+  if(!isCurrentUserAdmin)return;
+  const auth=document.getElementById("monitorAuth");
+  const market=document.getElementById("monitorMarket");
+  const tick=document.getElementById("monitorTick");
+  const positions=document.getElementById("monitorPositions");
+  const funding=document.getElementById("monitorFunding");
+  const notifications=document.getElementById("monitorNotifications");
+  const overall=document.getElementById("monitoringOverall");
+
+  if(auth)auth.textContent=currentUser?"Connected":"Disconnected";
+
+  const updated=Number(LIVE_MARKET?.BTCUSDT?.updatedAt||0);
+  const age=updated?Date.now()-updated:Infinity;
+  if(market)market.textContent=age<8000?"Live":(navigator.onLine?"Delayed":"Offline");
+  if(tick)tick.textContent=updated?Math.max(0,Math.round(age/1000))+"s ago":"—";
+  if(positions)positions.textContent=String((adminTrades||[]).filter(t=>t.status==="PENDING").length);
+  if(funding)funding.textContent=String((adminFunding||[]).filter(r=>r.status==="PENDING").length);
+  if(notifications)notifications.textContent=String(userNotifications.filter(n=>!n.read_at).length);
+
+  const ok=!!currentUser && age<15000 && navigator.onLine;
+  if(overall){
+    overall.textContent=ok?"Operational":"Attention";
+    overall.classList.toggle("ok",ok);
+    overall.classList.toggle("warn",!ok);
+  }
+}
+setInterval(updateMonitoringUI,3000);
+
 function updateAdminStats(){
   const statUsers=document.getElementById("statUsers");
   const statCodes=document.getElementById("statCodes");
@@ -4554,6 +5057,7 @@ function updateAdminStats(){
   if(statCodes)statCodes.textContent=adminCodes.filter(c=>c.active&&!c.used_at&&(!c.expires_at||new Date(c.expires_at)>new Date())).length;
   if(statPending)statPending.textContent=adminTrades.filter(t=>t.status==="PENDING").length;
   if(statFunding)statFunding.textContent=adminFunding.filter(r=>r.status==="PENDING").length;
+  updateMonitoringUI();
 }
 
 /* ===== MY ASSETS / WALLET DEMO LOGIC ===== */
@@ -5709,6 +6213,7 @@ function applyMarketUpdate(symbol,data={}){
     btcChartLastLiveTick=Date.now();
     ingestBtcTick(p,Date.now(),vol,data.source||'market');
     updateTradeFromMarket();
+    updateProfessionalPortfolio();
 
     if(data.source==="coinbase-ws"){
       setTradeChartConnectionStatus("LIVE · REAL TIME","live");
@@ -6066,6 +6571,40 @@ function toggleDemoMode(){
   sw?.classList.add("on");
   alert("NexaTrade currently supports DEMO mode only.");
 }
+
+function openAccountDetails(){
+  openPersonalSub("accountPage");
+  const email=currentUser?.email||currentUser?.phone||"—";
+  const id=profile?.account_id||currentUser?.id||"—";
+  const name=profile?.display_name||"";
+  const identity=String(profile?.identity_status||"UNVERIFIED").toUpperCase();
+  const emailVerified=!!(currentUser?.email_confirmed_at||currentUser?.confirmed_at);
+
+  const dn=document.getElementById("accountDisplayName");if(dn)dn.value=name;
+  const dt=document.getElementById("accountDisplayTitle");if(dt)dt.textContent=name||"NexaTrade account";
+  const ids=document.getElementById("accountIdSummary");if(ids)ids.textContent="ID "+id;
+  const em=document.getElementById("accountEmail");if(em)em.textContent=email;
+  const es=document.getElementById("accountEmailStatus");if(es)es.textContent=emailVerified?"Verified":"Pending verification";
+  const is=document.getElementById("accountIdentityStatus");if(is)is.textContent=identity;
+  const ca=document.getElementById("accountCreatedAt");if(ca)ca.textContent=formatDate(currentUser?.created_at||profile?.created_at);
+  const dev=document.getElementById("accountDevice");
+  if(dev)dev.textContent=(navigator.userAgentData?.platform||navigator.platform||"Browser")+" · "+(navigator.userAgentData?.mobile?"Mobile":"Web");
+
+  const pill=document.getElementById("accountVerifyPill");
+  if(pill)pill.textContent=identity==="VERIFIED"?"Verified":identity;
+}
+
+async function saveAccountDisplayName(){
+  const name=String(document.getElementById("accountDisplayName")?.value||"").trim();
+  const msg=document.getElementById("accountProfileMsg");
+  if(!name){if(msg)msg.textContent="Enter a display name.";return}
+  const {error}=await sb.from("profiles").update({display_name:name}).eq("user_id",currentUser.id);
+  if(error){if(msg)msg.textContent=error.message;return}
+  if(msg)msg.textContent="Profile updated.";
+  await loadProfile();
+  openAccountDetails();
+}
+
 async function changeAccountPassword(){
   const msg=document.getElementById("securityMsg"), current=document.getElementById("secCurrent").value;
   const next=document.getElementById("secNew").value, confirm=document.getElementById("secConfirm").value;
