@@ -1991,6 +1991,14 @@ body.login-gate-active{
   border-color:#efc2c8!important;
 }
 
+
+#tradeChartStatus{display:none!important}
+.trade-chart-wrap{min-height:410px!important}
+.trade-canvas{height:410px!important}
+@media(max-width:899px){
+ .trade-chart-wrap{min-height:370px!important}
+ .trade-canvas{height:370px!important}
+}
 </style>
 </head>
 <body>
@@ -3539,6 +3547,7 @@ async function placeDemoTrade(direction){
 
   const dir=String(direction||"").toUpperCase();
   if(!["CALL","PUT"].includes(dir))return;
+  setTradeChartDirection(dir);
 
   const amount=Number(document.getElementById("tradeAmount")?.value||0);
   const available=Number(profile?.balance||0);
@@ -3767,44 +3776,85 @@ function chartCandlesForTimeframe(){
   return [...m.values()].sort((a,b)=>a.time-b.time);
 }
 function drawTradeChart(){
-  const c=document.getElementById("tradeCandleCanvas");if(!c)return;
-  const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
-  const d=window.devicePixelRatio||1;c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);
-  const x=c.getContext("2d");x.setTransform(d,0,0,d,0,0);
-  const W=r.width,H=r.height;x.clearRect(0,0,W,H);
-  const left=8,right=72,top=18,bottom=28,plotW=W-left-right,plotH=H-top-bottom;
-  x.strokeStyle="#edf0f2";x.lineWidth=1;x.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.fillStyle="#7f8996";
-  for(let i=0;i<=4;i++){const y=top+plotH*i/4;x.beginPath();x.moveTo(left,y);x.lineTo(W-right+4,y);x.stroke()}
-  const allCandles=chartCandlesForTimeframe();
-  if(!allCandles.length)return;
-  clampTradeChartView();
-  const end=Math.max(0,allCandles.length-tradeChartOffset);
-  const start=Math.max(0,end-tradeChartVisibleCount);
-  const candles=allCandles.slice(start,end);
-  if(!candles.length)return;
-  updateTradeChartZoomLabel();
-  let min=Math.min(...candles.map(v=>v.low)),max=Math.max(...candles.map(v=>v.high));
-  const span=Math.max(max-min,max*.0008);min-=span*.08;max+=span*.08;
-  const yy=v=>top+(max-v)/(max-min)*plotH;
-  const step=plotW/candles.length,bw=Math.max(2,Math.min(7,step*.78));
-  candles.forEach((v,i)=>{const cx=left+(i+.5)*step,up=v.close>=v.open,col=up?"#28bd89":"#f33762";x.strokeStyle=col;x.fillStyle=col;x.beginPath();x.moveTo(cx,yy(v.high));x.lineTo(cx,yy(v.low));x.stroke();const y1=yy(v.open),y2=yy(v.close);x.fillRect(cx-bw/2,Math.min(y1,y2),bw,Math.max(2,Math.abs(y1-y2)))});
-  x.fillStyle="#7f8996";x.textAlign="left";
-  for(let i=0;i<=4;i++){const v=max-(max-min)*i/4;x.fillText(livePriceFormat(v),W-right+8,top+plotH*i/4+4)}
-  const last=candles[candles.length-1],ly=yy(last.close);
-  const directionColor=tradeChartDirection==="PUT"?"#f33762":"#20bd8a";
-  x.strokeStyle=directionColor;
-  x.lineWidth=1.4;
-  x.setLineDash([5,5]);
-  x.beginPath();
-  x.moveTo(left,ly);
-  x.lineTo(W-right+4,ly);
-  x.stroke();
-  x.setLineDash([]);
-  x.fillStyle=directionColor;
-  x.fillRect(W-right+5,ly-10,right-8,20);
-  x.fillStyle="#fff";
-  x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";
-  x.fillText(livePriceFormat(last.close),W-right+9,ly+4);
+ const c=document.getElementById("tradeCandleCanvas");if(!c)return;
+ const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
+ const d=window.devicePixelRatio||1,W=r.width,H=Math.max(340,r.height);
+ c.width=Math.round(W*d);c.height=Math.round(H*d);
+ const x=c.getContext("2d");x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,W,H);
+ x.fillStyle="#fff";x.fillRect(0,0,W,H);
+
+ const all=chartCandlesForTimeframe();if(!all.length)return;
+ clampTradeChartView();
+ const ve=Math.max(0,all.length-tradeChartOffset),vs=Math.max(0,ve-tradeChartVisibleCount);
+ const candles=all.slice(vs,ve);if(!candles.length)return;
+
+ const left=8,right=76,top=24,bottom=27,volH=Math.max(82,H*.24);
+ const priceBottom=H-volH-bottom-12,priceH=Math.max(145,priceBottom-top);
+ const highs=candles.map(v=>+v.high),lows=candles.map(v=>+v.low);
+ let max=Math.max(...highs),min=Math.min(...lows);
+ const pad=Math.max((max-min)*.08,max*.0003);max+=pad;min-=pad;
+ const yy=v=>top+(max-v)/(max-min)*priceH;
+ const plotW=W-left-right,step=plotW/candles.length,bw=Math.max(2,Math.min(9,step*.65));
+ const compact=n=>{n=+n||0;if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2).replace(/\.?0+$/,"")+"M";if(Math.abs(n)>=1e3)return(n/1e3).toFixed(1).replace(/\.0$/,"")+"K";return Math.round(n)+""};
+
+ // Price grid and right-side price levels.
+ x.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="left";
+ for(let i=0;i<=5;i++){
+   const py=top+priceH*i/5,p=max-(max-min)*i/5;
+   x.strokeStyle="#edf0f2";x.lineWidth=1;x.setLineDash([]);
+   x.beginPath();x.moveTo(left,py);x.lineTo(W-right+3,py);x.stroke();
+   x.fillStyle="#7f8996";x.fillText(livePriceFormat(p),W-right+7,py+4);
+ }
+
+ // Candles.
+ candles.forEach((v,i)=>{
+   const cx=left+(i+.5)*step,up=v.close>=v.open,col=up?"#28bd89":"#f33762";
+   x.strokeStyle=col;x.fillStyle=col;x.lineWidth=1.1;
+   x.beginPath();x.moveTo(cx,yy(v.high));x.lineTo(cx,yy(v.low));x.stroke();
+   const y1=yy(v.open),y2=yy(v.close);
+   x.fillRect(cx-bw/2,Math.min(y1,y2),bw,Math.max(2,Math.abs(y1-y2)));
+ });
+
+ // Moving averages MA5 / MA10 / MA20.
+ const avg=(idx,n)=>{if(idx<n-1)return null;let q=0;for(let j=idx-n+1;j<=idx;j++)q+=+candles[j].close;return q/n};
+ const ma=(n,col)=>{x.strokeStyle=col;x.lineWidth=1.25;x.beginPath();let begun=false;candles.forEach((_,i)=>{const a=avg(i,n);if(a==null)return;const px=left+(i+.5)*step,py=yy(a);if(!begun){x.moveTo(px,py);begun=true}else x.lineTo(px,py)});if(begun)x.stroke()};
+ ma(5,"#ff8a00");ma(10,"#9867d7");ma(20,"#287cf5");
+
+ // Visible high/low annotations.
+ const rawHi=Math.max(...highs),rawLo=Math.min(...lows),hiI=highs.indexOf(rawHi),loI=lows.indexOf(rawLo);
+ const note=(i,v,high)=>{const px=left+(i+.5)*step,py=yy(v);x.fillStyle="#75818e";x.font="10px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="center";x.fillText((high?"↘ ":"↗ ")+livePriceFormat(v),px,Math.max(top+10,Math.min(priceBottom-3,py+(high?-8:15))))};
+ note(hiI,rawHi,true);note(loI,rawLo,false);
+
+ // Volume.
+ const volTop=priceBottom+20,volBottom=H-bottom,vols=candles.map(v=>+v.volume||0),maxVol=Math.max(...vols,1);
+ x.strokeStyle="#edf0f2";x.beginPath();x.moveTo(left,volTop);x.lineTo(W-right,volTop);x.stroke();
+ candles.forEach((v,i)=>{const cx=left+(i+.5)*step,vh=(+v.volume||0)/maxVol*(volBottom-volTop-9);x.fillStyle=v.close>=v.open?"rgba(40,189,137,.66)":"rgba(243,55,98,.66)";x.fillRect(cx-bw/2,volBottom-vh,bw,Math.max(1,vh))});
+
+ // MA and volume values.
+ const li=candles.length-1;
+ x.font="10px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="left";
+ let lx=left+4,legendY=volTop+13;
+ const legend=(label,val,col)=>{const t=label+": "+(val==null?"--":compact(val));x.fillStyle=col;x.fillText(t,lx,legendY);lx+=x.measureText(t).width+7};
+ legend("MA5",avg(li,5),"#ff8a00");legend("MA10",avg(li,10),"#9867d7");legend("MA20",avg(li,20),"#287cf5");legend("VOLUME",vols[li],"#28bd89");
+
+ // Volume levels on right: dynamically displays K/M values such as 30K, 300K, 1.5M.
+ x.fillStyle="#7f8996";x.textAlign="left";
+ [1,.6,.2].forEach(q=>{const py=volTop+(1-q)*(volBottom-volTop);x.fillText(compact(maxVol*q),W-right+7,py+4)});
+
+ // Time labels.
+ x.fillStyle="#7f8996";x.textAlign="center";
+ [.15,.5,.85].forEach(q=>{const i=Math.min(li,Math.max(0,Math.round(li*q))),dt=new Date(candles[i].time);x.fillText(dt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:false}),left+plotW*q,H-7)});
+
+ // Current-price median line: CALL=green, PUT=red.
+ const last=candles[li],ly=yy(last.close);
+ const isPut=String(tradeChartDirection||"CALL").toUpperCase()==="PUT";
+ const directionColor=isPut?"#f33762":"#20bd8a";
+ x.strokeStyle=directionColor;x.lineWidth=1.4;x.setLineDash([5,5]);
+ x.beginPath();x.moveTo(left,ly);x.lineTo(W-right+4,ly);x.stroke();x.setLineDash([]);
+ x.fillStyle=directionColor;x.fillRect(W-right+4,ly-11,right-6,22);
+ x.fillStyle="#fff";x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="left";
+ x.fillText(livePriceFormat(last.close),W-right+8,ly+4);
+ updateTradeChartZoomLabel();
 }
 window.addEventListener("resize",drawTradeChart);
 
