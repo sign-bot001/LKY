@@ -3818,7 +3818,7 @@ function drawTradeChart(){
  // Moving averages MA5 / MA10 / MA20.
  const avg=(idx,n)=>{if(idx<n-1)return null;let q=0;for(let j=idx-n+1;j<=idx;j++)q+=+candles[j].close;return q/n};
  const ma=(n,col)=>{x.strokeStyle=col;x.lineWidth=1.25;x.beginPath();let begun=false;candles.forEach((_,i)=>{const a=avg(i,n);if(a==null)return;const px=left+(i+.5)*step,py=yy(a);if(!begun){x.moveTo(px,py);begun=true}else x.lineTo(px,py)});if(begun)x.stroke()};
- ma(5,"#ff8a00");ma(10,"#9867d7");ma(20,"#287cf5");
+ // MA overlay lines removed on request; keep numeric MA info only.
 
  // Visible high/low annotations.
  const rawHi=Math.max(...highs),rawLo=Math.min(...lows),hiI=highs.indexOf(rawHi),loI=lows.indexOf(rawLo);
@@ -3845,13 +3845,13 @@ function drawTradeChart(){
  x.fillStyle="#7f8996";x.textAlign="center";
  [.15,.5,.85].forEach(q=>{const i=Math.min(li,Math.max(0,Math.round(li*q))),dt=new Date(candles[i].time);x.fillText(dt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:false}),left+plotW*q,H-7)});
 
- // Current-price median line: CALL=green, PUT=red.
+ // Current live-price dashed line follows the active / last candle color like a real trading chart.
  const last=candles[li],ly=yy(last.close);
- const isPut=String(tradeChartDirection||"CALL").toUpperCase()==="PUT";
- const directionColor=isPut?"#f33762":"#20bd8a";
- x.strokeStyle=directionColor;x.lineWidth=1.4;x.setLineDash([5,5]);
+ const lastCandleUp=Number(last.close) >= Number(last.open);
+ const liveLineColor=lastCandleUp ? "#20bd8a" : "#f33762";
+ x.strokeStyle=liveLineColor;x.lineWidth=1.4;x.setLineDash([5,5]);
  x.beginPath();x.moveTo(left,ly);x.lineTo(W-right+4,ly);x.stroke();x.setLineDash([]);
- x.fillStyle=directionColor;x.fillRect(W-right+4,ly-11,right-6,22);
+ x.fillStyle=liveLineColor;x.fillRect(W-right+4,ly-11,right-6,22);
  x.fillStyle="#fff";x.font="bold 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="left";
  x.fillText(livePriceFormat(last.close),W-right+8,ly+4);
  updateTradeChartZoomLabel();
