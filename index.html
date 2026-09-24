@@ -2128,6 +2128,50 @@ body.login-gate-active{
 .wallet-input.input-invalid,.personal-input.input-invalid{border:1.5px solid #e34a5f!important;background:#fff7f8!important;box-shadow:0 0 0 3px rgba(227,74,95,.07)!important}
 .wallet-input.input-valid,.personal-input.input-valid{border:1.5px solid #69d860!important;background:#fbfff9!important}
 
+
+.wallet-coin.sol{background:linear-gradient(145deg,#292c2f,#111);color:#7bf171}
+
+/* ===== Separate DEMO crypto balances ===== */
+.asset-holdings-card{
+  margin:0 22px 22px;
+  padding:21px;
+  border-radius:24px;
+  background:#fff;
+  border:1px solid #dce8da;
+  box-shadow:0 9px 26px rgba(37,78,41,.065);
+}
+.asset-holding-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  padding:15px 0;
+  border-bottom:1px solid #e9eee7;
+}
+.asset-holding-row:last-child{border-bottom:0}
+.asset-holding-main{display:flex;align-items:center;gap:12px;min-width:0}
+.asset-holding-main>div{min-width:0}
+.asset-holding-main strong{display:block;font-size:15px;color:#222d24}
+.asset-holding-main span:not(.asset-holding-icon){display:block;margin-top:3px;font-size:10px;color:#909992}
+.asset-holding-icon{
+  width:39px;height:39px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:18px;font-weight:900;
+}
+.asset-holding-icon.usdt{background:#2fc3a5;color:#fff}
+.asset-holding-icon.btc{background:#f7931a;color:#fff}
+.asset-holding-icon.eth{background:#627eea;color:#fff}
+.asset-holding-icon.sol{background:#202326;color:#77f0a7}
+.asset-holding-values{text-align:right;min-width:0}
+.asset-holding-values strong{display:block;font-size:14px;color:#202a22}
+.asset-holding-values span{display:block;margin-top:4px;font-size:10px;color:#8a958d}
+@media(max-width:430px){
+  .asset-holdings-card{margin-left:18px;margin-right:18px}
+}
+@media(min-width:900px){
+  .asset-holdings-card{margin-left:0;margin-right:0}
+}
+
 </style>
 </head>
 <body>
@@ -2590,6 +2634,33 @@ body.login-gate-active{
       </div>
     </div>
 
+    <div class="asset-holdings-card">
+      <div class="pro-card-head">
+        <div>
+          <span class="pro-eyebrow">ASSET BALANCES</span>
+          <h3>My crypto balances</h3>
+        </div>
+        <span class="pro-period">DEMO</span>
+      </div>
+
+      <div class="asset-holding-row">
+        <div class="asset-holding-main"><span class="asset-holding-icon usdt">₮</span><div><strong>USDT</strong><span>Tether</span></div></div>
+        <div class="asset-holding-values"><strong id="holdingUSDT">0.00</strong><span id="holdingUSDTUsd">≈ $0.00</span></div>
+      </div>
+      <div class="asset-holding-row">
+        <div class="asset-holding-main"><span class="asset-holding-icon btc">₿</span><div><strong>BTC</strong><span>Bitcoin</span></div></div>
+        <div class="asset-holding-values"><strong id="holdingBTC">0.00000000</strong><span id="holdingBTCUsd">≈ $0.00</span></div>
+      </div>
+      <div class="asset-holding-row">
+        <div class="asset-holding-main"><span class="asset-holding-icon eth">◆</span><div><strong>ETH</strong><span>Ethereum</span></div></div>
+        <div class="asset-holding-values"><strong id="holdingETH">0.000000</strong><span id="holdingETHUsd">≈ $0.00</span></div>
+      </div>
+      <div class="asset-holding-row">
+        <div class="asset-holding-main"><span class="asset-holding-icon sol">◎</span><div><strong>SOL</strong><span>Solana</span></div></div>
+        <div class="asset-holding-values"><strong id="holdingSOL">0.000000</strong><span id="holdingSOLUsd">≈ $0.00</span></div>
+      </div>
+    </div>
+
     <div class="pro-portfolio-card">
       <div class="pro-card-head">
         <div>
@@ -2856,10 +2927,6 @@ body.login-gate-active{
       <input id="withdrawAddress" class="wallet-field wallet-input" placeholder="DEMO wallet address only" maxlength="90" oninput="validateWithdrawForm(false)">
       <div id="withdrawAddressError" class="field-error hidden"></div>
 
-      <div class="wallet-label"><span>fund password</span></div>
-      <input id="withdrawFundPassword" class="wallet-field wallet-input" type="password" minlength="6" maxlength="64" autocomplete="off" placeholder="DEMO only — do not enter a real password" oninput="validateWithdrawForm(false)">
-      <div id="withdrawPasswordError" class="field-error hidden"></div>
-
       <div class="wallet-label"><span>quantity</span><span>available: <strong id="withdrawAvailable">0.00</strong></span></div>
       <div class="wallet-quantity">
         <input id="withdrawQuantity" class="wallet-field wallet-input" type="number" min="0.01" step="0.01" value="0" oninput="updateWithdrawFee();validateWithdrawForm(false)">
@@ -2926,6 +2993,9 @@ body.login-gate-active{
         </button>
         <button class="wallet-currency-row" data-currency="BTC" onclick="selectRechargeCurrency('BTC')">
           <span class="wallet-currency-main"><span class="wallet-coin btc">₿</span>BTC</span><span class="wallet-chevron">›</span>
+        </button>
+        <button class="wallet-currency-row" data-currency="SOL" onclick="selectRechargeCurrency('SOL')">
+          <span class="wallet-currency-main"><span class="wallet-coin sol">◎</span>SOL</span><span class="wallet-chevron">›</span>
         </button>
         <button class="wallet-currency-row" data-currency="USDC" onclick="selectRechargeCurrency('USDC')">
           <span class="wallet-currency-main"><span class="wallet-coin usdc">$</span>USDC</span><span class="wallet-chevron">›</span>
@@ -3111,8 +3181,7 @@ body.login-gate-active{
   <!-- Withdrawal network selector -->
   <div id="walletNetworkSheetOverlay" class="wallet-sheet-overlay hidden" onclick="if(event.target===this)closeWalletSheet('walletNetworkSheetOverlay')">
     <div class="wallet-sheet wallet-sheet-simple">
-      <button class="wallet-sheet-row" onclick="selectWithdrawNetwork('TRC20')"><span>TRC20</span><span id="networkCheckTRC20" class="wallet-sheet-check">✓</span></button>
-      <button class="wallet-sheet-row" onclick="selectWithdrawNetwork('ERC20')"><span>ERC20</span><span id="networkCheckERC20" class="wallet-sheet-check"></span></button>
+      <div id="walletNetworkSheetRows"></div>
     </div>
   </div>
 
@@ -3392,6 +3461,31 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,{
 let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false;
 let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[];
 let btcPrice=112840.00, ethPrice=4410.00, settlingTrades=new Set();
+
+const SUPPORTED_ASSETS=["USDT","BTC","ETH","SOL"];
+let assetBalances={USDT:0,BTC:0,ETH:0,SOL:0};
+
+function assetDecimals(currency){
+  return {USDT:2,BTC:8,ETH:6,SOL:6}[String(currency||"").toUpperCase()] ?? 6;
+}
+function assetAmount(currency,value){
+  const n=Number(value||0);
+  return Number.isFinite(n)?n.toFixed(assetDecimals(currency)):(0).toFixed(assetDecimals(currency));
+}
+function assetUsdPrice(currency){
+  const c=String(currency||"").toUpperCase();
+  if(c==="USDT")return 1;
+  if(c==="BTC")return Number(LIVE_MARKET?.BTCUSDT?.price||btcPrice||0);
+  if(c==="ETH")return Number(LIVE_MARKET?.ETHUSDT?.price||ethPrice||0);
+  if(c==="SOL")return Number(LIVE_MARKET?.SOLUSDT?.price||0);
+  return 0;
+}
+function assetUsdValue(currency){
+  return Number(assetBalances[currency]||0)*assetUsdPrice(currency);
+}
+function assetPortfolioUsdValue(){
+  return SUPPORTED_ASSETS.reduce((sum,c)=>sum+assetUsdValue(c),0);
+}
 let chartValues=Array.from({length:28},(_,i)=>112600+i*8+Math.random()*90);
 
 function money(n){
@@ -3437,14 +3531,15 @@ function refreshAssetVisibility(){
     eye.title=assetBalanceVisible?"Hide balance":"Show balance";
   }
 
-  const balance=Number(profile?.balance||0);
+  const totalUsd=assetPortfolioUsdValue();
   const today=assetTodayProfitValue();
+  const usdt=Number(assetBalances.USDT||0);
 
   const valueMap=[
-    ["assetBalance",assetNumber(balance)],
-    ["assetApproxBalance",assetNumber(balance)],
+    ["assetBalance",assetNumber(totalUsd)],
+    ["assetApproxBalance",assetNumber(totalUsd)],
     ["assetTodayEarnings",assetNumber(today)],
-    ["usdtBalance",assetNumber(balance)]
+    ["usdtBalance",assetAmount("USDT",usdt)]
   ];
 
   valueMap.forEach(([id,value])=>{
@@ -3452,6 +3547,27 @@ function refreshAssetVisibility(){
     if(!el)return;
     el.textContent=assetBalanceVisible?value:"••••••";
     el.classList.toggle("assets-balance-masked",!assetBalanceVisible);
+  });
+
+  const holdings=[
+    ["USDT","holdingUSDT","holdingUSDTUsd"],
+    ["BTC","holdingBTC","holdingBTCUsd"],
+    ["ETH","holdingETH","holdingETHUsd"],
+    ["SOL","holdingSOL","holdingSOLUsd"]
+  ];
+  holdings.forEach(([currency,amountId,usdId])=>{
+    const amountEl=document.getElementById(amountId);
+    const usdEl=document.getElementById(usdId);
+    const amount=assetAmount(currency,assetBalances[currency]);
+    const usd=assetNumber(assetUsdValue(currency));
+    if(amountEl){
+      amountEl.textContent=assetBalanceVisible?amount:"••••••";
+      amountEl.classList.toggle("assets-balance-masked",!assetBalanceVisible);
+    }
+    if(usdEl){
+      usdEl.textContent=assetBalanceVisible?`≈ $${usd}`:"≈ $••••••";
+      usdEl.classList.toggle("assets-balance-masked",!assetBalanceVisible);
+    }
   });
 
   ["exchangeAccountBalance","perpetualAccountBalance"].forEach(id=>{
@@ -3726,10 +3842,36 @@ async function checkAdmin(){
   adminNav.classList.toggle("hidden",!isCurrentUserAdmin);
 }
 
+async function loadAssetBalances(){
+  if(!currentUser)return;
+  const {data,error}=await sb.from("asset_balances")
+    .select("currency,balance")
+    .eq("user_id",currentUser.id);
+
+  if(error){
+    console.warn("asset_balances:",error.message||error);
+    // Compatibility fallback until the SQL patch is installed.
+    assetBalances={USDT:Number(profile?.balance||0),BTC:0,ETH:0,SOL:0};
+  }else{
+    const next={USDT:0,BTC:0,ETH:0,SOL:0};
+    (data||[]).forEach(row=>{
+      const c=String(row.currency||"").toUpperCase();
+      if(c in next)next[c]=Number(row.balance||0);
+    });
+    // profiles.balance remains the trading source of truth for USDT.
+    next.USDT=Number(profile?.balance ?? next.USDT ?? 0);
+    assetBalances=next;
+  }
+  refreshAssetVisibility();
+  updateProfessionalPortfolio();
+}
+
 async function loadProfile(){
   const {data,error}=await sb.from("profiles").select("*").eq("user_id",currentUser.id).single();
   if(error){console.error(error);return}
-  profile=data;updateUI();
+  profile=data;
+  await loadAssetBalances();
+  updateUI();
 }
 
 async function loadTrades(){
@@ -3835,6 +3977,7 @@ setInterval(()=>{if(currentUser&&!document.hidden)loadNotifications()},10000);
 
 function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== */
   const b=Number(profile?.balance||0);
+  const totalAssetUsd=assetPortfolioUsdValue();
 
   const assetBalanceEl = document.getElementById("assetBalance");
   const usdtBalanceEl = document.getElementById("usdtBalance");
@@ -3844,8 +3987,8 @@ function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== 
   const ethQuoteEl = document.getElementById("ethQuote");
   const btcTradeEl = document.getElementById("btcTrade");
 
-  if(assetBalanceEl) assetBalanceEl.textContent = assetNumber(b);
-  if(usdtBalanceEl) usdtBalanceEl.textContent = assetNumber(b);
+  if(assetBalanceEl) assetBalanceEl.textContent = assetNumber(totalAssetUsd);
+  if(usdtBalanceEl) usdtBalanceEl.textContent = assetAmount("USDT",assetBalances.USDT);
 
   if(btcHotEl) btcHotEl.textContent = price(btcPrice);
   if(ethHotEl) ethHotEl.textContent = price(ethPrice);
@@ -3862,7 +4005,7 @@ function updateUI(){/* ===== LIVE MARKET DATA — Binance public Spot API ===== 
   const ta=document.getElementById("tradeAvailable"); if(ta) ta.textContent=money(b);
 
   const approx=document.getElementById("assetApproxBalance");
-  if(approx) approx.textContent=assetNumber(b);
+  if(approx) approx.textContent=assetNumber(totalAssetUsd);
   updateAssetsTodayEarnings();
   refreshAssetVisibility();
 
@@ -4605,7 +4748,8 @@ function calculateUserTradingStats(){
   const openCapital=pending.reduce((a,t)=>a+Number(t.amount||0),0);
   const unrealized=pending.reduce((a,t)=>a+liveMarketPnlForTrade(t),0);
   const available=Number(profile?.balance||0);
-  const equity=available+openCapital+unrealized;
+  const spotAssetsUsd=assetPortfolioUsdValue();
+  const equity=spotAssetsUsd+openCapital+unrealized;
 
   // Reconstruct an approximate equity curve from realized P/L to estimate max drawdown.
   const chronological=[...settled].sort((a,b)=>new Date(a.settled_at||a.settle_at)-new Date(b.settled_at||b.settle_at));
@@ -4637,10 +4781,11 @@ function updateProfessionalPortfolio(){
 
   const av=document.getElementById("portfolioAvailable");
   const op=document.getElementById("portfolioOpen");
-  if(av)av.textContent=money(st.available);
+  if(av)av.textContent=money(assetPortfolioUsdValue());
   if(op)op.textContent=money(st.openCapital);
 
-  const denom=Math.max(.000001,st.available+st.openCapital);
+  const availableAssetsUsd=assetPortfolioUsdValue();
+  const denom=Math.max(.000001,availableAssetsUsd+st.openCapital);
   const exposedPct=Math.max(0,Math.min(100,st.openCapital/denom*100));
   const badge=document.getElementById("portfolioExposureBadge");
   if(badge)badge.textContent=exposedPct.toFixed(1)+"% exposed";
@@ -5316,7 +5461,7 @@ function applyFundingDateRange(){
   renderFundingRecords();
 }
 
-const WALLET_CURRENCIES=["USDT","ETH","BTC","USDC","DAI"];
+const WALLET_CURRENCIES=["USDT","BTC","ETH","SOL","USDC","DAI"];
 let walletCurrencyTarget="withdraw";
 let withdrawCurrency="USDT";
 let withdrawNetwork="TRC20";
@@ -5330,18 +5475,19 @@ let rechargeCurrency="USDT";
 
 function coinClass(currency){
   const c=String(currency||"USDT").toLowerCase();
-  return ["usdt","eth","btc","usdc","dai"].includes(c)?c:"usdt";
+  return ["usdt","eth","btc","sol","usdc","dai"].includes(c)?c:"usdt";
 }
 function coinGlyph(currency){
-  return {USDT:"₮",ETH:"◆",BTC:"₿",USDC:"$",DAI:"Ð"}[currency]||"¤";
+  return {USDT:"₮",ETH:"◆",BTC:"₿",SOL:"◎",USDC:"$",DAI:"Ð"}[currency]||"¤";
 }
 function walletCoinHTML(currency,id=""){
   const inner=currency==="USDT"?`<span>${coinGlyph(currency)}</span>`:coinGlyph(currency);
   return `<span ${id?`id="${id}"`:""} class="wallet-coin ${coinClass(currency)}">${inner}</span>`;
 }
 function walletAvailableFor(currency){
-  // Current NexaTrade DEMO has one Supabase demo balance denominated in USDT.
-  return currency==="USDT" ? Number(profile?.balance||0) : 0;
+  const c=String(currency||"").toUpperCase();
+  if(c==="USDT")return Number(profile?.balance ?? assetBalances.USDT ?? 0);
+  return Number(assetBalances[c]||0);
 }
 
 function isEmailVerified(){
@@ -5424,9 +5570,10 @@ function openWalletCurrencySheet(target){
 function selectWalletCurrency(currency){
   if(!WALLET_CURRENCIES.includes(currency))return;
   if(walletCurrencyTarget==="withdraw"){
+    if(!SUPPORTED_ASSETS.includes(currency))return;
     withdrawCurrency=currency;
-    // Reference provides TRC20/ERC20 for USDT. Other currencies use an illustrative DEMO network.
-    withdrawNetwork=currency==="USDT"?"TRC20":(currency==="BTC"?"BTC":currency==="ETH"?"ERC20":"ERC20");
+    const networks=DEMO_DEPOSIT_NETWORKS[currency]||[];
+    withdrawNetwork=networks[0]?.name || currency;
     refreshWithdrawUI();
   }else if(walletCurrencyTarget==="transfer"){
     transferCurrency=currency;
@@ -5455,18 +5602,28 @@ function refreshWithdrawUI(){
     icon.innerHTML=withdrawCurrency==="USDT"?`<span>${coinGlyph(withdrawCurrency)}</span>`:coinGlyph(withdrawCurrency);
   }
   if(network)network.textContent=withdrawNetwork;
-  if(available)available.textContent=money(walletAvailableFor(withdrawCurrency));
+  if(available)available.textContent=assetAmount(withdrawCurrency,walletAvailableFor(withdrawCurrency));
   updateWithdrawFee();
 }
+function withdrawNetworksForCurrency(){
+  return (DEMO_DEPOSIT_NETWORKS[withdrawCurrency]||[]).map(n=>n.name);
+}
 function openNetworkSheet(){
-  const trc=document.getElementById("networkCheckTRC20"),erc=document.getElementById("networkCheckERC20");
-  if(trc)trc.textContent=withdrawNetwork==="TRC20"?"✓":"";
-  if(erc)erc.textContent=withdrawNetwork==="ERC20"?"✓":"";
+  const rows=document.getElementById("walletNetworkSheetRows");
+  const networks=withdrawNetworksForCurrency();
+  if(rows){
+    rows.innerHTML=networks.map(name=>`
+      <button class="wallet-sheet-row" onclick="selectWithdrawNetwork(${JSON.stringify(name)})">
+        <span>${esc(name)}</span>
+        <span class="wallet-sheet-check">${name===withdrawNetwork?"✓":""}</span>
+      </button>
+    `).join("");
+  }
   document.getElementById("walletNetworkSheetOverlay")?.classList.remove("hidden");
 }
 function selectWithdrawNetwork(network){
-  // Screenshot reference exposes TRC20 / ERC20.
-  if(!["TRC20","ERC20"].includes(network))return;
+  const networks=withdrawNetworksForCurrency();
+  if(!networks.includes(network))return;
   withdrawNetwork=network;
   document.getElementById("withdrawNetworkText").textContent=network;
   closeWalletSheet("walletNetworkSheetOverlay");
@@ -5474,7 +5631,7 @@ function selectWithdrawNetwork(network){
 }
 function setWithdrawMaximum(){
   const el=document.getElementById("withdrawQuantity");
-  if(el){el.value=walletAvailableFor(withdrawCurrency).toFixed(2);updateWithdrawFee()}
+  if(el){el.value=walletAvailableFor(withdrawCurrency).toFixed(assetDecimals(withdrawCurrency));updateWithdrawFee()}
 }
 function demoWithdrawalFee(amount,currency){
   const n=Number(amount||0);
@@ -5499,30 +5656,45 @@ function walletAddressValidation(address,network,currency){
   if(!a)return {ok:false,message:"L’adresse wallet est obligatoire."};
   if(/\s/.test(a))return {ok:false,message:"L’adresse wallet ne doit contenir aucun espace."};
 
-  const n=String(network||"").toUpperCase(),c=String(currency||"").toUpperCase();
-  if(n==="TRC20"){
-    if(a.length!==34)return {ok:false,message:"Une adresse TRC20 doit contenir exactement 34 caractères."};
-    if(!/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(a))return {ok:false,message:"Format TRC20 invalide : l’adresse doit commencer par T et utiliser le format Base58."};
+  const n=String(network||"").toUpperCase();
+  const c=String(currency||"").toUpperCase();
+
+  if(n.includes("TRON")||n.includes("TRC20")){
+    if(a.length<34||a.length>35)return {ok:false,message:"Une adresse TRON/TRC20 doit contenir environ 34 caractères."};
+    if(!/^T[1-9A-HJ-NP-Za-km-z]{33,34}$/.test(a))return {ok:false,message:"Format TRON/TRC20 invalide : l’adresse doit commencer par T et utiliser le format Base58."};
     return {ok:true,message:""};
   }
-  if(n==="ERC20"||c==="ETH"){
-    if(a.length!==42)return {ok:false,message:"Une adresse ERC20/Ethereum doit contenir exactement 42 caractères (0x + 40 caractères hexadécimaux)."};
-    if(!/^0x[a-fA-F0-9]{40}$/.test(a))return {ok:false,message:"Format ERC20/Ethereum invalide. Exemple de structure : 0x suivi de 40 caractères hexadécimaux."};
+
+  if(n.includes("ETHEREUM")||n.includes("ERC20")){
+    if(a.length!==42)return {ok:false,message:"Une adresse Ethereum/ERC20 doit contenir exactement 42 caractères (0x + 40 caractères hexadécimaux)."};
+    if(!/^0x[a-fA-F0-9]{40}$/.test(a))return {ok:false,message:"Format Ethereum/ERC20 invalide."};
     return {ok:true,message:""};
   }
-  if(n==="BTC"||c==="BTC"){
+
+  if(c==="BTC"||n.includes("TAPROOT")||n.includes("HÉRITAGE")||n.includes("HERITAGE")||n.includes("BITCOIN")){
     const legacy=/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
     const segwit=/^bc1[ac-hj-np-z02-9]{11,71}$/i;
-    if(!legacy.test(a)&&!segwit.test(a))return {ok:false,message:"Format Bitcoin invalide. Utilise une adresse BTC valide de type 1…, 3… ou bc1…."};
+    if(!legacy.test(a)&&!segwit.test(a))return {ok:false,message:"Format Bitcoin invalide. Utilise une adresse BTC de type 1…, 3… ou bc1…."};
     return {ok:true,message:""};
   }
+
+  if(n.includes("SOLANA")){
+    if(a.length<32||a.length>44)return {ok:false,message:"Une adresse Solana doit contenir entre 32 et 44 caractères."};
+    if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a))return {ok:false,message:"Format Solana invalide : utilise une adresse Base58."};
+    return {ok:true,message:""};
+  }
+
+  if(n.includes("X LAYER")){
+    if(a.length<20||a.length>90)return {ok:false,message:"L’adresse X Layer doit contenir entre 20 et 90 caractères."};
+    return {ok:true,message:""};
+  }
+
   if(a.length<20||a.length>90)return {ok:false,message:"L’adresse wallet doit contenir entre 20 et 90 caractères."};
   return {ok:true,message:""};
 }
 function validateWithdrawForm(showSummary=true){
   const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
   const address=(document.getElementById("withdrawAddress")?.value||"").trim();
-  const pass=(document.getElementById("withdrawFundPassword")?.value||"").trim();
   const available=walletAvailableFor(withdrawCurrency);
   const addr=walletAddressValidation(address,withdrawNetwork,withdrawCurrency);
 
@@ -5533,13 +5705,7 @@ function validateWithdrawForm(showSummary=true){
 
   setFieldValidation("withdrawAddress","withdrawAddressError",addr.message,addr.ok);
 
-  let passMsg="";
-  if(!pass)passMsg="Le mot de passe de fonds est obligatoire.";
-  else if(pass.length<6)passMsg="Le mot de passe de fonds doit contenir au moins 6 caractères.";
-  else if(pass.length>64)passMsg="Le mot de passe de fonds ne peut pas dépasser 64 caractères.";
-  setFieldValidation("withdrawFundPassword","withdrawPasswordError",passMsg,!passMsg);
-
-  const errors=[amountMsg,addr.message,passMsg].filter(Boolean);
+  const errors=[amountMsg,addr.message].filter(Boolean);
   const summary=document.getElementById("withdrawFormError");
   if(summary){summary.textContent=showSummary&&errors.length?"Corrige les champs indiqués avant de continuer.":"";summary.classList.toggle("hidden",!showSummary||!errors.length)}
   return errors.length===0;
@@ -5549,7 +5715,6 @@ async function submitWithdrawDemo(){
   if(!routeFundingVerification("withdraw"))return;
   const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
   const address=(document.getElementById("withdrawAddress")?.value||"").trim();
-  const pass=(document.getElementById("withdrawFundPassword")?.value||"").trim();
   const available=walletAvailableFor(withdrawCurrency);
 
   if(!validateWithdrawForm(true))return;
@@ -5569,7 +5734,6 @@ async function submitWithdrawDemo(){
 
   addWalletRecord("Withdrawal request",withdrawCurrency,-amount,{network:withdrawNetwork,fee,status:"pending",confirmationWindowHours:48});
 
-  document.getElementById("withdrawFundPassword").value="";
   document.getElementById("withdrawSuccessAmount").textContent=`${money(amount)} ${withdrawCurrency}`;
   document.getElementById("withdrawSuccessNetwork").textContent=withdrawNetwork;
 
@@ -5593,8 +5757,8 @@ function filterRechargeCurrencies(){
   const q=(document.getElementById("rechargeSearch")?.value||"").trim().toUpperCase();
   document.querySelectorAll("#rechargeCurrencyList .wallet-currency-row").forEach(row=>{
     const currency=(row.dataset.currency||"").toUpperCase();
-    // The current Supabase profile has one principal DEMO balance denominated in USDT.
-    row.style.display=(currency==="USDT" && (!q||currency.includes(q)))?"flex":"none";
+    const supported=SUPPORTED_ASSETS.includes(currency) && !!DEMO_DEPOSIT_NETWORKS[currency];
+    row.style.display=(supported && (!q||currency.includes(q)))?"flex":"none";
   });
 }
 // Private DEMO configuration — addresses below are the fictitious test addresses supplied for this simulation.
@@ -5639,42 +5803,80 @@ const DEMO_DEPOSIT_NETWORKS={
   ],
   BTC:[
     {
-      id:"solana",
-      name:"Solana",
-      icon:"◎",
-      address:"3JgG9kMPchc7YwnVkFS1WRWRWjFk3Dscvha3L1noGisM",
-      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFfElEQVR42u3dy47iMBAFUGeU///lngWb0SAkq6iHoc9Zd0MccmUo2eXr5+dnwe/2xy0AMQAxADEAMQAxADEAMQAxADEAMQAxADEAMQAxADEAMYD/3bF/u65r8KKfd8w9X0/sb3ZGGvuvnVHM3vm6Ozb7bJgNQAxADEAMQAxg2531QnX9jmJVl856RWcNKus+19WyTns2zAYgBiAGIAYgBrDtrnvp2K/4zpU2WXWGrJU2sdpR1jXXrcuafTbMBiAGIAYgBiAGsO3+jmE4we1fsfVCnSuazAYgBiAGIAYgBnCkL6kUZa1RydqTlbVaKbbOJ3bNsVF8R+3IbABiAGIAYgBiAGut0kpRZw0hq09R3es8y9rJtXPNs3dj9tkwG4AYgBiAGIAYwLa0StHsiVdZa2+yevXU9fOpu566T3D22TAbgBiAGIAYgBjAtmCl6Pw9R53doXfuz2wv6E6fuB/NbABiAGIAYgBiAGutA/sU1XVjzjrLfnbsO3cjtnoq9l6x+3za2i2zAYgBiAGIAYgBrLXClaK63UxZ1ZvZ8+U7ryfrvWKfV93arc79cWYDEAMQAxADEANYayXuPuvcXdVZQ+h8r+8Y6c6TUPf8mA1ADEAMQAxADOAN9/mXONv3ZvYM+tPW+cQ+r/NPTDMbgBiAGIAYgBjA40f8aSt/TusF3bnXLKuTUmddqO6udt55swGIAYgBiAGIAay1Djz77LRz4c+vw9RVVGJj76zwZH0WZgMQAxADEAMQA3j8iD+t5lNXH5itn9S9e90oZldhOfsMfCkCMQAxADGAdml9irJ+s2dVrurWFGWZ7epcd0JZ1udV94yZDUAMQAxADEAM4IW0SlFW3aNuldFptazYPcy687ETymKf12n748wGIAYgBiAGIAbwQrBSNNt7ua46kbWCqPO0r6zVOHX70c7vGWU2ADEAMQAxADGAx4/v2f7MdSeqPzutKlU3itnzyDo7X2V9ymYDEAMQAxADEANYa5WuKapbV1O3Nim2AytrFHXXXFfPqeueHRuX2QDEAMQAxADEAN5wdXYkzlK3+mX2hLK6UZw20qxnzO4z8KUIxADEAMQAUt11Lz27m6mu703n6pfzT0PbGWln1yazAYgBiAGIAYgBvKG1T1HwEhtrR886zyOrG8XOFcbeK6smVvc6ZgMQAxADEAMQA9h2dfYfnu2HvHOFMZ27q+rqJ6fVhTqfBLMBiAGIAYgBiAE8fqCftj6ns6NO5zliWdcTe53Z9+p8NqwpAl+KQAxADEAM4A1pfYpO26W1817POvsz1/VEijntrLq6k87MBiAGIAYgBiAG8EJrR+uY0yoYWaPoXGE1u2IndjfMBiAGIAYgBiAG0O7ufLO6tSV1J3DVrWPJOp2ts/NzbBSxa+5c32U2ADEAMQAxADGAtVZppSirylG3+mX2NLTYPeysL2VVpTqrbfoUgS9FIAYgBiAG8IZgpSi2Fij2NzGdlZCs64ndn9k1RbMd0c0GIAYgBiAGIAaQKlgpqquo7Mjq6jxbTarbk1U39tgrd55MZ00R+FIEYgBiAGIAbyg8+yxL5w61nd1ep3V+rrs/p638MRuAGIAYgBiAGECx1j5FO2J1hs5zxGZPMcu6G7OfcuyVs9aSmQ1ADEAMQAxADOCF+zcPvm5/0+x5bbGRdnYcynp3swGIAYgBiAGIAaT61ZWi83v+1HW0ztox19lNqO6VzQYgBiAGIAYgBrDWKq0Uza4S6ewm1HnNOzp31dWNq/PTMRuAGIAYgBiAGMBaK7FSNHsa2s71dJ7klVUb+cQz6M+vC5kNQAxADEAMQAzghesTT6oCswGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIART7C9JFxSbGuOFGAAAAAElFTkSuQmCC',
+      id:"taproot",
+      name:"Taproot",
+      icon:"₿",
+      address:"bc1pd24jdwdaajgnuq7qdzlf5682zvxrjepccs9nmsgar7c49nkxkjwsu3elvy",
+      qr:'data:image/png;base64,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',
       minimum:"BTC 0.00000001",
-      arrival:"~1 minute",
-      withdraw:"~1 minute",
-      contract:"***aznnkn",
-      warning:"DEMO privé — adresse fictive BTC/Solana fournie pour cette simulation. Aucun transfert réel n’est attendu."
+      arrival:"~10 minutes",
+      withdraw:"~20 minutes",
+      contract:"—",
+      warning:"DEMO privé — adresse fictive BTC/Taproot fournie pour cette simulation."
     },
     {
-      id:"bitcoin",
-      name:"Bitcoin",
+      id:"legacy",
+      name:"Héritage",
       icon:"₿",
-      address:"bc1qfqcg934wdtzszs4z3ukhjnvn3lxqqr27cujj9llrecvelvla3dlqj8qerf",
-      qr:'data:image/png;base64,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',
+      address:"1BJA4nUL8pYZVJLq1JxJfdmSf2VjREv4ZS",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOoAAADqCAIAAAAj9k4ZAAAEc0lEQVR42u3d22rEIBQF0Fry/788fS0USpBzi1nruc1knI2oMcf1+Xy+4Jm+NQHiC+IL4ov4gviC+IL4Ir4gviC+iC+IL4gviC/iC+IL8a69f1trNd70nTdE9u7w75X/Xmfvb6JatffTe39TvS8GDyC+IL6ILzzQFXWhvHoReWsIdz4raqZ/57+i2jBqLWLab6r3xeABxBfEF/GFB7ryLh21YvCeT6/8LSr3ReStYOh9MXgA8QXxRXxhvOs9XzVvZ0LUvD5vxeDUE0z0vogviC+IL+IL4x2y8rD3JkWUqOoQle1zxlqE3hfxBfEF8UV8YbzElYfKuW1eZci9OfveOkNU5cy8lp+2XqH3xeABxBfEF/GF8cJWHnorG1SuM+T9TdT32rvOtN9U74vBA4gviC+IL0dYZ+y6r9wJEDUfP6OWpt4XxBfxBfEF8YX/p629JyfmPXmPet+hcodDVA3MyjbsXcHQ+2LwAOIL4ov4wnjNex6iVgP2RF05b8XgkJCl7UjR+2LwAOIL4ov4wnibdR4qT3uMesqf9wQ/b2adtzKTdz96XxBfxBfEF8QXfk8l589Ae3cU9M6189ZYej896tfR+2LwAOIL4ov4wnibex4q56R5OxPyZui9NS6mVXXIu7LeF4MHEF8QX8QXxltnnPhQOdeuXAmpbPnKX8eeBxBfxBfEF8SX11i9lQ2m1Q3orcYw/yyJymzofTF4APEF8QXx5Qir8in2qVUfz1hjqaxm6W0LEF/EF8QXxJfXuKIuVFnjcdp6ReXZoFHfvfc8U70viC/iC+IL4strrMr1gaj57/w7zNsTsneHeXrf/tD7YvAA4gvii/jCeJt7HirPXMh7On9npt/73L+ynkZUG96hzgOIL+IL4gviy2us3vMUptVw2Pv0yp0JlSsh8yte6n0xeADxBfFFfGG8zT0PUSc19O4fiKrYEPVZ89/+yGt5vS8GDyC+IL4gvhyqec/DHb1vE1SehnnqGaN5+yL0vhg8gPiC+CK+MN6qfCthb7bbuz4wrX5jXl2Fynbeu0O9LwYPIL4gvogvPFDzqZqVZzv21kOImmtX1tLMax+9L4gv4gviC+LLa6y8HfVRu+6nnVBZecpnXhtWsvIA4ov4gviC+PJiq/dsgrCvUXjWxvyaEnmrAb1nmuh9MXgA8QXxRXzhgTbftpj/DD3vHY28VYXelt/bX9FbOVPvi8EDiC+IL+IL46355xf0vrWR9y3uyKt4WbnnwdsWIL6IL4gviC8vduVduneWWrlXIWpvQFT77NWcjJJXrULvi8EDiC+IL+ILD3Sd8TWmnaE5/22UvLqdUWdt6H0xeADxBfEF8eUI16lfLO/kiLzqB1F3mFfRonJ3h94XgwcQXxBfEF+OkLjyUDkDfWLFhr25f1T75K1OVF5H74vBA4gviC/iC+OFrTz0vl8QdT+VqwqntnPlvgi9LwYPIL4gvogvjLcqdwuA3hfEF/EF8QXxRXxBfEF8QXwRXxBfEF8QX8QXxBfEF/GF8X4Ayurd6PMcr6sAAAAASUVORK5CYII=',
       minimum:"BTC 0.00003",
-      arrival:"~22 minutes",
-      withdraw:"~33 minutes",
+      arrival:"~10 minutes",
+      withdraw:"~20 minutes",
       contract:"—",
-      warning:"DEMO privé — adresse fictive Bitcoin fournie pour cette simulation. Aucun transfert réel n’est attendu."
+      warning:"DEMO privé — adresse fictive BTC/Héritage fournie pour cette simulation."
     }
   ],
   ETH:[
     {
-      id:"erc20",
-      name:"Ethereum (ERC20)",
+      id:"ethereum",
+      name:"Ethereum",
       icon:"◆",
-      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
-      qr:'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22296%22%20height%3D%22296%22%20viewBox%3D%220%200%20296%20296%22%3E%0A%3Crect%20width%3D%22296%22%20height%3D%22296%22%20rx%3D%2224%22%20fill%3D%22white%22/%3E%0A%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%22268%22%20height%3D%22268%22%20rx%3D%2220%22%20fill%3D%22%23f3f8f1%22%20stroke%3D%22%23dce8d9%22%20stroke-width%3D%223%22/%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22135%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2231%22%20font-weight%3D%22700%22%20fill%3D%22%2338bd41%22%3EDEMO%3C/text%3E%0A%3Ctext%20x%3D%22148%22%20y%3D%22174%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20fill%3D%22%23637066%22%3ENON-FUNDABLE%3C/text%3E%0A%3C/svg%3E',
+      address:"0x5ef2929f53e44bb2aaf322f4ff4ad872224dea8a",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFYUlEQVR42u3dSW4rORAFQKqh+1/ZvdDuGwaIdE6SI9Z2qQY9UJUgk4+vr68Df9t/bgGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAfzrGfu3x+MxeNLfV8x9P5+sv5k959izyDrOzVXs/24YDUAMQAxADEAM4Noz60B1/Y6yKg83Z7itdnTzX3U1qJtnEbur274bRgMQAxADEAMQAzjnJFaKst7iY1WFulk0sc+6OfK2OTydVbLO74bRAMQAxADEAMQArj0/4zLqVpZlHSfrDGOzemZX3hkNQAxADEAMQAzgTTz/zqXOriyLyaoLbbsuowGIAYgBiAGIAaxUWCn61KpC51yguupW3cyod/xuGA1ADEAMQAxADOCck1gp2r92qXP919/5m8/4bhgNQAxADEAMQAzg9RL/qTN/Zvs8z3ZJytoNLavnttEAxADEAMQAxADeRGuforpuzDeyZhBlma2xdO4+NlslMxqAGIAYgBiAGMC1YKUoazVT7MidYudcd39mZxndXHvWPcy6dqMBiAGIAYgBiAHcv+jX7dIV09k/p7OCMVstyarRdc6wqqu2GQ1ADEAMQAxADOCn8sDseqLgSZfNVqqrC832lM7yGTUxowGIAYgBiAGIAfygsE9RZ1UhpnMnr7rVZ3V3rHM9mtVn4EcRiAGIAYgBLBCsFNV1HNrWp+jm2rM6Y2fVoOoqPLN9sOu+CUYDEAMQAxADEAM455R2tN42byT2WXW9cWJnGHsWseeVdQ+zzrnum2A0ADEAMQAxADGA18t33XyPbVWX2R5E267iRmenIKMBiAGIAYgBiAEs8OjsMr1tF7P985duriLr/sSect3TybrPRgMQAxADEAMQA7iWtvrs5m/q1jfVzerZ33O7s74U+6zOGU1GAxADEAMQAxAD+IVHXffjmNm94zvnJnXO5so6zrZVbFnXbjQAMQAxADEAMYBzTuLeZ52di+pmEHXu1/aO1aS670bs/hgNQAxADEAMQAwgVeucos660LYzrOtEXfcEZ7udx45sNAAxADEAMQAxgF8o3Pus802/85xjZrtV7684zX6jjAYgBiAGIAYgBnDOCa8+u3lnnz3yTTfmbX2wZ3s0ddbxZtcYGg1ADEAMQAxADOCnV/bZOUU3OusVnZ9ed3+21WGy7nzd8zIagBiAGIAYgBjA6+W7sz5wdUKNu6p1ns/sfmSde7rF7sbsjnJGAxADEAMQAxADOOckrj67EZvHMrvean+Pnf3PYrZKZjQAMQAxADEAMYD71/HO1WdZ1YDOekXwtpatrorZVoOqW71oThH4UQRiAGIAYgC/EJxT9BlroOo+Peuc61bM1d3DrLvaWd0yGoAYgBiAGIAYwOsFvXNv9G07zm/r5j17XVnPfZY5ReBHEYgBiAGIAfzm1X9bR+vgZYx2Y745n6zP6lyvl3U36u5P1vkYDUAMQAxADEAM4JwTXn02O7ck1nd620ybunVts7Wjul7ZOlqDH0UgBiAGIAZQLG3vs211mM6+QLEj1+2YltXzZ3ans6xnajQAMQAxADEAMYBrz7pD76/V1F1X3cyfm/OZ7QHe+bzMKQI/ikAMQAxADCDV8zMuo65a0rmuLWuVVudquKzjdNaFjAYgBiAGIAYgBvCDD6kU7V9dtW1f+Kz7nDXD6uZu6FMEfhSBGIAYgBhAscJK0Wzdo7Ovctan719Htu26sr5jRgMQAxADEAMQAzjnJFaKZndD+27bWqpYtaRuL/vO55X16XUzvowGIAYgBiAGIAbwevnev+IJjAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBtDufx6L1y+6mUjpAAAAAElFTkSuQmCC',
       minimum:"ETH 0.00007",
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
-      contract:"***831ec7",
-      warning:"DEMO privé — adresse fictive fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+      contract:"***dea8a",
+      warning:"DEMO privé — adresse fictive ETH/Ethereum fournie pour cette simulation."
+    },
+    {
+      id:"xlayer",
+      name:"X Layer",
+      icon:"✕",
+      address:"XKO5ef2929f53e44bb2aaf322f4ff4ad872224dea8a",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFZUlEQVR42u3dSw7iMBAFQDPi/ldmFtkNQrJ6+uNA1RpCEngyabXtx+v1WvDb/rgFIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAbwr2fsbY/HY/Ck32fMvZ9P1qy6nSNnffrOXd359J13xa70jr8NowGIAYgBiAGIAWx7Zh2obr2jWOUhq34Sq8zUXVfWGcZeE/uWT/ttGA1ADEAMQAxADOCDZ92hY0/xdVWFul6gzlXBs/qOZlcyP+23YTQAMQAxADEAMYC1VmmlqFPWnKzZikrsfOquNKsvy2gAYgBiAGIAYgA38fzWC6vrDspa86euehM7n9P6jowGIAYgBiAGIAbQrrBSdP6crLrjdM6hqztyXe3otBqU0QDEAMQAxADEANZaiZWi2R2v3mXVPbI6f2ZfE/sGsz7rtN+G0QDEAMQAxADEAD4IVorOn5dUN5Pr/L6a2V6gO85ZMxqAGIAYgBiAGMBa6xZ7n9X1zMTeVddpMztfr3PdpLpOpNg9NBqAGIAYgBiAGMD1OH5adaLuON9Rmak7n3en7YZWd3+MBiAGIAYgBiAGsNYK9xTV9QtlmV0bZ+fTZ9f8qfusO67RZDQAMQAxADEAMYDrUbtz9eOY2XWV7/jpp607fX7Hl9EAxADEAMQAxACuB/TT1h/u3O9+58h1863qaiOzXT2xuzq73rjRAMQAxADEAMQArsfxuupE1lN81qdnueN+951XsXM+p+1DZzQAMQAxADEAMYDrAb1z9lldfeC0WsRpO4LN3tW6Ti3rFIE/RSAGIAYgBpDq0VkJiZmtTsyu3Z1VOzptXpvRAMQAxADEAMQAjvQ4f0/z2TWcZ+eIxc6nzuzubHU1MaMBiAGIAYgBiAGstdZ6xt72rSvqxM4wdhWxSsj560Gd30FkNAAxADEAMQAxgE+P/rPP9Z39MO/q+nNm91CLHXl2dl7nlRoNQAxADEAMQAzgg8Keos65XXUVntjdyBK7G7G7Grv2rG8n60qNBiAGIAYgBiAG8B+ClaK6qsK7rCrHbP/Szt3orKjMdk+dtjK20QDEAMQAxADEAK7H8dPWF2q9+Ma1sjt3io+pq+PNfhdGAxADEAMQAxAD2H9AP3/94dn60mnrC82uCzTbm1RXOzIagBiAGIAYgBjAWmt877MddT08Wa857Y5lffrv3B+jAYgBiAGIAYgBrLXClaIsnfO/dnSuHZR1nKxzrrs/WUfOWoXbaABiAGIAYgBiAB8UVoqy5m117ji/I+vIdV00ddded856isCfIhADEAMQAzjA87QTqlu9Z7a+FLuK2RWt69bl7ux6MhqAGIAYgBiAGMC2G8w+i72rbrWczgpGlrrOn6zz6Vw922gAYgBiAGIAYgAf/FBPUVZ/TmdHU12XUedsr7prz6odGQ1ADEAMQAxADOB61J7tdUm7jMZKUafZFaRjx8n6vrI+y2gAYgBiAGIAYgDbgj1FsxWVnT2wsvpqZl9Tt6vazl2NHaduB7e6laaMBiAGIAYgBiAGsNZKnH02O3cpdj51M57qOn/qjpNVlao7Z+sUgT9FIAYgBiAGUKxwnaI7zmbKqo2c362UdVezqjc7V2H2GfhTBGIAYgBiAMWev3OpnSvz1L2ms1tpdj8yowGIAYgBiAGIAbT72krR7ByoztWzs6pSnUfekdVPZTQAMQAxADEAMYBthZWizl3VOus5dWsvx+oeszPUsr6dzrlmRgMQAxADEAMQA/ggrVJ0/v7yO+fc2YmUVReq+74691mb/f0YDUAMQAxADEAM4HpA7+zcAKMBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAHcxF+VWN/55C8WmAAAAABJRU5ErkJggg==',
+      minimum:"ETH 0.00007",
+      arrival:"~1 minute",
+      withdraw:"~2 minutes",
+      contract:"***dea8a",
+      warning:"DEMO privé — adresse fictive ETH/X Layer fournie pour cette simulation."
+    }
+  ],
+  SOL:[
+    {
+      id:"solana",
+      name:"Solana",
+      icon:"◎",
+      address:"DXKPTVQXvpCiu5uK75UhqUYFNqwsaaLPnuMMUckJU4qt",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFUUlEQVR42u3dQY4iMQwF0NSI+1+5Z8FuGKTI2I6pfm/dDZWCr1BW4lw/Pz8Lfrc/bgGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAfzrEfu367oOXvTrjrnX69nZVVc3ip0r7HydnVfOMu27YTYAMQAxADEAMYBtj6wXumvlofP+TBtprP72jd8NswGIAYgBiAGIAay1EitFWU/xWbWIurU3O/WTurHH7s/O9WTVhaZ9N8wGIAYgBiAGIAaw7XGPYXRWOerefad+0rmqp+56zAYgBiAGIAYgBjDS464Di1U5Ote61FW3OtdTmQ1ADEAMQAxADOBGCitFZ1ebxPoCna2N1NWOOvfQzf9umA1ADEAMQAxADOCNtErR/NUmsdpIrH4Sq/lkXU/n39zju2E2ADEAMQAxADGA50P8PfrM/GdgoVpN3Vn288+7n9Zl2mwAYgBiAGIAYgDtrvmdn+tqPmerHJ19sHfMP+ms7jM1G4AYgBiAGIAYwFqrtE9R1i6t2IqdaTunOqtSZytOdWOvu4dmAxADEAMQAxADWGuFK0Vn+zzH/qZu91mn+fva6j4va4rAjyIQAxADEAMolramKLby51Vnf6GskWbpXCs17f50/pfZAMQAxADEAMQA3ghWiuZ3N+qsqGStdcnaZ5d1hWf3o9WdMWc2ADEAMQAxADGANx6db1ZX98iqctS9Tuc9zBrp2VPVzAYgBiAGIAYgBtAurU9RbJ9UZx2mru6R1VEnq+f2/DPdpq0TMxuAGIAYgBiAGMBaq/nss7MVjNgVdp7bVbeeatrOss7XMRuAGIAYgBiAGMC2q3OlTecrZ63qqevCXXfNO+quMPZeZ++82QDEAMQAxADEAJ6P2tN6U087Ma3zDPppo+jsthS7Y2YDEAMQAxADEAPIfWS/a0+bnfd61dlxKGsUnXvWsu5zHWuKwI8iEAMQAxAD+MC4s8/q+kXv/E3nu+/cn6y72unsWimzAYgBiAGIAYgBfOBwR+vO/WixK4yNdEdWj+tpvrHeZTYAMQAxADEAMYDnA/o99kB1dlqOmbbSpm711PwO5GYDEAMQAxADEAN44yZriupqCGdfOfZfdVfYqa6XuNkAxADEAMQAxADeuDrPt/rGU+nPyvp0stZc1a2wqvuOmQ1ADEAMQAxADGBb4ZqizmrA/J5IsapLZ1fnzhVEZzuHmw1ADEAMQAxADODdI/vZ1R11XXfOvs7hD3VYvWv+PTQbgBiAGIAYgBjA80G/s6N17JV3qHd9fg+z7mpdxUlHa/CjCMQAxADEAIpdv2eP2M41x3T2Vqob17RT8MwGIAYgBiAGIAbQLtinKKvGktWrp+4Kz9Zz6s67r1ub1Nkn3Joi8KMIxADEAMQAch+153fd2RpGWX+hafvRznYKOruaq+67ajYAMQAxADEAMYC11vE1RTGvFYNp1Ztp3YTq1m7F7s/OKF5fp64eaDYAMQAxADEAMYC1VrhSlPWEvuPsPrK6CkZn/6VYrSb2WXSuUst6L7MBiAGIAYgBiAGstRIrRa+m7TCadgr82S5A085ZyxqFNUXgRxGIAYgBiAF84HGPYWTVc+pOZ6sb1/x+R3X70cwGIAYgBiAGIAaQ6iaVoli94uxZ7Z2nyZ+tiWX9V13tyGwAYgBiAGIAYgBrrdJK0dlT1WJVjli36rM7uTq7G9Xd1bN7Fc0GIAYgBiAGIAbwfEDvPOU8S1Z9oLNzUWwUZ1c9nb1jdRU5swGIAYgBiAGIAbx79D9beQCzAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBjPQXgy+hES6f6W0AAAAASUVORK5CYII=',
+      minimum:"SOL 0.001",
+      arrival:"~1 minute",
+      withdraw:"~1 minute",
+      contract:"—",
+      warning:"DEMO privé — adresse fictive SOL/Solana fournie pour cette simulation."
+    },
+    {
+      id:"xlayer",
+      name:"X Layer",
+      icon:"✕",
+      address:"XKO5ef2929f53e44bb2aaf322f4ff4ad872224dea8a",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAAECCAIAAACaLU4HAAAFZUlEQVR42u3dSw7iMBAFQDPi/ldmFtkNQrJ6+uNA1RpCEngyabXtx+v1WvDb/rgFIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAbwr2fsbY/HY/Ck32fMvZ9P1qy6nSNnffrOXd359J13xa70jr8NowGIAYgBiAGIAWx7Zh2obr2jWOUhq34Sq8zUXVfWGcZeE/uWT/ttGA1ADEAMQAxADOCDZ92hY0/xdVWFul6gzlXBs/qOZlcyP+23YTQAMQAxADEAMYC1VmmlqFPWnKzZikrsfOquNKsvy2gAYgBiAGIAYgA38fzWC6vrDspa86euehM7n9P6jowGIAYgBiAGIAbQrrBSdP6crLrjdM6hqztyXe3otBqU0QDEAMQAxADEANZaiZWi2R2v3mXVPbI6f2ZfE/sGsz7rtN+G0QDEAMQAxADEAD4IVorOn5dUN5Pr/L6a2V6gO85ZMxqAGIAYgBiAGMBa6xZ7n9X1zMTeVddpMztfr3PdpLpOpNg9NBqAGIAYgBiAGMD1OH5adaLuON9Rmak7n3en7YZWd3+MBiAGIAYgBiAGsNYK9xTV9QtlmV0bZ+fTZ9f8qfusO67RZDQAMQAxADEAMYDrUbtz9eOY2XWV7/jpp607fX7Hl9EAxADEAMQAxACuB/TT1h/u3O9+58h1863qaiOzXT2xuzq73rjRAMQAxADEAMQArsfxuupE1lN81qdnueN+951XsXM+p+1DZzQAMQAxADEAMYDrAb1z9lldfeC0WsRpO4LN3tW6Ti3rFIE/RSAGIAYgBpDq0VkJiZmtTsyu3Z1VOzptXpvRAMQAxADEAMQAjvQ4f0/z2TWcZ+eIxc6nzuzubHU1MaMBiAGIAYgBiAGstdZ6xt72rSvqxM4wdhWxSsj560Gd30FkNAAxADEAMQAxgE+P/rPP9Z39MO/q+nNm91CLHXl2dl7nlRoNQAxADEAMQAzgg8Keos65XXUVntjdyBK7G7G7Grv2rG8n60qNBiAGIAYgBiAG8B+ClaK6qsK7rCrHbP/Szt3orKjMdk+dtjK20QDEAMQAxADEAK7H8dPWF2q9+Ma1sjt3io+pq+PNfhdGAxADEAMQAxAD2H9AP3/94dn60mnrC82uCzTbm1RXOzIagBiAGIAYgBjAWmt877MddT08Wa857Y5lffrv3B+jAYgBiAGIAYgBrLXClaIsnfO/dnSuHZR1nKxzrrs/WUfOWoXbaABiAGIAYgBiAB8UVoqy5m117ji/I+vIdV00ddded856isCfIhADEAMQAzjA87QTqlu9Z7a+FLuK2RWt69bl7ux6MhqAGIAYgBiAGMC2G8w+i72rbrWczgpGlrrOn6zz6Vw922gAYgBiAGIAYgAf/FBPUVZ/TmdHU12XUedsr7prz6odGQ1ADEAMQAxADOB61J7tdUm7jMZKUafZFaRjx8n6vrI+y2gAYgBiAGIAYgDbgj1FsxWVnT2wsvpqZl9Tt6vazl2NHaduB7e6laaMBiAGIAYgBiAGsNZKnH02O3cpdj51M57qOn/qjpNVlao7Z+sUgT9FIAYgBiAGUKxwnaI7zmbKqo2c362UdVezqjc7V2H2GfhTBGIAYgBiAMWev3OpnSvz1L2ms1tpdj8yowGIAYgBiAGIAbT72krR7ByoztWzs6pSnUfekdVPZTQAMQAxADEAMYBthZWizl3VOus5dWsvx+oeszPUsr6dzrlmRgMQAxADEAMQA/ggrVJ0/v7yO+fc2YmUVReq+74691mb/f0YDUAMQAxADEAM4HpA7+zcAKMBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAGIAYgBiAHcxF+VWN/55C8WmAAAAABJRU5ErkJggg==',
+      minimum:"SOL 0.001",
+      arrival:"~1 minute",
+      withdraw:"~2 minutes",
+      contract:"***dea8a",
+      warning:"DEMO privé — adresse fictive SOL/X Layer fournie pour cette simulation."
     }
   ],
   USDC:[
@@ -5693,7 +5895,7 @@ const DEMO_DEPOSIT_NETWORKS={
   ]
 };
 let depositCurrency="USDT";
-let depositNetworkId="erc20";
+let depositNetworkId="tron";
 let pendingDepositAmount=0;
 
 function selectRechargeCurrency(currency){
@@ -6091,7 +6293,7 @@ document.addEventListener('DOMContentLoaded',()=>{setLanguage(localStorage.getIt
 ===================================================== */
 
 const LIVE_SYMBOLS = [
-  "BTCUSDT","ETHUSDT","BCHUSDT","DASHUSDT","DOGEUSDT",
+  "BTCUSDT","ETHUSDT","SOLUSDT","BCHUSDT","DASHUSDT","DOGEUSDT",
   "DOTUSDT","FILUSDT","LINKUSDT","LTCUSDT","XRPUSDT","ZECUSDT"
 ];
 
@@ -6105,6 +6307,7 @@ const MARKET_API_URL = SUPABASE_URL + "/functions/v1/smooth-api";
 const COINBASE_PRODUCTS = {
   "BTC-USD":"BTCUSDT",
   "ETH-USD":"ETHUSDT",
+  "SOL-USD":"SOLUSDT",
   "BCH-USD":"BCHUSDT",
   "DOGE-USD":"DOGEUSDT",
   "DOT-USD":"DOTUSDT",
@@ -6311,6 +6514,11 @@ function applyMarketUpdate(symbol,data={}){
 
   updateQuotesFromMarket(symbol);
   updateHomeFromMarket(symbol);
+
+  if(["BTCUSDT","ETHUSDT","SOLUSDT"].includes(symbol)){
+    refreshAssetVisibility();
+    updateProfessionalPortfolio();
+  }
 
   if(symbol==="BTCUSDT"){
     btcChartLastLiveTick=Date.now();
