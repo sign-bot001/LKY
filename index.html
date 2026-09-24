@@ -135,6 +135,12 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 .adv-hero p{font-size:14px;line-height:1.25;margin-top:4px}
 .adv-card.buy{background:linear-gradient(180deg,#6ef183,#73d8f5)}
 .adv-card.safety{background:linear-gradient(180deg,#ffb575,#ffdc45)}
+.lang-backdrop{
+  position:fixed;inset:0;z-index:49;
+  background:rgba(13,17,20,.14);
+  -webkit-backdrop-filter:blur(1.5px);
+  backdrop-filter:blur(1.5px);
+}
 .lang-menu{
   position:fixed;z-index:50;top:118px;left:50%;transform:translateX(-50%);
   width:min(300px,calc(100% - 48px));background:#303236;color:#fff;
@@ -1080,7 +1086,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* HOME */
 #home{
-  background: radial-gradient(circle at 85% 2%,rgba(110,246,105,.13),transparent 28%),
+  background:
+    radial-gradient(circle at 85% 2%,rgba(110,246,105,.13),transparent 28%),
     var(--nx-bg);
 }
 .home-top{margin-bottom:34px}
@@ -1114,7 +1121,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* QUOTES */
 #quotes{
-  background: radial-gradient(circle at 92% 0%,rgba(114,247,107,.11),transparent 25%),
+  background:
+    radial-gradient(circle at 92% 0%,rgba(114,247,107,.11),transparent 25%),
     var(--nx-bg);
 }
 .quotes-search{
@@ -1186,7 +1194,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* MY ASSETS */
 #assets{
-  background: radial-gradient(circle at 88% 0%,rgba(113,247,107,.12),transparent 26%),
+  background:
+    radial-gradient(circle at 88% 0%,rgba(113,247,107,.12),transparent 26%),
     var(--nx-bg);
 }
 .assets-records-btn{
@@ -1220,7 +1229,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* AUTH — same visual identity as the product */
 .auth-screen{
-  background: radial-gradient(circle at 80% 5%,rgba(111,247,104,.28),transparent 30%),
+  background:
+    radial-gradient(circle at 80% 5%,rgba(111,247,104,.28),transparent 30%),
     linear-gradient(180deg,#eaffdf 0%,#f8fff6 48%,#fff 100%);
   color:var(--nx-ink);
 }
@@ -1264,7 +1274,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* Personal center, identity verification and wallet sheets */
 .personal-overlay,.personal-subpage,.wallet-action-page,.funding-page{
-  background: radial-gradient(circle at 90% 0%,rgba(107,240,101,.10),transparent 25%),
+  background:
+    radial-gradient(circle at 90% 0%,rgba(107,240,101,.10),transparent 25%),
     var(--nx-bg);
 }
 .personal-profile,.personal-form-card,.kyc-camera-card,
@@ -1293,7 +1304,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* Funding / withdrawal / deposit finishing */
 .deposit-detail-page,.withdraw-success-page{
-  background: radial-gradient(circle at 90% 0%,rgba(105,239,99,.09),transparent 24%),
+  background:
+    radial-gradient(circle at 90% 0%,rgba(105,239,99,.09),transparent 24%),
     #fff;
 }
 .deposit-step-card,.deposit-confirm-card,.withdraw-success-wait{
@@ -1311,7 +1323,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* ADMIN */
 #admin{
-  background: radial-gradient(circle at 90% 0%,rgba(94,225,83,.12),transparent 25%),
+  background:
+    radial-gradient(circle at 90% 0%,rgba(94,225,83,.12),transparent 25%),
     linear-gradient(180deg,#f8fff6 0%,#f0faed 100%);
 }
 #admin .card{
@@ -1497,7 +1510,8 @@ body.login-gate-active{
     padding:24px!important;
     display:grid!important;
     place-items:center;
-    background: radial-gradient(circle at 18% 16%,rgba(123,255,111,.28),transparent 30%),
+    background:
+      radial-gradient(circle at 18% 16%,rgba(123,255,111,.28),transparent 30%),
       #edf3ea!important;
   }
   .reference-login.hidden{display:none!important}
@@ -1512,7 +1526,8 @@ body.login-gate-active{
     grid-template-rows:105px 1fr;
     border-radius:34px;
     overflow:hidden;
-    background: linear-gradient(135deg,#8ff681 0%,#caffc2 47%,#ffffff 47%,#ffffff 100%);
+    background:
+      linear-gradient(135deg,#8ff681 0%,#caffc2 47%,#ffffff 47%,#ffffff 100%);
     box-shadow:0 28px 85px rgba(38,69,42,.16);
     border:1px solid rgba(255,255,255,.75);
     position:relative;
@@ -2164,498 +2179,168 @@ body.login-gate-active{
 }
 
 
-/* ===== NEXATRADE WHITE BACKGROUND + LOADING + EMAIL CONFIRMATION ===== */
-html,body{
-  background:#fff!important;
+/* ===== NEXATRADE PREMIUM FINISHING LAYER ===== */
+:root{
+  --nx-premium-green:#67df59;
+  --nx-premium-ink:#172019;
+  --nx-premium-muted:#7b857d;
+  --nx-premium-surface:#ffffff;
+  --nx-premium-line:#dfe8dc;
+  --nx-premium-danger:#d94257;
+  --nx-premium-warn:#b67716;
+  --nx-premium-shadow:0 18px 55px rgba(26,47,29,.13);
 }
+html{scroll-behavior:smooth}
 body{
-  min-height:100vh;
+  overscroll-behavior-y:none;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
-.app,
-.auth-screen,
-#home,
-#quotes,
-#trade,
-#assets,
-.personal-overlay,
-.personal-subpage,
-.wallet-action-page,
-.funding-page{
-  background:#fff!important;
-}
-
-.page-loader{
-  position:fixed;
-  inset:0;
-  z-index:5000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#fff;
-  color:#171a1f;
-}
-.page-loader-card{
-  width:min(360px,calc(100% - 44px));
-  text-align:center;
-  padding:34px 26px;
-}
-.page-loader-logo{
-  font-size:30px;
-  font-weight:900;
-  letter-spacing:-1px;
-  margin-bottom:24px;
-}
-.page-loader-spinner{
-  width:48px;
-  height:48px;
-  margin:0 auto 18px;
-  border:4px solid #e7e9e7;
-  border-top-color:#62df52;
-  border-radius:50%;
-  animation:nexaLoaderSpin .8s linear infinite;
-}
-.page-loader-text{
-  color:#7b837f;
-  font-size:14px;
-}
-@keyframes nexaLoaderSpin{
-  to{transform:rotate(360deg)}
-}
-
-.email-confirmation-page{
-  position:fixed;
-  inset:0;
-  z-index:4900;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  background:#fff;
-  color:#171a1f;
-}
-.email-confirmation-card{
-  width:min(430px,100%);
-  text-align:center;
-  padding:38px 28px;
-  border:1px solid #edf0ec;
-  border-radius:28px;
-  background:#fff;
-  box-shadow:0 18px 55px rgba(0,0,0,.08);
-}
-.email-confirmation-icon{
-  width:86px;
-  height:86px;
-  margin:0 auto 24px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:#72ef68;
-  color:#162116;
-  font-size:44px;
-  font-weight:900;
-}
-.email-confirmation-card h1{
-  font-size:29px;
-  margin:0 0 12px;
-}
-.email-confirmation-card p{
-  margin:0 auto 24px;
-  color:#727a75;
-  line-height:1.45;
-  max-width:330px;
-}
-.email-confirmation-button{
-  width:100%;
-  height:56px;
-  border:0;
-  border-radius:17px;
-  background:#62df52;
-  color:#111;
-  font-size:17px;
-  font-weight:900;
-  cursor:pointer;
-}
-
-
-/* ===== MY ASSETS — SLIM BALANCE CARD ===== */
-@media (max-width:600px){
-  #assets .assets-valuation-card{
-    padding:18px 28px 19px!important;
-    border-radius:28px!important;
-    margin-bottom:38px!important;
-  }
-
-  #assets .assets-valuation-top{
-    font-size:17px!important;
-    line-height:1.15!important;
-  }
-
-  #assets .assets-eye-btn{
-    width:23px!important;
-    height:23px!important;
-  }
-
-  #assets .assets-eye-btn svg{
-    width:21px!important;
-    height:21px!important;
-  }
-
-  #assets .assets-balance{
-    margin-top:12px!important;
-    font-size:44px!important;
-    line-height:1!important;
-  }
-
-  #assets .assets-subline{
-    margin-top:11px!important;
-    font-size:16px!important;
-    line-height:1.15!important;
-    gap:16px!important;
-    flex-wrap:nowrap!important;
-  }
-}
-
-
-/* ===== PROFESSIONAL PREVIEW LOADER ===== */
-.page-loader{
-  position:fixed!important;
-  inset:0!important;
-  z-index:5000!important;
-  display:block!important;
-  overflow:hidden!important;
-  background:#fff!important;
-  color:#171a1f!important;
-}
-
-.page-loader.hidden{
-  display:none!important;
-}
-
-.professional-loader-preview{
-  position:absolute;
-  inset:0;
-  width:min(560px,100%);
-  margin:0 auto;
-  padding:72px 22px 118px;
-  background:#fff;
-  overflow:hidden;
-}
-
-.loader-preview-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:32px;
-}
-
-.loader-preview-title{
-  width:180px;
-  height:43px;
-  border-radius:14px;
-  background:#ecefeb;
-}
-
-.loader-preview-menu{
-  width:58px;
-  height:58px;
-  border-radius:18px;
-  background:#303236;
-}
-
-.loader-preview-balance{
-  height:205px;
-  border-radius:30px;
-  background:#303236;
-  padding:28px 30px;
-  box-shadow:0 18px 46px rgba(37,40,38,.12);
-}
-
-.loader-preview-line{
-  height:16px;
-  border-radius:999px;
-  background:rgba(255,255,255,.18);
-}
-
-.loader-preview-line.short{width:42%}
-.loader-preview-line.medium{width:66%}
-
-.loader-preview-amount{
-  width:58%;
-  height:48px;
-  border-radius:13px;
-  background:#6cf26b;
-  opacity:.75;
-  margin:28px 0 26px;
-}
-
-.loader-preview-actions{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin:34px 0;
-  padding:20px 15px;
-  border-radius:27px;
-  background:#f2f6f0;
-}
-
-.loader-preview-actions span{
-  width:58px;
-  height:58px;
-  max-width:100%;
-  margin:auto;
-  border-radius:50%;
-  background:#dfe7dd;
-}
-
-.loader-preview-card{
-  border:1px solid #edf0eb;
-  border-radius:28px;
-  padding:25px;
-  background:#fff;
-  box-shadow:0 14px 40px rgba(31,34,32,.06);
-}
-
-.loader-preview-card .loader-preview-line{
-  background:#e9ede8;
-  margin-bottom:22px;
-}
-
-.loader-preview-row{
-  height:58px;
-  border-radius:17px;
-  background:#f2f4f1;
-  margin-top:12px;
-}
-
-.loader-preview-nav{
-  position:absolute;
-  left:16px;
-  right:16px;
-  bottom:18px;
-  height:88px;
-  border-radius:30px;
-  background:#303236;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  align-items:center;
-  padding:0 20px;
-}
-
-.loader-preview-nav span{
-  width:31px;
-  height:31px;
-  border-radius:10px;
-  margin:auto;
-  background:rgba(255,255,255,.26);
-}
-
-.professional-loader-preview:after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:rgba(255,255,255,.22);
-  backdrop-filter:blur(2px);
-  -webkit-backdrop-filter:blur(2px);
-}
-
-.professional-loader-center{
-  position:absolute;
-  z-index:2;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:min(235px,calc(100% - 48px));
-  padding:22px 22px 20px;
-  border-radius:27px;
-  text-align:center;
-  background:rgba(255,255,255,.94);
-  border:1px solid rgba(223,228,222,.95);
-  box-shadow:0 22px 70px rgba(22,28,23,.18);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-}
-
-.professional-loader-center strong{
-  display:block;
-  margin-top:12px;
-  font-size:17px;
-  letter-spacing:-.15px;
-}
-
-.professional-spinner,
-.destination-spinner{
-  position:relative;
-  width:52px;
-  height:52px;
-  margin:0 auto;
-  border-radius:50%;
-  border:4px solid #e6eae5;
-  border-top-color:#65e65c;
-  animation:nexaProfessionalSpin .82s linear infinite;
-}
-
-.professional-spinner span,
-.destination-spinner span{
-  position:absolute;
-  inset:8px;
-  border-radius:50%;
-  border:3px solid transparent;
-  border-bottom-color:#303236;
-  animation:nexaProfessionalSpinReverse 1.15s linear infinite;
-}
-
-.page-loader-text{
-  margin-top:5px;
-  color:#8a918d;
-  font-size:12px;
-  line-height:1.35;
-}
-
-@keyframes nexaProfessionalSpin{
-  to{transform:rotate(360deg)}
-}
-@keyframes nexaProfessionalSpinReverse{
-  to{transform:rotate(-360deg)}
-}
-
-/* The real target screen stays visible behind this loader. */
-.destination-loader{
-  position:fixed;
-  inset:0;
-  z-index:4850;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  background:rgba(255,255,255,.19);
-  backdrop-filter:blur(1.7px) saturate(.96);
-  -webkit-backdrop-filter:blur(1.7px) saturate(.96);
-  opacity:1;
-  transition:opacity .18s ease;
-}
-
-.destination-loader.hidden{
-  display:none!important;
-}
-
-.destination-loader.leaving{
-  opacity:0;
-  pointer-events:none;
-}
-
-.destination-loader-center{
-  width:min(220px,calc(100% - 46px));
-  padding:21px 20px 19px;
-  border-radius:26px;
-  text-align:center;
-  background:rgba(255,255,255,.93);
-  border:1px solid rgba(226,231,225,.95);
-  box-shadow:0 20px 65px rgba(23,27,24,.17);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-}
-
-.destination-loader-center strong{
-  display:block;
-  margin-top:12px;
-  font-size:16px;
-  color:#222724;
-}
-
-.destination-loader-center small{
-  display:block;
-  margin-top:4px;
-  font-size:11px;
-  color:#929994;
-}
-
-.destination-spinner{
-  width:48px;
-  height:48px;
-}
-
-/* A soft shimmer on the page while the destination settles. */
-.app.nexa-page-loading .page.active{
-  animation:nexaPagePreviewIn .3s ease both;
-}
-
-@keyframes nexaPagePreviewIn{
-  from{opacity:.76;transform:translateY(3px)}
+button,a,[onclick]{-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation}
+button:not(:disabled):active{transform:scale(.975)}
+button:disabled{opacity:.56!important;cursor:not-allowed!important}
+input,select,textarea{font-size:16px}
+.page.active{animation:nxPremiumPageIn .22s cubic-bezier(.2,.75,.25,1)}
+@keyframes nxPremiumPageIn{
+  from{opacity:.72;transform:translateY(5px)}
   to{opacity:1;transform:none}
 }
-
-@media(max-width:380px){
-  .professional-loader-preview{
-    padding-left:16px;
-    padding-right:16px;
-  }
-  .loader-preview-balance{height:190px}
-  .loader-preview-title{width:155px}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .page.active{animation:none}
 }
+
+/* Page transition: target page stays visible behind it */
+#nxPageVeil{
+  position:fixed;z-index:935;inset:0;
+  display:grid;place-items:center;
+  background:rgba(248,252,247,.25);
+  -webkit-backdrop-filter:blur(1.3px);
+  backdrop-filter:blur(1.3px);
+  opacity:0;pointer-events:none;
+  transition:opacity .16s ease;
+}
+#nxPageVeil.show{opacity:1;pointer-events:auto}
+.nx-page-loader{
+  width:126px;padding:18px 16px 15px;border-radius:24px;
+  background:rgba(255,255,255,.9);
+  border:1px solid rgba(213,226,211,.9);
+  box-shadow:0 18px 45px rgba(30,59,35,.12);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.nx-spinner{
+  width:30px;height:30px;border-radius:50%;
+  border:3px solid #dce8da;border-top-color:var(--nx-premium-green);
+  animation:nxSpin .72s linear infinite;
+}
+@keyframes nxSpin{to{transform:rotate(360deg)}}
+.nx-loader-bars{width:72px;display:grid;gap:5px}
+.nx-loader-bars i{display:block;height:5px;border-radius:10px;background:#e7eee5;overflow:hidden}
+.nx-loader-bars i:after{
+  content:"";display:block;width:45%;height:100%;border-radius:inherit;
+  background:#b9eeb4;animation:nxShimmer 1s ease-in-out infinite alternate;
+}
+.nx-loader-bars i:nth-child(2):after{animation-delay:.12s;width:62%}
+.nx-loader-bars i:nth-child(3):after{animation-delay:.24s;width:34%}
+@keyframes nxShimmer{from{transform:translateX(-15%);opacity:.55}to{transform:translateX(125%);opacity:1}}
+
+/* Toast notifications replace browser alert popups */
+#nxToastStack{
+  position:fixed;z-index:1450;left:50%;bottom:calc(105px + env(safe-area-inset-bottom));
+  width:min(430px,calc(100% - 30px));transform:translateX(-50%);
+  display:grid;gap:9px;pointer-events:none;
+}
+.nx-toast{
+  pointer-events:auto;
+  display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;
+  padding:12px 12px;border-radius:17px;background:rgba(31,36,32,.96);color:#fff;
+  box-shadow:0 15px 38px rgba(0,0,0,.20);
+  border:1px solid rgba(255,255,255,.08);
+  animation:nxToastIn .2s ease-out;
+}
+.nx-toast.success{background:rgba(36,94,42,.97)}
+.nx-toast.error{background:rgba(125,38,51,.97)}
+.nx-toast.warning{background:rgba(119,79,23,.97)}
+.nx-toast-icon{
+  width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.12);
+  display:grid;place-items:center;font-weight:900
+}
+.nx-toast-copy{font-size:13px;line-height:1.35;font-weight:650}
+.nx-toast-close{border:0;background:transparent;color:#fff;font-size:20px;padding:4px 5px}
+@keyframes nxToastIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+
+/* Offline status stays non-blocking */
+#nxConnectionBanner{
+  position:fixed;z-index:1390;top:calc(10px + env(safe-area-inset-top));left:50%;
+  width:min(470px,calc(100% - 26px));transform:translate(-50%,-140%);
+  background:#2f3331;color:#fff;border-radius:16px;padding:11px 13px;
+  box-shadow:0 12px 35px rgba(0,0,0,.18);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  transition:transform .25s ease;
+}
+#nxConnectionBanner.show{transform:translate(-50%,0)}
+.nx-connection-copy{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:750}
+.nx-connection-dot{width:9px;height:9px;border-radius:50%;background:#ffb14a}
+.nx-connection-retry{
+  border:0;background:#fff;color:#222;border-radius:10px;padding:8px 10px;
+  font-size:11px;font-weight:850;
+}
+
+/* Proper blocking error page */
+#nxSystemError{
+  position:fixed;z-index:1500;inset:0;background:#f7fff4;color:#172019;
+  display:grid;place-items:center;padding:24px;
+}
+#nxSystemError.hidden{display:none!important}
+.nx-error-card{
+  width:min(440px,100%);background:#fff;border:1px solid #dfeadd;border-radius:30px;
+  padding:30px 25px;box-shadow:var(--nx-premium-shadow);text-align:center;
+}
+.nx-error-mark{
+  width:74px;height:74px;margin:0 auto 18px;border-radius:24px;
+  background:#eff8ed;color:#54c64d;display:grid;place-items:center;
+  font-size:34px;font-weight:900;
+}
+.nx-error-card h2{font-size:26px;letter-spacing:-.5px;margin:0 0 9px}
+.nx-error-card p{font-size:14px;line-height:1.5;color:#727d75;margin:0 auto 8px;max-width:330px}
+.nx-error-code{font-size:11px;color:#a0a9a2;margin:14px 0 20px;font-weight:800;letter-spacing:.7px}
+.nx-error-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nx-error-actions button{
+  min-height:52px;border-radius:16px;border:1px solid #dfe8dd;
+  background:#fff;color:#222;font-weight:850;
+}
+.nx-error-actions .primary{background:#2d312f;color:#fff;border-color:#2d312f;margin:0;width:auto}
+
+/* Premium confirm dialog */
+#nxConfirmOverlay{
+  position:fixed;z-index:1510;inset:0;background:rgba(19,24,20,.32);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  display:grid;place-items:center;padding:24px;
+}
+#nxConfirmOverlay.hidden{display:none!important}
+.nx-confirm-card{
+  width:min(410px,100%);background:#fff;color:#1d231f;border-radius:26px;
+  padding:24px;border:1px solid #e2e9e0;box-shadow:0 24px 65px rgba(0,0,0,.22);
+}
+.nx-confirm-card h3{font-size:21px;margin:0 0 8px}
+.nx-confirm-card p{font-size:14px;line-height:1.5;color:#747d76;margin:0 0 20px}
+.nx-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nx-confirm-actions button{height:50px;border-radius:15px;border:1px solid #dfe6dd;background:#fff;font-weight:850}
+.nx-confirm-actions .danger{margin:0;width:auto;background:#2f3331;color:#fff;border-color:#2f3331}
+
+/* Better empty states / focus / long text handling */
+.funding-empty,.empty,.history-empty{
+  min-height:120px;display:grid;place-items:center;text-align:center;color:#919b93;
+}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:3px solid rgba(104,222,91,.24)!important;outline-offset:2px;
+}
+.nexa-support-bubble,.notification-text,.funding-record-title{overflow-wrap:anywhere}
 
 </style>
 </head>
 <body>
-
-<div id="pageLoader" class="page-loader" role="status" aria-live="polite">
-  <div class="professional-loader-preview" aria-hidden="true">
-    <div class="loader-preview-header">
-      <div class="loader-preview-title"></div>
-      <div class="loader-preview-menu"></div>
-    </div>
-
-    <div class="loader-preview-balance">
-      <div class="loader-preview-line short"></div>
-      <div class="loader-preview-amount"></div>
-      <div class="loader-preview-line medium"></div>
-    </div>
-
-    <div class="loader-preview-actions">
-      <span></span><span></span><span></span><span></span>
-    </div>
-
-    <div class="loader-preview-card">
-      <div class="loader-preview-line medium"></div>
-      <div class="loader-preview-row"></div>
-      <div class="loader-preview-row"></div>
-      <div class="loader-preview-row"></div>
-    </div>
-
-    <div class="loader-preview-nav">
-      <span></span><span></span><span></span><span></span>
-    </div>
-  </div>
-
-  <div class="professional-loader-center">
-    <div class="professional-spinner" aria-hidden="true">
-      <span></span>
-    </div>
-    <strong>Chargement</strong>
-    <div id="pageLoaderText" class="page-loader-text">Préparation de votre espace…</div>
-  </div>
-</div>
-</div>
-
-
-<div id="destinationLoader" class="destination-loader hidden" role="status" aria-live="polite">
-  <div class="destination-loader-center">
-    <div class="destination-spinner" aria-hidden="true">
-      <span></span>
-    </div>
-    <strong id="destinationLoaderTitle">Chargement</strong>
-    <small id="destinationLoaderText">Préparation de la page…</small>
-  </div>
-</div>
-
-<div id="emailConfirmationPage" class="email-confirmation-page hidden">
-  <div class="email-confirmation-card">
-    <div class="email-confirmation-icon">✓</div>
-    <h1>Confirmation réussie</h1>
-    <p>Votre adresse email a été confirmée avec succès. Votre compte est maintenant activé.</p>
-    <button class="email-confirmation-button" type="button" onclick="continueAfterEmailConfirmation()">Continuer</button>
-  </div>
-</div>
-
 
 <div id="authScreen" class="auth-screen reference-login">
   <div class="reference-login-shell">
@@ -2832,7 +2517,8 @@ body{
     <div class="adv-card buy"><div class="adv-emoji">🪙</div><h3 data-i18n="buy">Buy</h3><p data-i18n="buyText">Choose your favorite cryptocurrency.</p></div>
     <div class="adv-card safety"><div class="adv-emoji">🛡️</div><h3 data-i18n="safety">Safety</h3><p data-i18n="safetyText">Provide users with a safer trading environment technical service architecture</p></div>
   </div>
- <div id="languageMenu" class="lang-menu hidden">
+ <div id="languageBackdrop" class="lang-backdrop hidden" onclick="closeLanguageMenu()" aria-hidden="true"></div>
+ <div id="languageMenu" class="lang-menu hidden" role="menu" aria-label="Language selection">
     <button onclick="setLanguage('en')">🇬🇧 English</button>
     <button onclick="setLanguage('fr')">🇫🇷 Français</button>
     <button onclick="setLanguage('es')">🇪🇸 Español</button>
@@ -2978,7 +2664,8 @@ body{
       </div>
 
       <div id="copyInitiateView">
-<div class="follow-box">
+        <div class="follow--note">.</div>
+        <div class="follow-box">
           <input id="followOrderCode" maxlength="6" placeholder="Enter the order code">
           <button onclick="recognizeFollowCode()">recognize</button>
         </div>
@@ -3003,7 +2690,8 @@ body{
       </div>
 
       <div id="releaseInitiateView">
-<button class="follow-action-btn" onclick="openFollowModal('release','')">Initiate follow</button>
+        <div class="follow--note"> only </div>
+        <button class="follow-action-btn" onclick="openFollowModal('release','')">Initiate follow</button>
         <div class="trade-empty-panel"><div class="trade-empty-icon">▤</div>No active release</div>
       </div>
 
@@ -3231,7 +2919,8 @@ body{
       </div>
     </div>
 
-</section>
+    <div class="assets--note">.</div>
+  </section>
 
   <section id="admin" class="page">
     <div class="section-title" style="color:#28b43f">Admin Dashboard</div>
@@ -3315,7 +3004,7 @@ body{
       <strong>Default Balance</strong>
       <div class="muted" style="margin-top:5px">Solde fictif attribué aux nouveaux comptes.</div>
       <div class="inline" style="margin-top:10px">
-        <input id="initialBalanceInput" class="input" type="number" min="0" step="100" value="0">
+        <input id="initialBalanceInput" class="input" type="number" min="0" step="100" value="10000">
         <button class="mini" onclick="updateInitialBalance()">Save</button>
       </div>
       <div class="admin-referral-note">Parrainage : lorsqu’un administrateur ajoute pour la première fois du solde fictif à un nouvel utilisateur parrainé, le parrain reçoit automatiquement 100 USDT , une seule fois.</div>
@@ -3499,13 +3188,15 @@ The handling fee is 10 USDT within 100 USDT, and 10% will be charged for more th
         <div id="depositDetailTitle" class="deposit-detail-title">Deposit USDT</div>
         <div></div>
       </div>
-      <div class="deposit--note"> </div>
+      <div class="deposit--note"> — adresses fictives uniquement. Ne jamais envoyer de vraie cryptomonnaie.</div>
 
       <!-- STEP 1: amount before revealing the fictitious wallet -->
       <div id="depositAmountStep">
         <div class="deposit-step-card">
           <div class="deposit-step-title">Deposit amount</div>
-<div class="deposit-amount-label">Quantity</div>
+          <div class="deposit-step-sub">Enter the amount of cryptocurrency you want to simulate depositing.</div>
+
+          <div class="deposit-amount-label">Quantity</div>
           <div class="deposit-amount-field">
             <input id="depositAmountInput" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
             <span id="depositAmountCurrency">USDT</span>
@@ -3923,7 +3614,8 @@ const SUPABASE_URL = "https://khhexjfvwvfoehaqybzm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_iGxqDljv0d0t0nYgQVyyFQ_CXXdKpOu";
 
 /*
-  Session behaviour: - the authenticated Supabase session is persisted locally;
+  Session behaviour:
+  - the authenticated Supabase session is persisted locally;
   - refreshing the page keeps the user connected;
   - Logout still clears the session and returns to Login.
 */
@@ -3938,123 +3630,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,{
 let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false;
 let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[];
 let btcPrice=112840.00, ethPrice=4410.00, settlingTrades=new Set();
-
-let confirmedRedirectUser=null;
-
-function getEmailConfirmationRedirectUrl(){
-  const u=new URL(window.location.href);
-  u.search="";
-  u.hash="";
-  u.searchParams.set("email_confirmed","1");
-  return u.toString();
-}
-
-function isEmailConfirmationRedirect(){
-  return new URLSearchParams(window.location.search).get("email_confirmed")==="1";
-}
-
-function hidePageLoader(){
-  document.getElementById("pageLoader")?.classList.add("hidden");
-}
-
-function updatePageLoaderMessage(message){
-  const el=document.getElementById("pageLoaderText");
-  if(el)el.textContent=message;
-}
-
-function clearEmailConfirmationFlag(){
-  const u=new URL(window.location.href);
-  u.searchParams.delete("email_confirmed");
-  u.hash="";
-  history.replaceState({},document.title,u.pathname+(u.searchParams.toString()?"?"+u.searchParams.toString():""));
-}
-
-function showEmailConfirmationSuccess(user){
-  confirmedRedirectUser=user||null;
-  document.getElementById("authScreen")?.classList.add("hidden");
-  document.getElementById("app")?.classList.add("hidden");
-  document.getElementById("emailConfirmationPage")?.classList.remove("hidden");
-  document.body.classList.remove("login-gate-active");
-  hidePageLoader();
-}
-
-async function continueAfterEmailConfirmation(){
-  document.getElementById("emailConfirmationPage")?.classList.add("hidden");
-  clearEmailConfirmationFlag();
-
-  let user=confirmedRedirectUser;
-  if(!user){
-    const {data:{session}}=await sb.auth.getSession();
-    user=session?.user||null;
-  }
-
-  if(user){
-    await enterApp(user);
-  }else{
-    document.getElementById("app")?.classList.add("hidden");
-    document.getElementById("authScreen")?.classList.remove("hidden");
-    document.body.classList.add("login-gate-active");
-    showLogin();
-  }
-}
-
-/*
-  New self-service accounts carry the nexa_start_zero flag in Supabase Auth metadata.
-  On the first authenticated session, force their balances to zero once, then clear
-  that flag so future legitimate balance changes are not reset on later logins.
-*/
-async function ensureNewUserStartsAtZero(user){
-  if(!user?.id || user.user_metadata?.nexa_start_zero!==true)return true;
-
-  try{
-    const {error:profileError}=await sb
-      .from("profiles")
-      .update({balance:0})
-      .eq("user_id",user.id);
-
-    if(profileError){
-      console.warn("Initial zero balance (profiles):",profileError.message||profileError);
-      return false;
-    }
-
-    // Best effort for separate crypto rows, if the project's RLS permits it.
-    const {error:assetsError}=await sb
-      .from("asset_balances")
-      .update({balance:0})
-      .eq("user_id",user.id);
-
-    if(assetsError){
-      console.warn("Initial zero balance (asset_balances):",assetsError.message||assetsError);
-    }
-
-    const newMetadata={...(user.user_metadata||{}),nexa_start_zero:false,nexa_zero_initialized_at:new Date().toISOString()};
-    const {data:updateData,error:updateError}=await sb.auth.updateUser({data:newMetadata});
-    if(updateError){
-      console.warn("Initial zero balance metadata:",updateError.message||updateError);
-    }else if(updateData?.user){
-      confirmedRedirectUser=updateData.user;
-      if(currentUser?.id===updateData.user.id)currentUser=updateData.user;
-    }
-
-    return true;
-  }catch(err){
-    console.warn("Initial zero balance:",err);
-    return false;
-  }
-}
-
-// If startup genuinely takes longer, keep the loading screen visible and update its text.
-setTimeout(()=>{
-  if(!document.getElementById("pageLoader")?.classList.contains("hidden")){
-    updatePageLoaderMessage("Connexion en cours…");
-  }
-},3500);
-setTimeout(()=>{
-  if(!document.getElementById("pageLoader")?.classList.contains("hidden")){
-    updatePageLoaderMessage("Le chargement prend un peu plus de temps que prévu…");
-  }
-},8000);
-
 
 const SUPPORTED_ASSETS=["USDT","BTC","ETH","SOL"];
 let assetBalances={USDT:0,BTC:0,ETH:0,SOL:0};
@@ -4085,7 +3660,8 @@ let chartValues=Array.from({length:28},(_,i)=>112600+i*8+Math.random()*90);
 function money(n){
   const value=Number(n||0);
   if(!Number.isFinite(value))return "0.00";
-  // Monetary balances are displayed without a thousands separator: // 10000.00 instead of 10,000.00
+  // Monetary balances are displayed without a thousands separator:
+  // 10000.00 instead of 10,000.00
   return value.toFixed(2);
 }
 function price(n){return Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
@@ -4217,14 +3793,7 @@ async function signup(){
   if(password!==p2)return showMessage("signupMessage","Les mots de passe ne correspondent pas.","error");
   const {data,error}=await sb.auth.signUp({
     email,password,
-    options:{
-      emailRedirectTo:getEmailConfirmationRedirectUrl(),
-      data:{
-        display_name:displayName,
-        referral_code:inviteCode||null,
-        nexa_start_zero:true
-      }
-    }
+    options:{data:{display_name:displayName,referral_code:inviteCode||null}}
   });
   if(error)return showMessage("signupMessage",error.message,"error");
   if(data.session) await enterApp(data.user);
@@ -4320,7 +3889,9 @@ function friendlyLoginError(error){
   const low=raw.toLowerCase();
 
   if(low.includes("invalid login credentials") || low.includes("invalid credentials")){
-    return loginMode==="phone" ? "Numéro de téléphone ou mot de passe incorrect." : "Adresse email ou mot de passe incorrect.";
+    return loginMode==="phone"
+      ? "Numéro de téléphone ou mot de passe incorrect."
+      : "Adresse email ou mot de passe incorrect.";
   }
   if(low.includes("email not confirmed") || low.includes("email_not_confirmed")){
     return "Ton adresse email n’est pas encore vérifiée. Ouvre l’email de confirmation reçu puis réessaie.";
@@ -4329,7 +3900,9 @@ function friendlyLoginError(error){
     return "Ton numéro de téléphone n’est pas encore vérifié.";
   }
   if(low.includes("provider") && low.includes("disabled")){
-    return loginMode==="phone" ? "La connexion par numéro de téléphone n’est pas encore activée." : "Ce mode de connexion n’est pas disponible.";
+    return loginMode==="phone"
+      ? "La connexion par numéro de téléphone n’est pas encore activée."
+      : "Ce mode de connexion n’est pas disponible.";
   }
   if(low.includes("rate limit") || low.includes("too many")){
     return "Trop de tentatives. Attends un moment avant de réessayer.";
@@ -4424,21 +3997,12 @@ async function logout(){
 }
 
 async function enterApp(user){
-  currentUser=user;
-  await ensureNewUserStartsAtZero(user);
-  userEmail.textContent=user.email||user.phone||"Utilisateur";
+  currentUser=user;userEmail.textContent=user.email||user.phone||"Utilisateur";
   authScreen.classList.add("hidden");app.classList.remove("hidden");
-  document.getElementById("emailConfirmationPage")?.classList.add("hidden");
   document.body.classList.remove("login-gate-active");
   await checkAdmin();
   await settleExpiredTrades(false);
   await refreshEverything();
-  hidePageLoader();
-  const firstPage=document.querySelector(".page.active")?.id||"home";
-  const firstStarted=performance.now();
-  const firstToken=beginDestinationLoader(firstPage);
-  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-  await finishDestinationLoader(firstToken,firstStarted,430);
 }
 
 async function checkAdmin(){
@@ -4624,101 +4188,18 @@ function filterQuotes(){
   });
 }
 
-
-let nexaDestinationLoadToken=0;
-
-function destinationPageName(pageId){
-  return ({
-    home:"Accueil",
-    quotes:"Cours",
-    trade:"Trading",
-    assets:"Mes actifs",
-    admin:"Administration"
-  })[pageId]||"Page";
-}
-
-function beginDestinationLoader(pageId){
-  const overlay=document.getElementById("destinationLoader");
-  if(!overlay)return 0;
-
-  const token=++nexaDestinationLoadToken;
-  const title=document.getElementById("destinationLoaderTitle");
-  const subtitle=document.getElementById("destinationLoaderText");
-
-  if(title)title.textContent=destinationPageName(pageId);
-  if(subtitle)subtitle.textContent="Chargement de la page…";
-
-  overlay.classList.remove("hidden","leaving");
-  document.getElementById("app")?.classList.add("nexa-page-loading");
-  return token;
-}
-
-async function finishDestinationLoader(token,startedAt,minDuration=520){
-  const elapsed=performance.now()-startedAt;
-  if(elapsed<minDuration){
-    await new Promise(resolve=>setTimeout(resolve,minDuration-elapsed));
-  }
-
-  if(token!==nexaDestinationLoadToken)return;
-
-  const overlay=document.getElementById("destinationLoader");
-  document.getElementById("app")?.classList.remove("nexa-page-loading");
-  if(!overlay)return;
-
-  overlay.classList.add("leaving");
-  setTimeout(()=>{
-    if(token===nexaDestinationLoadToken){
-      overlay.classList.add("hidden");
-      overlay.classList.remove("leaving");
-    }
-  },180);
-}
-
-
-async function showPage(pageId,button){
-  const target=document.getElementById(pageId);
-  if(!target)return;
-
-  const current=document.querySelector(".page.active");
-  const samePage=current?.id===pageId;
-
+function showPage(pageId,button){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  target.classList.add("active");
-
-  if(button){
-    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-    button.classList.add("active");
-  }
-
-  // Do not flash a loader when the user taps the tab already open.
-  if(samePage){
-    if(pageId==="admin"&&isCurrentUserAdmin)await loadAdminAll();
-    return;
-  }
-
-  const startedAt=performance.now();
-  const token=beginDestinationLoader(pageId);
-  const pending=[];
-
-  if(pageId==="admin"&&isCurrentUserAdmin){
-    pending.push(loadAdminAll());
-  }
-
+  document.getElementById(pageId).classList.add("active");
+  if(button){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));button.classList.add("active")}
+  if(pageId==="admin"&&isCurrentUserAdmin) loadAdminAll();
   if(pageId==="home"||pageId==="quotes"||pageId==="trade"){
     Object.keys(LIVE_MARKET).forEach(symbol=>{
       updateHomeFromMarket(symbol);
       updateQuotesFromMarket(symbol);
     });
     updateTradeFromMarket();
-    pending.push(refreshLiveMarket());
-  }
-
-  try{
-    if(pending.length)await Promise.allSettled(pending);
-    // Give the browser one frame to paint the actual destination behind the loader.
-    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-  }finally{
-    await finishDestinationLoader(token,startedAt,520);
+    refreshLiveMarket();
   }
 }
 
@@ -4782,7 +4263,7 @@ async function placeTrade(direction){
   placingTrade=true;
   document.querySelectorAll(".trade-actions button").forEach(b=>b.classList.add("trade-busy"));
   try{
-    const {data,error}=await sb.rpc("open_demo_trade",{
+    const {data,error}=await sb.rpc("open__trade",{
       p_direction:dir,
       p_amount:amount,
       p_duration_seconds:duration,
@@ -4791,51 +4272,16 @@ async function placeTrade(direction){
     if(error)throw error;
 
     const trade=Array.isArray(data)?data[0]:data;
-
-    if(trade?.id!=null){
-      directTradeDurationCache.set(String(trade.id),duration);
-
-      // Immediate UI feedback: the position appears as soon as Supabase accepts it.
-      const nowIso=new Date().toISOString();
-      const immediateTrade={
-        ...trade,
-        status:trade.status||"PENDING",
-        symbol:trade.symbol||"BTCUSDT",
-        direction:trade.direction||dir,
-        amount:Number(trade.amount??amount),
-        open_price:Number(trade.open_price??openPrice),
-        opened_at:trade.opened_at||nowIso,
-        settle_at:trade.settle_at||new Date(Date.now()+duration*1000).toISOString(),
-        duration_seconds:Number(trade.duration_seconds||duration),
-        code:trade.code||"DIRECT"
-      };
-
-      const index=trades.findIndex(x=>String(x.id)===String(immediateTrade.id));
-      if(index>=0)trades[index]=immediateTrade;
-      else trades.unshift(immediateTrade);
-      renderPositions();
-      updateCountdowns();
-    }
-
     document.getElementById("tradeAmount").value="0";
     setTradeChartDirection(dir);
-    showMessage("tradeMessage",`${dir} ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
-
+    showMessage("tradeMessage",`${dir}  ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
     await refreshEverything();
-
-    const refreshed=trades.find(x=>trade?.id!=null&&String(x.id)===String(trade.id));
-    if(refreshed?.id!=null){
-      directTradeDurationCache.set(String(refreshed.id),duration);
-      refreshed.duration_seconds=Number(refreshed.duration_seconds||duration);
-      renderPositions();
-    }
-
     const deliveryTab=document.querySelector('.trade-order-tab[onclick*="delivery"]');
     if(deliveryTab)showTradeOrderTab("delivery",deliveryTab);
   }catch(err){
     const message=String(err?.message||err||"Impossible d’ouvrir la position .");
-    if(message.includes("open_demo_trade")){
-      showMessage("tradeMessage","Le moteur de trading Supabase n’est pas disponible. Vérifie que les fonctions SQL de trading sont bien déployées.","error");
+    if(message.includes("open__trade")){
+      showMessage("tradeMessage","Le moteur de trading direct n’est pas encore installé dans Supabase. Exécute le fichier SQL de migration fourni.","error");
     }else{
       showMessage("tradeMessage",message,"error");
     }
@@ -4915,7 +4361,8 @@ function liveBtcVolumeDelta(cumulative,source){
   return Number.isFinite(delta)&&delta>0 ? delta : 0;
 }
 
-/* Trade direction controls the live price line: CALL / achat = green
+/* Trade direction controls the live price line:
+   CALL / achat = green
    PUT / vente = red */
 let tradeChartDirection="CALL";
 
@@ -5278,7 +4725,8 @@ function showFollowSubtab(name,el){
     "copy-initiate":"copyInitiateView",
     "copy-history":"copyHistoryView",
     "release-initiate":"releaseInitiateView",
-    "release-history":"releaseHistoryView" };
+    "release-history":"releaseHistoryView"
+  };
   document.getElementById(map[name])?.classList.remove("hidden");
   if(name==="copy-history"||name==="release-history") renderFollowHistory();
 }
@@ -5289,7 +4737,7 @@ async function recognizeFollowCode(){
   if(code.length!==6)return alert("Le code doit contenir exactement 6 caractères.");
   if(!btcPrice||btcPrice<=0)return alert("Le prix BTC  n’est pas disponible.");
 
-  const {data,error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
+  const {data,error}=await sb.rpc("use__code",{p_code:code,p_open_price:btcPrice});
   if(error)return alert(error.message);
 
   if(input)input.value="";
@@ -5537,69 +4985,22 @@ function updateProfessionalPortfolio(){
   setTradeRiskPercent(tradeRiskPercent);
 }
 
-
-const directTradeDurationCache=new Map();
-
-function normalizedTradeTiming(t){
-  const rawStart=new Date(t?.opened_at||t?.created_at||Date.now()).getTime();
-  const start=Number.isFinite(rawStart)?rawStart:Date.now();
-
-  let duration=Number(
-    t?.duration_seconds ??
-    t?.duration ??
-    directTradeDurationCache.get(String(t?.id)) ??
-    0
-  );
-
-  const rawSettle=new Date(t?.settle_at||0).getTime();
-
-  if(!Number.isFinite(duration) || duration<=0){
-    if(Number.isFinite(rawSettle) && rawSettle>start){
-      duration=Math.max(1,Math.round((rawSettle-start)/1000));
-    }else{
-      duration=60;
-    }
-  }
-
-  // For direct positions, the selected duration is the source of truth
-  // whenever the backend did not return a valid settlement timestamp.
-  let settle=rawSettle;
-  if(!Number.isFinite(settle) || settle<=start){
-    settle=start+(duration*1000);
-  }
-
-  return {start,settle,duration};
-}
-
-function positionCountdownLabel(ms){
-  const seconds=Math.max(0,Math.ceil(ms/1000));
-  return formatTradeCountdown(seconds);
-}
-
-
 function activePositionHTML(t){
-  const timing=normalizedTradeTiming(t);
-  const now=Date.now();
-  const waiting=now<timing.start;
-  const countdown=waiting
-    ? "Starts in "+positionCountdownLabel(timing.start-now)
-    : positionCountdownLabel(timing.settle-now);
-
   return `<div class="card position" data-trade-id="${t.id}">
     <div class="position-header">
-      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${t.code==="DIRECT"?"Direct":esc(t.code||"Direct")}</div></div>
+      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${t.code==="DIRECT"?"Direct ":esc(t.code||"Direct ")}</div></div>
       <div class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</div>
     </div>
-    <div class="countdown" id="countdown-${t.id}">${countdown}</div>
+    <div class="countdown" id="countdown-${t.id}">${Date.now()<new Date(t.opened_at).getTime()?"Starts in "+Math.max(0,Math.ceil((new Date(t.opened_at)-Date.now())/1000))+"S":Math.max(0,Math.ceil((new Date(t.settle_at)-Date.now())/1000))+"S"}</div>
     <div class="progress"><div id="progress-${t.id}" class="progress-inner"></div></div>
     <div class="trade-grid">
-      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${timing.duration}S</strong></div>
+      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}S</strong></div>
       <div class="trade-detail"><span class="muted">Capital Used</span><strong>${money(t.capital_pct)}%</strong></div>
       <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
       <div class="trade-detail"><span class="muted">Live P/L</span><strong id="live-pnl-${t.id}">0.00 USDT</strong></div>
       <div class="trade-detail"><span class="muted">Market move</span><strong id="live-move-${t.id}">0.000%</strong></div>
       <div class="trade-detail"><span class="muted">Opening Price</span><strong>${price(t.open_price)}</strong></div>
-      <div class="trade-detail"><span class="muted">${waiting?"Starts at":"Order Time"}</span><strong>${formatDate(new Date(timing.start).toISOString())}</strong></div>
+      <div class="trade-detail"><span class="muted">${Date.now()<new Date(t.opened_at).getTime()?"Starts at":"Order Time"}</span><strong>${formatDate(t.opened_at)}</strong></div>
     </div>
   </div>`;
 }
@@ -5612,38 +5013,34 @@ function renderPositions(){
 async function updateCountdowns(){
   for(const t of trades.filter(x=>x.status==="PENDING")){
     const now=Date.now();
-    const timing=normalizedTradeTiming(t);
-    const c=document.getElementById("countdown-"+t.id);
-    const p=document.getElementById("progress-"+t.id);
+    const startsAt=new Date(t.opened_at).getTime();
+    const settlesAt=new Date(t.settle_at).getTime();
+    const c=document.getElementById("countdown-"+t.id), p=document.getElementById("progress-"+t.id);
 
-    if(now<timing.start){
-      const untilStart=Math.max(0,timing.start-now);
-      if(c)c.textContent="Starts in "+positionCountdownLabel(untilStart);
+    if(now<startsAt){
+      const untilStart=Math.max(0,Math.ceil((startsAt-now)/1000));
+      if(c)c.textContent="Starts in "+untilStart+"S";
       if(p)p.style.width="0%";
       continue;
     }
 
-    const remainingMs=Math.max(0,timing.settle-now);
-    if(c)c.textContent=positionCountdownLabel(remainingMs);
-
+    const remaining=Math.max(0,Math.ceil((settlesAt-now)/1000));
+    if(c)c.textContent=remaining+"S";
     if(p){
-      const elapsed=Math.max(0,now-timing.start);
-      const total=Math.max(1000,timing.duration*1000);
-      const completed=Math.max(0,Math.min(100,(elapsed/total)*100));
-      p.style.width=(100-completed)+"%";
+      const duration=Math.max(1,Math.round((settlesAt-startsAt)/1000));
+      p.style.width=Math.max(0,Math.min(100,remaining/duration*100))+"%";
     }
-
-    if(remainingMs<=0&&!settlingTrades.has(t.id)){
+    if(remaining<=0&&!settlingTrades.has(t.id)){
       settlingTrades.add(t.id);
       await settleTrade(t.id);
     }
   }
 }
-setInterval(updateCountdowns,250);
+setInterval(updateCountdowns,500);
 
 async function settleTrade(id){
   const closePrice=Number(btcPrice||0);
-  const {data,error}=await sb.rpc("settle_demo_trade",{
+  const {data,error}=await sb.rpc("settle__trade",{
     p_trade_id:id,
     p_close_price:closePrice>0?closePrice:null
   });
@@ -5660,13 +5057,13 @@ async function settleTrade(id){
     const pnl=Number(data.profit||0);
     const prefix=pnl>0?"+":"";
     const label=pnl>0?"Gain ":(pnl<0?"Perte ":"Résultat ");
-    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT.`,pnl>=0?"success":"error");
+    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT fictifs.`,pnl>=0?"success":"error");
   }
 }
 
 async function settleExpiredTrades(refresh=true){
   if(!currentUser)return;
-  const {data,error}=await sb.rpc("settle_expired_demo_trades");
+  const {data,error}=await sb.rpc("settle_expired__trades");
   if(error){console.error(error);return}
   if(refresh&&Number(data)>0) await refreshEverything();
 }
@@ -5680,7 +5077,7 @@ function renderHistory(){
     const hm=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
     const profit=Number(t.profit||0),profitClass=profit>=0?"profit-pos":"profit-neg";
     return `<div class="trade-history-card">
-      <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${normalizedTradeTiming(t).duration}s</span></div>
+      <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}s</span></div>
       <div class="trade-history-line"><span>time period</span><strong>${hm(opened)} ~ ${hm(settledAt)}</strong></div>
       <div class="trade-history-line"><span>profit and loss</span><strong class="${profitClass}">${profit>=0?"+":""}${money(profit)}</strong></div>
       <div class="trade-history-line"><span>return on position</span><strong class="${profit>=0?"profit-pos":"profit-neg"}">${Number(t.amount)>0?((profit/Number(t.amount))*100).toFixed(3):"0.000"}%</strong></div>
@@ -6202,7 +5599,8 @@ function renderFundingCalendar(){
       outMonth?"muted":"",
       inRange?"in-range":"",
       selectedStart||selectedEnd?"selected":"",
-      selectedStart?"selected-start":"" ].filter(Boolean).join(" ");
+      selectedStart?"selected-start":""
+    ].filter(Boolean).join(" ");
 
     cells.push(`<button class="${cls}" onclick="chooseFundingDate('${calendarDayKey(d)}')">${d.getDate()}</button>`);
   }
@@ -6545,7 +5943,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***SYWa",
-      warning:"" },
+      warning:" privé — adresse fictive USDT/TRON fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+    },
     {
       id:"ethereum",
       name:"Ethereum",
@@ -6556,7 +5955,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive USDT/Ethereum fournie pour cette simulation. Ne pas utiliser pour un transfert réel." },
+      warning:" privé — adresse fictive USDT/Ethereum fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+    },
     {
       id:"solana",
       name:"Solana",
@@ -6567,7 +5967,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~1 minute",
       contract:"***JU4qt",
-      warning:" privé — adresse fictive USDT/Solana fournie pour cette simulation. Ne pas utiliser pour un transfert réel." }
+      warning:" privé — adresse fictive USDT/Solana fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
+    }
   ],
   BTC:[
     {
@@ -6580,7 +5981,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~10 minutes",
       withdraw:"~20 minutes",
       contract:"—",
-      warning:" privé — adresse fictive BTC/Taproot fournie pour cette simulation." },
+      warning:" privé — adresse fictive BTC/Taproot fournie pour cette simulation."
+    },
     {
       id:"legacy",
       name:"Héritage",
@@ -6591,7 +5993,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~10 minutes",
       withdraw:"~20 minutes",
       contract:"—",
-      warning:" privé — adresse fictive BTC/Héritage fournie pour cette simulation." }
+      warning:" privé — adresse fictive BTC/Héritage fournie pour cette simulation."
+    }
   ],
   ETH:[
     {
@@ -6604,7 +6007,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive ETH/Ethereum fournie pour cette simulation." },
+      warning:" privé — adresse fictive ETH/Ethereum fournie pour cette simulation."
+    },
     {
       id:"xlayer",
       name:"X Layer",
@@ -6615,7 +6019,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive ETH/X Layer fournie pour cette simulation." }
+      warning:" privé — adresse fictive ETH/X Layer fournie pour cette simulation."
+    }
   ],
   SOL:[
     {
@@ -6628,7 +6033,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~1 minute",
       contract:"—",
-      warning:" privé — adresse fictive SOL/Solana fournie pour cette simulation." },
+      warning:" privé — adresse fictive SOL/Solana fournie pour cette simulation."
+    },
     {
       id:"xlayer",
       name:"X Layer",
@@ -6639,7 +6045,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive SOL/X Layer fournie pour cette simulation." }
+      warning:" privé — adresse fictive SOL/X Layer fournie pour cette simulation."
+    }
   ],
   USDC:[
     {
@@ -6652,7 +6059,8 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***831ec7",
-      warning:" — adresse fictive reproduite pour l’interface. N’envoyez aucun USDC réel." }
+      warning:" — adresse fictive reproduite pour l’interface. N’envoyez aucun USDC réel."
+    }
   ]
 };
 let depositCurrency="USDT";
@@ -6689,9 +6097,7 @@ function renderDepositDetail(){
   document.getElementById("depositArrival").textContent=n.arrival;
   document.getElementById("depositWithdrawTime").textContent=n.withdraw;
   document.getElementById("depositContract").textContent=n.contract;
-  const depositWarningEl=document.getElementById("depositWarning");
-  depositWarningEl.textContent=n.warning||"";
-  depositWarningEl.style.display=n.warning?"block":"none";
+  document.getElementById("depositWarning").textContent=n.warning;
   const preName=document.getElementById("depositPreNetworkName");
   const preMin=document.getElementById("depositPreMinimum");
   const amountCurrency=document.getElementById("depositAmountCurrency");
@@ -6923,7 +6329,8 @@ function toggleNexaSupport(force){
       nexaSupportGreetingShown=true;
       addNexaSupportMessage(
         "assistant",
-        "Bonjour 👋 Je suis l’assistant IA NexaTrade . Je peux vous aider avec Trade, My Assets, Funding records, Follow, Recharge, Transfer, Exchange et les fonctions du site." );
+        "Bonjour 👋 Je suis l’assistant IA NexaTrade . Je peux vous aider avec Trade, My Assets, Funding records, Follow, Recharge, Transfer, Exchange et les fonctions du site."
+      );
     }
     setTimeout(()=>document.getElementById("nexaSupportInput")?.focus(),80);
   }
@@ -7003,7 +6410,8 @@ async function sendNexaSupportMessage(){
     console.error("NEXA SUPPORT:",error);
     addNexaSupportMessage(
       "assistant",
-      "Le service IA n’est pas disponible pour le moment. Vérifie que la fonction Supabase « nexa-support » est déployée et que sa clé API serveur est configurée." );
+      "Le service IA n’est pas disponible pour le moment. Vérifie que la fonction Supabase « nexa-support » est déployée et que sa clé API serveur est configurée."
+    );
   }finally{
     nexaSupportBusy=false;
     typing?.classList.add("hidden");
@@ -7018,7 +6426,8 @@ const SITE_I18N={"Login":{"en":"Login","fr":"Connexion","es":"Iniciar sesión","
 
 Object.assign(SITE_I18N,{
   "Deposit amount":{"en":"Deposit amount","fr":"Montant du dépôt","es":"Importe del depósito","zh":"存款金额","ar":"مبلغ الإيداع","de":"Einzahlungsbetrag","it":"Importo del deposito","ru":"Сумма депозита","pl":"Kwota wpłaty"},
-"Quantity":{"en":"Quantity","fr":"Quantité","es":"Cantidad","zh":"数量","ar":"الكمية","de":"Menge","it":"Quantità","ru":"Количество","pl":"Ilość"},
+  "Enter the amount of cryptocurrency you want to deposit.":{"en":"Enter the amount of cryptocurrency you want to deposit.","fr":"Entrez la quantité de cryptomonnaie que vous souhaitez déposer dans la simulation.","es":"Introduce la cantidad de criptomoneda que deseas simular como depósito.","zh":"输入您要模拟存入的加密货币数量。","ar":"أدخل كمية العملة المشفرة التي تريد محاكاة إيداعها.","de":"Geben Sie die Kryptowährungsmenge für die simulierte Einzahlung ein.","it":"Inserisci la quantità di criptovaluta da simulare come deposito.","ru":"Введите количество криптовалюты для имитации депозита.","pl":"Wpisz ilość kryptowaluty do symulowanego depozytu."},
+  "Quantity":{"en":"Quantity","fr":"Quantité","es":"Cantidad","zh":"数量","ar":"الكمية","de":"Menge","it":"Quantità","ru":"Количество","pl":"Ilość"},
   "Show deposit address":{"en":"Show deposit address","fr":"Afficher l’adresse de dépôt","es":"Mostrar dirección de depósito","zh":"显示存款地址","ar":"إظهار عنوان الإيداع","de":"Einzahlungsadresse anzeigen","it":"Mostra indirizzo di deposito","ru":"Показать адрес депозита","pl":"Pokaż adres wpłaty"},
   "I have sent it":{"en":"I have sent it","fr":"J’ai envoyé","es":"Ya lo envié","zh":"我已发送","ar":"لقد أرسلته","de":"Ich habe es gesendet","it":"Ho inviato","ru":"Я отправил","pl":"Wysłano"},
   "Deposit submitted":{"en":"Deposit submitted","fr":"Dépôt envoyé","es":"Depósito enviado","zh":"存款已提交","ar":"تم إرسال الإيداع","de":"Einzahlung gesendet","it":"Deposito inviato","ru":"Депозит отправлен","pl":"Wpłata wysłana"},
@@ -7038,8 +6447,20 @@ function tSite(key,lang=(localStorage.getItem('nexaLanguage')||'en')){const k=SI
 function translateTextNodeI18n(node,lang){if(!node||node.nodeType!==Node.TEXT_NODE)return;const p=node.parentElement;if(!p||/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/i.test(p.tagName)||p.closest('[data-no-i18n]'))return;let k=SITE_I18N_TEXT_KEYS.get(node);if(!k){k=canonicalI18nKey(node.nodeValue);if(!k)return;SITE_I18N_TEXT_KEYS.set(node,k)}const raw=node.nodeValue,lead=(raw.match(/^\s*/)||[''])[0],trail=(raw.match(/\s*$/)||[''])[0],next=lead+tSite(k,lang)+trail;if(raw!==next)node.nodeValue=next}
 function translateAttrI18n(el,attr,lang){if(!el||!el.getAttribute)return;const ds='i18n'+attr.replace(/(^.|-.)/g,m=>m.replace('-','').toUpperCase())+'Key';let k=el.dataset?.[ds];if(!k){k=canonicalI18nKey(el.getAttribute(attr));if(!k)return;if(el.dataset)el.dataset[ds]=k}const next=tSite(k,lang);if(el.getAttribute(attr)!==next)el.setAttribute(attr,next)}
 function translateTreeI18n(root=document,lang=(localStorage.getItem('nexaLanguage')||'en')){if(root.nodeType===Node.TEXT_NODE){translateTextNodeI18n(root,lang);return}if(root.matches?.('[data-no-i18n]'))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];while(w.nextNode())nodes.push(w.currentNode);nodes.forEach(n=>translateTextNodeI18n(n,lang));const els=[];if(root.nodeType===Node.ELEMENT_NODE)els.push(root);if(root.querySelectorAll)els.push(...root.querySelectorAll('[placeholder],[title],[aria-label]'));els.forEach(el=>['placeholder','title','aria-label'].forEach(a=>{if(el.hasAttribute?.(a))translateAttrI18n(el,a,lang)}))}
-function toggleLanguageMenu(){document.getElementById('languageMenu')?.classList.toggle('hidden')}
-function setLanguage(lang){const supported=["en", "fr", "es", "zh", "ar", "de", "it", "ru", "pl"];if(!supported.includes(lang))lang='en';localStorage.setItem('nexaLanguage',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';translateTreeI18n(document,lang);document.querySelectorAll('[data-lang-choice]').forEach(b=>b.classList.toggle('selected',b.dataset.langChoice===lang));document.getElementById('languageMenu')?.classList.add('hidden');window.dispatchEvent(new CustomEvent('nexa:languagechange',{detail:{lang}}))}
+function closeLanguageMenu(){
+  document.getElementById('languageMenu')?.classList.add('hidden');
+  document.getElementById('languageBackdrop')?.classList.add('hidden');
+}
+function toggleLanguageMenu(){
+  const menu=document.getElementById('languageMenu');
+  const backdrop=document.getElementById('languageBackdrop');
+  if(!menu)return;
+  const opening=menu.classList.contains('hidden');
+  menu.classList.toggle('hidden',!opening);
+  backdrop?.classList.toggle('hidden',!opening);
+}
+function setLanguage(lang){const supported=["en", "fr", "es", "zh", "ar", "de", "it", "ru", "pl"];if(!supported.includes(lang))lang='en';localStorage.setItem('nexaLanguage',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';translateTreeI18n(document,lang);document.querySelectorAll('[data-lang-choice]').forEach(b=>b.classList.toggle('selected',b.dataset.langChoice===lang));closeLanguageMenu();window.dispatchEvent(new CustomEvent('nexa:languagechange',{detail:{lang}}))}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLanguageMenu()});
 const NEXA_I18N_OBSERVER=new MutationObserver(ms=>{const lang=localStorage.getItem('nexaLanguage')||'en';for(const m of ms){if(m.type==='characterData')translateTextNodeI18n(m.target,lang);if(m.type==='childList')m.addedNodes.forEach(n=>translateTreeI18n(n,lang));if(m.type==='attributes'&&['placeholder','title','aria-label'].includes(m.attributeName))translateAttrI18n(m.target,m.attributeName,lang)}});
 document.addEventListener('DOMContentLoaded',()=>{setLanguage(localStorage.getItem('nexaLanguage')||'en');NEXA_I18N_OBSERVER.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']})});
 
@@ -7128,13 +6549,15 @@ async function refreshBtcChartFallback(){
       price:p,
       change24h:previous.change||0,
       volume:Number(ticker?.v?.[1] ?? previous.volume ?? 0),
-      source:"kraken-rest-fallback" });
+      source:"kraken-rest-fallback"
+    });
     setTradeChartConnectionStatus("LIVE · FALLBACK","live");
   }catch(error){
     console.warn("BTC CHART FALLBACK:",error);
     setTradeChartConnectionStatus(
       navigator.onLine ? "RECONNECTING…" : "OFFLINE",
-      navigator.onLine ? "reconnecting" : "offline" );
+      navigator.onLine ? "reconnecting" : "offline"
+    );
   }finally{
     btcChartFallbackBusy=false;
   }
@@ -7211,7 +6634,8 @@ function updateTradeFromMarket(){
 
   if(tradeEl){
     tradeEl.textContent=livePriceFormat(market.price);
-    // The large BTC price follows the currently forming candle: // green when close >= open, red when close < open.
+    // The large BTC price follows the currently forming candle:
+    // green when close >= open, red when close < open.
     const activeCandle=tradeCandles?.[tradeCandles.length-1];
     const candleUp=!activeCandle || Number(activeCandle.close)>=Number(activeCandle.open);
     tradeEl.style.color=candleUp?"#20bd8a":"#f33762";
@@ -7263,7 +6687,8 @@ function applyMarketUpdate(symbol,data={}){
     change:Number.isFinite(ch)?ch:0,
     volume:Number.isFinite(vol)?vol:0,
     updatedAt:Date.now(),
-    source:data.source||previous.source||"market" };
+    source:data.source||previous.source||"market"
+  };
 
   if(symbol==="BTCUSDT") btcPrice=p;
   if(symbol==="ETHUSDT") ethPrice=p;
@@ -7308,7 +6733,8 @@ async function refreshLiveMarket(){
       method:"GET",
       cache:"no-store",
       headers:{
-        "Accept":"application/json" }
+        "Accept":"application/json"
+      }
     });
 
     if(!response.ok){
@@ -7330,7 +6756,8 @@ async function refreshLiveMarket(){
         price:item.price,
         change24h:item.change24h,
         volume:item.quoteVolume ?? item.volume,
-        source:"smooth-api" })){
+        source:"smooth-api"
+      })){
         updated++;
       }
     }
@@ -7351,7 +6778,8 @@ async function refreshLiveMarket(){
     console.log(
       "MARKET REST SNAPSHOT:",
       updated+"/"+LIVE_SYMBOLS.length,
-      payload.source||"" );
+      payload.source||""
+    );
   }catch(error){
     console.error("MARKET REST ERROR:",error);
   }finally{
@@ -7372,7 +6800,8 @@ function scheduleMarketSocketReconnect(){
   clearMarketSocketReconnect();
 
   /*
-    Exponential reconnect: 1s, 2s, 4s, 8s ... max 30s.
+    Exponential reconnect:
+    1s, 2s, 4s, 8s ... max 30s.
   */
   const delay=Math.min(
     30000,
@@ -7424,7 +6853,8 @@ function handleCoinbaseTickerMessage(message){
         price:ticker.price,
         change24h:ticker.price_percent_chg_24_h,
         volume:ticker.volume_24_h,
-        source:"coinbase-ws" });
+        source:"coinbase-ws"
+      });
     }
   }
 }
@@ -7463,7 +6893,8 @@ function connectMarketWebSocket(){
     const subscription={
       type:"subscribe",
       product_ids:Object.keys(COINBASE_PRODUCTS),
-      channel:"ticker" };
+      channel:"ticker"
+    };
 
     marketSocket.send(JSON.stringify(subscription));
 
@@ -7497,12 +6928,14 @@ function connectMarketWebSocket(){
     console.warn(
       "MARKET WS: disconnected",
       event.code,
-      event.reason||"" );
+      event.reason||""
+    );
 
     marketSocket=null;
     setTradeChartConnectionStatus(
       navigator.onLine ? "RECONNECTING…" : "OFFLINE",
-      navigator.onLine ? "reconnecting" : "offline" );
+      navigator.onLine ? "reconnecting" : "offline"
+    );
 
     /*
       Immediately refresh through smooth-api so the UI does not
@@ -7693,7 +7126,8 @@ function openAuthentication(){
 function refreshPersonalVerification(){
   const saved=JSON.parse(localStorage.getItem(kycStorageKey())||"{}");
   const serverStatus=String(profile?.identity_status||"").toUpperCase();
-  const status=serverStatus==="VERIFIED"?"verified": (["SUBMITTED","PENDING"].includes(serverStatus)?"submitted":(saved.status||"not verified"));
+  const status=serverStatus==="VERIFIED"?"verified":
+    (["SUBMITTED","PENDING"].includes(serverStatus)?"submitted":(saved.status||"not verified"));
   const p=document.getElementById("personalVerifyStatus"), k=document.getElementById("kycStatusText");
   if(p){p.textContent=status;p.classList.toggle("verified",status==="verified")}
   if(k)k.textContent=status==="verified"?"Verified":status==="submitted"?"Submitted — awaiting administrator verification":status;
@@ -7754,7 +7188,8 @@ async function startKycCamera(){
     showKycCameraState("idle");
     const insecure=location.protocol!=="https:"&&location.hostname!=="localhost";
     setKycCameraStatus(insecure
-      ?"Camera access requires HTTPS. Open NexaTrade from its secure HTTPS address." :"Camera permission was denied or no front camera is available.");
+      ?"Camera access requires HTTPS. Open NexaTrade from its secure HTTPS address."
+      :"Camera permission was denied or no front camera is available.");
   }
 }
 async function captureKycSelfie(){
@@ -7947,24 +7382,13 @@ function clearNexaCache(){
 
 
 async function restoreSessionOnBoot(){
-  // Keep the loading screen visible while Supabase resolves saved sessions / email redirects.
+  // Keep the app hidden only while Supabase checks the saved session.
   app.classList.add("hidden");
   authScreen.classList.add("hidden");
-  document.getElementById("emailConfirmationPage")?.classList.add("hidden");
 
   try{
     const {data:{session},error}=await sb.auth.getSession();
     if(error) throw error;
-
-    if(isEmailConfirmationRedirect()){
-      const confirmed=!!(session?.user?.email_confirmed_at||session?.user?.confirmed_at);
-      if(confirmed){
-        currentUser=session.user;
-        await ensureNewUserStartsAtZero(session.user);
-        showEmailConfirmationSuccess(currentUser||session.user);
-        return;
-      }
-    }
 
     if(session?.user){
       await enterApp(session.user);
@@ -7981,7 +7405,6 @@ async function restoreSessionOnBoot(){
   app.classList.add("hidden");
   authScreen.classList.remove("hidden");
   document.body.classList.add("login-gate-active");
-  hidePageLoader();
 }
 
 sb.auth.onAuthStateChange((event,session)=>{
@@ -7998,5 +7421,305 @@ sb.auth.onAuthStateChange((event,session)=>{
 if(document.readyState!=="loading") setLanguage(localStorage.getItem("nexaLanguage")||"en");
 restoreSessionOnBoot();
 </script>
+
+<!-- ===== NexaTrade premium UX layer ===== -->
+<div id="nxPageVeil" aria-hidden="true">
+  <div class="nx-page-loader" role="status" aria-label="Loading">
+    <div class="nx-spinner"></div>
+    <div class="nx-loader-bars"><i></i><i></i><i></i></div>
+  </div>
+</div>
+
+<div id="nxToastStack" aria-live="polite" aria-atomic="false"></div>
+
+<div id="nxConnectionBanner" role="status" aria-live="polite">
+  <div class="nx-connection-copy">
+    <span class="nx-connection-dot"></span>
+    <span>Connection interrupted. Some live data may be unavailable.</span>
+  </div>
+  <button class="nx-connection-retry" type="button" onclick="nexaRetryConnection()">Retry</button>
+</div>
+
+<div id="nxSystemError" class="hidden" role="dialog" aria-modal="true" aria-labelledby="nxErrorTitle">
+  <div class="nx-error-card">
+    <div class="nx-error-mark">!</div>
+    <h2 id="nxErrorTitle">Something went wrong</h2>
+    <p id="nxErrorMessage">The requested page could not be displayed.</p>
+    <div id="nxErrorCode" class="nx-error-code">NX-ERROR</div>
+    <div class="nx-error-actions">
+      <button type="button" onclick="nexaGoHome()">Home</button>
+      <button class="primary" type="button" onclick="nexaRetryConnection()">Retry</button>
+    </div>
+  </div>
+</div>
+
+<div id="nxConfirmOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="nxConfirmTitle">
+  <div class="nx-confirm-card">
+    <h3 id="nxConfirmTitle">Confirm action</h3>
+    <p id="nxConfirmMessage">Do you want to continue?</p>
+    <div class="nx-confirm-actions">
+      <button type="button" onclick="nexaResolveConfirm(false)">Cancel</button>
+      <button class="danger" type="button" onclick="nexaResolveConfirm(true)">Confirm</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ===== NEXATRADE PREMIUM UX CONTROLLER ===== */
+(function(){
+  "use strict";
+
+  const $ = (id)=>document.getElementById(id);
+  let nxVeilTimer = null;
+  let nxConfirmResolver = null;
+  let nxLastSystemError = null;
+
+  function classifyNotice(message){
+    const s=String(message||"");
+    if(/error|erreur|invalid|invalide|insufficient|indisponible|failed|échec|requise|required|greater than|doit contenir|ne peut pas/i.test(s))return "error";
+    if(/attention|offline|connexion|connection|pending|attente/i.test(s))return "warning";
+    if(/success|succès|réussi|accepted|accepté|copié|copied|enregistr|saved|cleared|confirmé|recorded/i.test(s))return "success";
+    return "info";
+  }
+
+  window.nexaNotify = function(message,type,timeout=3800){
+    const stack=$("nxToastStack");
+    if(!stack)return;
+    const kind=type||classifyNotice(message);
+    const icon=kind==="success"?"✓":kind==="error"?"!":kind==="warning"?"•":"i";
+    const toast=document.createElement("div");
+    toast.className="nx-toast "+kind;
+    toast.innerHTML='<div class="nx-toast-icon">'+icon+'</div><div class="nx-toast-copy"></div><button class="nx-toast-close" type="button" aria-label="Close">×</button>';
+    toast.querySelector(".nx-toast-copy").textContent=String(message||"");
+    const close=()=>{toast.style.opacity="0";toast.style.transform="translateY(8px)";setTimeout(()=>toast.remove(),170)};
+    toast.querySelector(".nx-toast-close").addEventListener("click",close);
+    stack.appendChild(toast);
+    while(stack.children.length>3)stack.firstElementChild?.remove();
+    if(timeout>0)setTimeout(close,timeout);
+  };
+
+  /* Replace blocking browser alert() popups everywhere without changing business logic. */
+  window.alert = function(message){ window.nexaNotify(message); };
+
+  window.nexaShowPageVeil=function(){
+    const el=$("nxPageVeil"); if(!el)return;
+    clearTimeout(nxVeilTimer);
+    el.classList.add("show");
+    nxVeilTimer=setTimeout(()=>el.classList.remove("show"),240);
+  };
+  window.nexaHidePageVeil=function(){
+    clearTimeout(nxVeilTimer);$("nxPageVeil")?.classList.remove("show");
+  };
+
+  window.showSystemError=function(title,message,code="NX-ERROR"){
+    nxLastSystemError={title,message,code};
+    $("nxErrorTitle").textContent=title||"Something went wrong";
+    $("nxErrorMessage").textContent=message||"The requested action could not be completed.";
+    $("nxErrorCode").textContent=code;
+    $("nxSystemError")?.classList.remove("hidden");
+  };
+  window.hideSystemError=function(){
+    $("nxSystemError")?.classList.add("hidden");
+  };
+  window.nexaGoHome=function(){
+    hideSystemError();
+    if(typeof window.showPage==="function" && $("home")){
+      const homeButton=[...document.querySelectorAll(".nav button")].find(b=>(b.getAttribute("onclick")||"").includes("'home'")||(b.getAttribute("onclick")||"").includes('"home"'));
+      window.showPage("home",homeButton||null);
+    }
+  };
+
+  window.nexaRetryConnection=async function(){
+    const retryButtons=document.querySelectorAll(".nx-connection-retry,#nxSystemError .primary");
+    retryButtons.forEach(b=>b.disabled=true);
+    try{
+      if(navigator.onLine===false)throw new Error("offline");
+      if(typeof window.refreshEverything==="function" && window.currentUser){
+        await window.refreshEverything();
+      }else if(typeof window.refreshLiveMarket==="function"){
+        window.refreshLiveMarket();
+      }
+      hideSystemError();
+      $("nxConnectionBanner")?.classList.remove("show");
+      nexaNotify("Connection restored.","success",2600);
+    }catch(_){
+      $("nxConnectionBanner")?.classList.add("show");
+      nexaNotify("Connection is still unavailable.","warning",3000);
+    }finally{
+      retryButtons.forEach(b=>b.disabled=false);
+    }
+  };
+
+  window.nexaConfirm=function(message,title="Confirm action"){
+    $("nxConfirmTitle").textContent=title;
+    $("nxConfirmMessage").textContent=String(message||"Do you want to continue?");
+    $("nxConfirmOverlay")?.classList.remove("hidden");
+    return new Promise(resolve=>{nxConfirmResolver=resolve});
+  };
+  window.nexaResolveConfirm=function(value){
+    $("nxConfirmOverlay")?.classList.add("hidden");
+    const resolve=nxConfirmResolver;nxConfirmResolver=null;
+    if(resolve)resolve(!!value);
+  };
+
+  /* Upgrade the only remaining browser confirm used by admin delete-code. */
+  if(typeof window.deleteCode==="function"){
+    const originalDeleteCode=window.deleteCode;
+    window.deleteCode=async function(id){
+      const ok=await nexaConfirm("Delete this unused code? This action cannot be undone.","Delete code");
+      if(!ok)return;
+      const originalConfirm=window.confirm;
+      window.confirm=()=>true;
+      try{return await originalDeleteCode(id)}
+      finally{window.confirm=originalConfirm}
+    };
+  }
+
+  /* Harden page routing and add a very short destination-preview loader. */
+  if(typeof window.showPage==="function"){
+    const originalShowPage=window.showPage;
+    window.showPage=function(pageId,button){
+      const target=$(pageId);
+      if(!target){
+        showSystemError("Page unavailable","This section is not available or its destination is invalid.","NX-404");
+        return false;
+      }
+      const alreadyActive=target.classList.contains("active");
+      try{
+        if(typeof window.closeLanguageMenu==="function")window.closeLanguageMenu();
+        const result=originalShowPage(pageId,button);
+        if(!alreadyActive){
+          nexaShowPageVeil();
+          requestAnimationFrame(()=>{
+            try{window.scrollTo({top:0,behavior:"smooth"})}catch(_){window.scrollTo(0,0)}
+          });
+        }
+        return result;
+      }catch(err){
+        console.error("Navigation error:",err);
+        showSystemError("Unable to open this page","The application encountered a navigation problem. You can retry or return to Home.","NX-NAV");
+        return false;
+      }
+    };
+  }
+
+  /* Close transient UI consistently with Escape. */
+  function closeTopTransient(){
+    if(!$("nxConfirmOverlay")?.classList.contains("hidden")){nexaResolveConfirm(false);return true}
+    if(!$("nxSystemError")?.classList.contains("hidden")){hideSystemError();return true}
+    if(!$("languageMenu")?.classList.contains("hidden")){window.closeLanguageMenu?.();return true}
+    const mapped=[
+      ["personalLanguageOverlay",()=>window.closeLanguageDialog?.()],
+      ["followModalOverlay",()=>window.closeFollowModal?.()],
+      ["fundingCalendarOverlay",()=>window.closeFundingCalendar?.()],
+      ["walletCurrencySheetOverlay",()=>window.closeWalletSheet?.("walletCurrencySheetOverlay")],
+      ["walletNetworkSheetOverlay",()=>window.closeWalletSheet?.("walletNetworkSheetOverlay")],
+      ["walletAccountSheetOverlay",()=>window.closeWalletSheet?.("walletAccountSheetOverlay")],
+      ["nexaSupportPanel",()=>window.toggleNexaSupport?.(false)]
+    ];
+    for(const [id,close] of mapped){
+      const el=$(id);
+      if(el&&!el.classList.contains("hidden")){close();return true}
+    }
+    const fullPages=["authenticationPage","accountPage","sharePage","fundingRecordsPage","withdrawPage","rechargePage","transferPage","exchangePage","depositDetailPage"];
+    for(const id of fullPages){
+      const el=$(id);
+      if(el&&!el.classList.contains("hidden")){
+        if(id==="fundingRecordsPage")window.closeFundingRecords?.();
+        else if(["withdrawPage","rechargePage","transferPage","exchangePage","depositDetailPage"].includes(id))window.closeWalletPage?.(id);
+        else window.closePersonalSub?.(id);
+        return true;
+      }
+    }
+    const pc=$("personalCenter");
+    if(pc&&!pc.classList.contains("hidden")){window.closePersonalCenter?.();return true}
+    return false;
+  }
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"&&closeTopTransient()){e.preventDefault();e.stopPropagation()}
+  });
+
+  /* Close dropdowns/panels by tapping outside them. */
+  document.addEventListener("pointerdown",e=>{
+    const country=$("countryPicker");
+    if(country&&!country.classList.contains("hidden")&&!e.target.closest(".country-picker")&&!e.target.closest(".country-picker-btn")){
+      country.classList.add("hidden");
+    }
+    const support=$("nexaSupportPanel");
+    if(support&&!support.classList.contains("hidden")&&!e.target.closest("#nexaSupportPanel")&&!e.target.closest("#nexaSupportFab")){
+      window.toggleNexaSupport?.(false);
+    }
+  },{passive:true});
+
+  /* Avoid accidental rapid multi-submit while preserving normal navigation. */
+  document.addEventListener("click",e=>{
+    const btn=e.target.closest("button");
+    if(!btn||btn.disabled)return;
+    const txt=(btn.textContent||"").trim().toLowerCase();
+    const isAction=btn.type==="submit"||/submit|confirm|continue|withdraw|deposit|recharge|send|save|create|generate|exchange|transfer|connexion|login|sign in/i.test(txt);
+    if(!isAction)return;
+    btn.dataset.nxClickLock="1";
+    btn.disabled=true;
+    setTimeout(()=>{if(btn.dataset.nxClickLock==="1"){btn.disabled=false;delete btn.dataset.nxClickLock}},520);
+  },true);
+
+  function updateNetworkState(){
+    const offline=navigator.onLine===false;
+    $("nxConnectionBanner")?.classList.toggle("show",offline);
+  }
+  window.addEventListener("offline",()=>{
+    updateNetworkState();
+    nexaNotify("Internet connection lost. Live information may pause.","warning",4200);
+  });
+  window.addEventListener("online",()=>{
+    updateNetworkState();
+    nexaNotify("Back online.","success",2200);
+    try{window.refreshLiveMarket?.()}catch(_){}
+  });
+  updateNetworkState();
+
+  /* Friendly fallback for truly unhandled client errors; keep app usable. */
+  window.addEventListener("error",event=>{
+    if(!event?.error)return;
+    console.error("NexaTrade UI error:",event.error);
+    nexaNotify("A display problem occurred. The application is still running.","error",4300);
+  });
+  window.addEventListener("unhandledrejection",event=>{
+    const reason=event?.reason;
+    console.error("NexaTrade async error:",reason);
+    const message=String(reason?.message||reason||"");
+    if(/network|fetch|offline|timeout/i.test(message)){
+      $("nxConnectionBanner")?.classList.add("show");
+      nexaNotify("A service is temporarily unreachable. You can retry.","warning",4300);
+    }else{
+      nexaNotify("An operation could not be completed. Please try again.","error",4300);
+    }
+  });
+
+  /* Make overlays outside-click friendly where that is safe. */
+  const outsideClosable=[
+    ["followModalOverlay",()=>window.closeFollowModal?.()],
+    ["fundingCalendarOverlay",()=>window.closeFundingCalendar?.()],
+    ["walletCurrencySheetOverlay",()=>window.closeWalletSheet?.("walletCurrencySheetOverlay")],
+    ["walletNetworkSheetOverlay",()=>window.closeWalletSheet?.("walletNetworkSheetOverlay")],
+    ["walletAccountSheetOverlay",()=>window.closeWalletSheet?.("walletAccountSheetOverlay")],
+    ["personalLanguageOverlay",()=>window.closeLanguageDialog?.()]
+  ];
+  outsideClosable.forEach(([id,close])=>{
+    const el=$(id);if(!el)return;
+    el.addEventListener("pointerdown",ev=>{if(ev.target===el)close()},{passive:true});
+  });
+
+  /* Ensure all icon-only controls have at least a generic accessible label. */
+  document.querySelectorAll("button").forEach(btn=>{
+    if(!btn.getAttribute("aria-label") && !(btn.textContent||"").trim()){
+      btn.setAttribute("aria-label","Action");
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
