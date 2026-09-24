@@ -2684,6 +2684,68 @@ input,select,textarea,button{max-width:100%}
   }
 }
 
+
+
+/* ===== FUNDING ACCESS — LOCKED UNTIL ACCOUNT AUTHENTICATION ===== */
+.assets-action{
+  position:relative;
+}
+
+.assets-action.funding-locked{
+  opacity:.48!important;
+  filter:grayscale(.15);
+}
+
+.assets-action.funding-locked .assets-action-icon{
+  background:#dfe6dc!important;
+  color:#687168!important;
+  border-color:#aeb8ad!important;
+  position:relative;
+}
+
+.assets-action.funding-locked .assets-action-icon::after{
+  content:"🔒";
+  position:absolute;
+  right:-5px;
+  bottom:-5px;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#303236;
+  color:#fff;
+  font-size:12px;
+  border:2px solid #fff;
+  box-shadow:0 3px 10px rgba(0,0,0,.16);
+}
+
+.assets-action.funding-unlocked{
+  opacity:1!important;
+  filter:none!important;
+}
+
+.assets-action.funding-unlocked .assets-action-icon{
+  transition:transform .16s ease, background .2s ease, border-color .2s ease;
+}
+
+.assets-action[aria-disabled="true"]{
+  cursor:pointer;
+}
+
+.assets-action-access-note{
+  grid-column:1/-1;
+  margin:4px 4px 0;
+  text-align:center;
+  font-size:11px;
+  line-height:1.35;
+  color:#89928b;
+}
+
+.assets-action-access-note.verified{
+  color:#42ae3d;
+}
+
 </style>
 </head>
 <body>
@@ -3217,11 +3279,11 @@ input,select,textarea,button{max-width:100%}
     </div>
 
     <div class="assets-actions-card">
-      <button class="assets-action" onclick="openAssetAction('withdraw')">
+      <button id="assetsWithdrawBtn" class="assets-action funding-locked" aria-disabled="true" onclick="openAssetAction('withdraw')">
         <span class="assets-action-icon">⇧</span>
         <span class="assets-action-label">withdraw</span>
       </button>
-      <button class="assets-action" onclick="openAssetAction('recharge')">
+      <button id="assetsRechargeBtn" class="assets-action funding-locked" aria-disabled="true" onclick="openAssetAction('recharge')">
         <span class="assets-action-icon">▤</span>
         <span class="assets-action-label">recharge</span>
       </button>
@@ -3233,6 +3295,9 @@ input,select,textarea,button{max-width:100%}
         <span class="assets-action-icon">ϟ</span>
         <span class="assets-action-label">exchange</span>
       </button>
+      <div id="fundingAccessNote" class="assets-action-access-note">
+        Deposit and withdrawal unlock after account authentication.
+      </div>
     </div>
 
     <div class="assets-account-title">my account</div>
@@ -3534,13 +3599,11 @@ The handling fee is 10 USDT within 100 USDT, and 10% will be charged for more th
         <div id="depositDetailTitle" class="deposit-detail-title">Deposit USDT</div>
         <div></div>
       </div>
-      <div class="deposit--note"> — adresses fictives uniquement. Ne jamais envoyer de vraie cryptomonnaie.</div>
 
       <!-- STEP 1: amount before revealing the fictitious wallet -->
       <div id="depositAmountStep">
         <div class="deposit-step-card">
           <div class="deposit-step-title">Deposit amount</div>
-          <div class="deposit-step-sub">Enter the amount of cryptocurrency you want to simulate depositing.</div>
 
           <div class="deposit-amount-label">Quantity</div>
           <div class="deposit-amount-field">
@@ -4128,6 +4191,52 @@ setTimeout(prefillInviteFromUrl,0);
 
 function showLogin(){signupForm.classList.add("hidden");loginForm.classList.remove("hidden")}
 
+
+function nexaEmailIsVerified(user){
+  return !!(
+    user &&
+    user.email &&
+    (user.email_confirmed_at || user.confirmed_at)
+  );
+}
+
+function nexaEmailRedirectUrl(){
+  const url=new URL(location.origin+location.pathname);
+  url.searchParams.set("email_confirmed","1");
+  return url.toString();
+}
+
+async function blockUnverifiedEmailAccess(user, targetMessageId="loginMessage"){
+  if(nexaEmailIsVerified(user))return false;
+
+  try{
+    await sb.auth.signOut();
+  }catch(_){}
+
+  currentUser=null;
+  profile=null;
+  trades=[];
+  isCurrentUserAdmin=false;
+
+  app?.classList.add("hidden");
+  authScreen?.classList.remove("hidden");
+  document.body.classList.add("login-gate-active");
+
+  if(targetMessageId==="signupMessage"){
+    showSignup();
+  }else{
+    showLogin();
+  }
+
+  showMessage(
+    targetMessageId,
+    "Ton compte a été créé, mais ton adresse e-mail doit être confirmée avant tout accès. Ouvre l’e-mail envoyé par NexaTrade et clique sur le lien de confirmation.",
+    "success"
+  );
+
+  return true;
+}
+
 async function signup(){
   clearMessage("signupMessage");
   const displayName=(document.getElementById("signupName")?.value||"").trim();
@@ -4138,12 +4247,33 @@ async function signup(){
   if(password.length<6)return showMessage("signupMessage","Mot de passe: minimum 6 caractères.","error");
   if(password!==p2)return showMessage("signupMessage","Les mots de passe ne correspondent pas.","error");
   const {data,error}=await sb.auth.signUp({
-    email,password,
-    options:{data:{display_name:displayName,referral_code:inviteCode||null}}
+    email,
+    password,
+    options:{
+      emailRedirectTo:nexaEmailRedirectUrl(),
+      data:{
+        display_name:displayName,
+        referral_code:inviteCode||null
+      }
+    }
   });
+
   if(error)return showMessage("signupMessage",error.message,"error");
-  if(data.session) await enterApp(data.user);
-  else showMessage("signupMessage","Compte créé. Vérifie obligatoirement ton email avant de pouvoir utiliser ton compte.","success");
+
+  if(!nexaEmailIsVerified(data?.user)){
+    if(data?.session){
+      try{await sb.auth.signOut()}catch(_){}
+    }
+
+    showMessage(
+      "signupMessage",
+      "Compte créé. Vérifie obligatoirement ton adresse e-mail avant de pouvoir accéder à NexaTrade. Un lien de confirmation vient de t’être envoyé.",
+      "success"
+    );
+    return;
+  }
+
+  await enterApp(data.user);
 }
 
 
@@ -4317,6 +4447,12 @@ async function login(){
       return;
     }
 
+    if(!nexaEmailIsVerified(data.user)){
+      try{await sb.auth.signOut()}catch(_){}
+      showLoginError("Ton adresse e-mail doit être confirmée avant de pouvoir accéder à ton compte. Ouvre l’e-mail de confirmation reçu puis réessaie.");
+      return;
+    }
+
     if(document.getElementById("rememberLogin")?.checked){
       localStorage.setItem("nexaRememberLogin",JSON.stringify({
         mode:loginMode,identifier:rememberIdentifier,country:selectedLoginCountry.iso
@@ -4343,12 +4479,21 @@ async function logout(){
 }
 
 async function enterApp(user){
-  currentUser=user;userEmail.textContent=user.email||user.phone||"Utilisateur";
-  authScreen.classList.add("hidden");app.classList.remove("hidden");
+  if(!nexaEmailIsVerified(user)){
+    await blockUnverifiedEmailAccess(user,"loginMessage");
+    return false;
+  }
+
+  currentUser=user;
+  userEmail.textContent=user.email||user.phone||"Utilisateur";
+  authScreen.classList.add("hidden");
+  app.classList.remove("hidden");
   document.body.classList.remove("login-gate-active");
+
   await checkAdmin();
   await settleExpiredTrades(false);
   await refreshEverything();
+  return true;
 }
 
 async function checkAdmin(){
@@ -4387,6 +4532,7 @@ async function loadProfile(){
   profile=data;
   await loadAssetBalances();
   updateUI();
+  syncFundingAccessUI();
 }
 
 async function loadTrades(){
@@ -6011,28 +6157,79 @@ function isEmailVerified(){
 function isIdentityVerified(){
   return String(profile?.identity_status||"").toUpperCase()==="VERIFIED";
 }
+function fundingAccessGranted(){
+  return isEmailVerified() && isIdentityVerified();
+}
+function syncFundingAccessUI(){
+  const unlocked=fundingAccessGranted();
+  const buttons=[
+    document.getElementById("assetsWithdrawBtn"),
+    document.getElementById("assetsRechargeBtn")
+  ].filter(Boolean);
+
+  buttons.forEach(btn=>{
+    btn.classList.toggle("funding-locked",!unlocked);
+    btn.classList.toggle("funding-unlocked",unlocked);
+    btn.setAttribute("aria-disabled",unlocked?"false":"true");
+    btn.title=unlocked
+      ?"Available"
+      :"Account authentication required";
+  });
+
+  const note=document.getElementById("fundingAccessNote");
+  if(note){
+    note.classList.toggle("verified",unlocked);
+    if(unlocked){
+      note.textContent="Account authenticated · Deposit and withdrawal are available.";
+    }else if(!isEmailVerified()){
+      note.textContent="Confirm your email to begin account authentication.";
+    }else{
+      const identity=String(profile?.identity_status||"UNVERIFIED").toUpperCase();
+      note.textContent=(identity==="SUBMITTED"||identity==="PENDING")
+        ?"Identity verification pending · Deposit and withdrawal remain locked."
+        :"Complete identity authentication to unlock deposit and withdrawal.";
+    }
+  }
+}
 function routeFundingVerification(action){
   localStorage.setItem("nexaPendingFundingAction",action||"");
   if(!isEmailVerified()){
-    alert("Adresse e-mail non vérifiée. Ouvre le message de confirmation envoyé à ton adresse e-mail puis clique sur le lien de vérification avant de continuer.");
+    alert("Adresse e-mail non vérifiée. Confirme ton adresse e-mail avant d’utiliser les fonctions de dépôt ou de retrait.");
+    syncFundingAccessUI();
     return false;
   }
+
   const identity=String(profile?.identity_status||"").toUpperCase();
+
   if(identity==="SUBMITTED"||identity==="PENDING"){
-    alert("Ta vérification d’identité a déjà été envoyée et attend encore la validation de l’administrateur.");
+    alert("Ta vérification d’identité est en attente de validation. Le dépôt et le retrait seront débloqués automatiquement après validation.");
     openAuthentication();
+    syncFundingAccessUI();
     return false;
   }
+
   if(identity!=="VERIFIED"){
-    alert("Vérification d’identité requise. Complète tous les champs, ajoute ton document et valide ton selfie avant d’effectuer un dépôt ou un retrait.");
+    alert("Authentification du compte requise. Complète la vérification d’identité pour débloquer le dépôt et le retrait.");
     openAuthentication();
+    syncFundingAccessUI();
     return false;
   }
+
+  syncFundingAccessUI();
   return true;
 }
 function openWalletPage(id){
-  ["withdrawPage","rechargePage","transferPage","exchangePage","depositDetailPage"].forEach(x=>document.getElementById(x)?.classList.add("hidden"));
+  const sensitive=["withdrawPage","rechargePage","depositDetailPage"];
+  if(sensitive.includes(id) && !fundingAccessGranted()){
+    const action=id==="withdrawPage"?"withdraw":"recharge";
+    if(!routeFundingVerification(action))return false;
+  }
+
+  ["withdrawPage","rechargePage","transferPage","exchangePage","depositDetailPage"]
+    .forEach(x=>document.getElementById(x)?.classList.add("hidden"));
+
   document.getElementById(id)?.classList.remove("hidden");
+  return true;
 }
 function closeWalletPage(id){
   document.getElementById(id)?.classList.add("hidden");
@@ -6414,6 +6611,7 @@ let depositNetworkId="tron";
 let pendingDepositAmount=0;
 
 function selectRechargeCurrency(currency){
+  if(!routeFundingVerification("recharge"))return;
   if(!_DEPOSIT_NETWORKS[currency])return;
   rechargeCurrency=currency;
   depositCurrency=currency;
@@ -6464,6 +6662,7 @@ function closeDepositDetail(){
   document.getElementById("depositConfirmationStep")?.classList.add("hidden");
 }
 function continueToDepositWallet(){
+  if(!routeFundingVerification("recharge"))return;
   const amount=Number(document.getElementById("depositAmountInput")?.value||0);
   if(!Number.isFinite(amount)||amount<=0){
     alert("Enter a  deposit amount greater than 0.");
@@ -6503,6 +6702,7 @@ function finishDepositFlow(){
   if(typeof showPage==="function")showPage("assets");
 }
 function openDepositNetworkSheet(){
+  if(!routeFundingVerification("recharge"))return;
   const host=document.getElementById("depositNetworkOptions");
   host.innerHTML=(_DEPOSIT_NETWORKS[depositCurrency]||[]).map(n=>`
     <button class="deposit-network-option" onclick="selectDepositNetwork('${n.id}')">
@@ -6520,6 +6720,7 @@ function selectDepositNetwork(id){
   renderDepositDetail();
 }
 async function copyDepositAddress(){
+  if(!routeFundingVerification("recharge"))return;
   const address=currentDepositNetwork()?.address||"";
   try{
     await navigator.clipboard.writeText(address);
@@ -6532,6 +6733,7 @@ async function copyDepositAddress(){
   setTimeout(()=>toast?.classList.add("hidden"),1400);
 }
 function submitRecharge(){
+  if(!routeFundingVerification("recharge"))return;
   const amount=Number(document.getElementById("rechargeAmount")?.value||0);
   if(amount<=0)return alert("Enter a  recharge amount greater than 0.");
   addWalletRecord(" recharge",rechargeCurrency,amount);
@@ -7477,6 +7679,7 @@ function refreshPersonalVerification(){
   const p=document.getElementById("personalVerifyStatus"), k=document.getElementById("kycStatusText");
   if(p){p.textContent=status;p.classList.toggle("verified",status==="verified")}
   if(k)k.textContent=status==="verified"?"Verified":status==="submitted"?"Submitted — awaiting administrator verification":status;
+  syncFundingAccessUI();
 }
 
 let kycCameraStream=null;
@@ -7727,6 +7930,27 @@ function clearNexaCache(){
 }
 
 
+
+function showEmailConfirmationReturnMessage(){
+  const params=new URLSearchParams(location.search);
+  if(params.get("email_confirmed")!=="1")return;
+
+  const clean=new URL(location.href);
+  clean.searchParams.delete("email_confirmed");
+  history.replaceState({},document.title,clean.pathname+clean.search+clean.hash);
+
+  setTimeout(()=>{
+    if(!currentUser){
+      showLogin();
+      showMessage(
+        "loginMessage",
+        "E-mail confirmé avec succès. Tu peux maintenant te connecter à ton compte.",
+        "success"
+      );
+    }
+  },700);
+}
+
 async function restoreSessionOnBoot(){
   // Keep the app hidden only while Supabase checks the saved session.
   app.classList.add("hidden");
@@ -7737,6 +7961,11 @@ async function restoreSessionOnBoot(){
     if(error) throw error;
 
     if(session?.user){
+      if(!nexaEmailIsVerified(session.user)){
+        await blockUnverifiedEmailAccess(session.user,"loginMessage");
+        return;
+      }
+
       await enterApp(session.user);
       return;
     }
@@ -7762,10 +7991,17 @@ sb.auth.onAuthStateChange((event,session)=>{
     app.classList.add("hidden");
     authScreen.classList.remove("hidden");
     document.body.classList.add("login-gate-active");
+    return;
+  }
+
+  if(event==="SIGNED_IN" && session?.user && !nexaEmailIsVerified(session.user)){
+    setTimeout(()=>{
+      blockUnverifiedEmailAccess(session.user,"loginMessage").catch(console.warn);
+    },0);
   }
 });
 if(document.readyState!=="loading") setLanguage(localStorage.getItem("nexaLanguage")||"en");
-restoreSessionOnBoot();
+restoreSessionOnBoot().finally(showEmailConfirmationReturnMessage);
 </script>
 
 <!-- ===== NexaTrade premium UX layer ===== -->
@@ -8116,6 +8352,14 @@ restoreSessionOnBoot();
     if(window.scrollX!==0) window.scrollTo(0,window.scrollY);
   },{passive:true});
 })();
+</script>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  try{ syncFundingAccessUI(); }catch(_){}
+});
 </script>
 
 </body>
