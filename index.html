@@ -2163,9 +2163,140 @@ body.login-gate-active{
   .asset-holdings-card{margin-left:0;margin-right:0}
 }
 
+
+/* ===== NEXATRADE WHITE BACKGROUND + LOADING + EMAIL CONFIRMATION ===== */
+html,body{
+  background:#fff!important;
+}
+body{
+  min-height:100vh;
+}
+.app,
+.auth-screen,
+#home,
+#quotes,
+#trade,
+#assets,
+.personal-overlay,
+.personal-subpage,
+.wallet-action-page,
+.funding-page{
+  background:#fff!important;
+}
+
+.page-loader{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  color:#171a1f;
+}
+.page-loader-card{
+  width:min(360px,calc(100% - 44px));
+  text-align:center;
+  padding:34px 26px;
+}
+.page-loader-logo{
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:-1px;
+  margin-bottom:24px;
+}
+.page-loader-spinner{
+  width:48px;
+  height:48px;
+  margin:0 auto 18px;
+  border:4px solid #e7e9e7;
+  border-top-color:#62df52;
+  border-radius:50%;
+  animation:nexaLoaderSpin .8s linear infinite;
+}
+.page-loader-text{
+  color:#7b837f;
+  font-size:14px;
+}
+@keyframes nexaLoaderSpin{
+  to{transform:rotate(360deg)}
+}
+
+.email-confirmation-page{
+  position:fixed;
+  inset:0;
+  z-index:4900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:#fff;
+  color:#171a1f;
+}
+.email-confirmation-card{
+  width:min(430px,100%);
+  text-align:center;
+  padding:38px 28px;
+  border:1px solid #edf0ec;
+  border-radius:28px;
+  background:#fff;
+  box-shadow:0 18px 55px rgba(0,0,0,.08);
+}
+.email-confirmation-icon{
+  width:86px;
+  height:86px;
+  margin:0 auto 24px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#72ef68;
+  color:#162116;
+  font-size:44px;
+  font-weight:900;
+}
+.email-confirmation-card h1{
+  font-size:29px;
+  margin:0 0 12px;
+}
+.email-confirmation-card p{
+  margin:0 auto 24px;
+  color:#727a75;
+  line-height:1.45;
+  max-width:330px;
+}
+.email-confirmation-button{
+  width:100%;
+  height:56px;
+  border:0;
+  border-radius:17px;
+  background:#62df52;
+  color:#111;
+  font-size:17px;
+  font-weight:900;
+  cursor:pointer;
+}
+
 </style>
 </head>
 <body>
+
+<div id="pageLoader" class="page-loader" role="status" aria-live="polite">
+  <div class="page-loader-card">
+    <div class="page-loader-logo">NexaTrade</div>
+    <div class="page-loader-spinner" aria-hidden="true"></div>
+    <div id="pageLoaderText" class="page-loader-text">Chargement sécurisé…</div>
+  </div>
+</div>
+
+<div id="emailConfirmationPage" class="email-confirmation-page hidden">
+  <div class="email-confirmation-card">
+    <div class="email-confirmation-icon">✓</div>
+    <h1>Confirmation réussie</h1>
+    <p>Votre adresse email a été confirmée avec succès. Votre compte est maintenant activé.</p>
+    <button class="email-confirmation-button" type="button" onclick="continueAfterEmailConfirmation()">Continuer</button>
+  </div>
+</div>
+
 
 <div id="authScreen" class="auth-screen reference-login">
   <div class="reference-login-shell">
@@ -2825,7 +2956,7 @@ body.login-gate-active{
       <strong>Default Balance</strong>
       <div class="muted" style="margin-top:5px">Solde fictif attribué aux nouveaux comptes.</div>
       <div class="inline" style="margin-top:10px">
-        <input id="initialBalanceInput" class="input" type="number" min="0" step="100" value="10000">
+        <input id="initialBalanceInput" class="input" type="number" min="0" step="100" value="0">
         <button class="mini" onclick="updateInitialBalance()">Save</button>
       </div>
       <div class="admin-referral-note">Parrainage : lorsqu’un administrateur ajoute pour la première fois du solde fictif à un nouvel utilisateur parrainé, le parrain reçoit automatiquement 100 USDT , une seule fois.</div>
@@ -3449,6 +3580,123 @@ let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false;
 let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[];
 let btcPrice=112840.00, ethPrice=4410.00, settlingTrades=new Set();
 
+let confirmedRedirectUser=null;
+
+function getEmailConfirmationRedirectUrl(){
+  const u=new URL(window.location.href);
+  u.search="";
+  u.hash="";
+  u.searchParams.set("email_confirmed","1");
+  return u.toString();
+}
+
+function isEmailConfirmationRedirect(){
+  return new URLSearchParams(window.location.search).get("email_confirmed")==="1";
+}
+
+function hidePageLoader(){
+  document.getElementById("pageLoader")?.classList.add("hidden");
+}
+
+function updatePageLoaderMessage(message){
+  const el=document.getElementById("pageLoaderText");
+  if(el)el.textContent=message;
+}
+
+function clearEmailConfirmationFlag(){
+  const u=new URL(window.location.href);
+  u.searchParams.delete("email_confirmed");
+  u.hash="";
+  history.replaceState({},document.title,u.pathname+(u.searchParams.toString()?"?"+u.searchParams.toString():""));
+}
+
+function showEmailConfirmationSuccess(user){
+  confirmedRedirectUser=user||null;
+  document.getElementById("authScreen")?.classList.add("hidden");
+  document.getElementById("app")?.classList.add("hidden");
+  document.getElementById("emailConfirmationPage")?.classList.remove("hidden");
+  document.body.classList.remove("login-gate-active");
+  hidePageLoader();
+}
+
+async function continueAfterEmailConfirmation(){
+  document.getElementById("emailConfirmationPage")?.classList.add("hidden");
+  clearEmailConfirmationFlag();
+
+  let user=confirmedRedirectUser;
+  if(!user){
+    const {data:{session}}=await sb.auth.getSession();
+    user=session?.user||null;
+  }
+
+  if(user){
+    await enterApp(user);
+  }else{
+    document.getElementById("app")?.classList.add("hidden");
+    document.getElementById("authScreen")?.classList.remove("hidden");
+    document.body.classList.add("login-gate-active");
+    showLogin();
+  }
+}
+
+/*
+  New self-service accounts carry the nexa_start_zero flag in Supabase Auth metadata.
+  On the first authenticated session, force their balances to zero once, then clear
+  that flag so future legitimate balance changes are not reset on later logins.
+*/
+async function ensureNewUserStartsAtZero(user){
+  if(!user?.id || user.user_metadata?.nexa_start_zero!==true)return true;
+
+  try{
+    const {error:profileError}=await sb
+      .from("profiles")
+      .update({balance:0})
+      .eq("user_id",user.id);
+
+    if(profileError){
+      console.warn("Initial zero balance (profiles):",profileError.message||profileError);
+      return false;
+    }
+
+    // Best effort for separate crypto rows, if the project's RLS permits it.
+    const {error:assetsError}=await sb
+      .from("asset_balances")
+      .update({balance:0})
+      .eq("user_id",user.id);
+
+    if(assetsError){
+      console.warn("Initial zero balance (asset_balances):",assetsError.message||assetsError);
+    }
+
+    const newMetadata={...(user.user_metadata||{}),nexa_start_zero:false,nexa_zero_initialized_at:new Date().toISOString()};
+    const {data:updateData,error:updateError}=await sb.auth.updateUser({data:newMetadata});
+    if(updateError){
+      console.warn("Initial zero balance metadata:",updateError.message||updateError);
+    }else if(updateData?.user){
+      confirmedRedirectUser=updateData.user;
+      if(currentUser?.id===updateData.user.id)currentUser=updateData.user;
+    }
+
+    return true;
+  }catch(err){
+    console.warn("Initial zero balance:",err);
+    return false;
+  }
+}
+
+// If startup genuinely takes longer, keep the loading screen visible and update its text.
+setTimeout(()=>{
+  if(!document.getElementById("pageLoader")?.classList.contains("hidden")){
+    updatePageLoaderMessage("Connexion en cours…");
+  }
+},3500);
+setTimeout(()=>{
+  if(!document.getElementById("pageLoader")?.classList.contains("hidden")){
+    updatePageLoaderMessage("Le chargement prend un peu plus de temps que prévu…");
+  }
+},8000);
+
+
 const SUPPORTED_ASSETS=["USDT","BTC","ETH","SOL"];
 let assetBalances={USDT:0,BTC:0,ETH:0,SOL:0};
 
@@ -3610,7 +3858,14 @@ async function signup(){
   if(password!==p2)return showMessage("signupMessage","Les mots de passe ne correspondent pas.","error");
   const {data,error}=await sb.auth.signUp({
     email,password,
-    options:{data:{display_name:displayName,referral_code:inviteCode||null}}
+    options:{
+      emailRedirectTo:getEmailConfirmationRedirectUrl(),
+      data:{
+        display_name:displayName,
+        referral_code:inviteCode||null,
+        nexa_start_zero:true
+      }
+    }
   });
   if(error)return showMessage("signupMessage",error.message,"error");
   if(data.session) await enterApp(data.user);
@@ -3810,12 +4065,16 @@ async function logout(){
 }
 
 async function enterApp(user){
-  currentUser=user;userEmail.textContent=user.email||user.phone||"Utilisateur";
+  currentUser=user;
+  await ensureNewUserStartsAtZero(user);
+  userEmail.textContent=user.email||user.phone||"Utilisateur";
   authScreen.classList.add("hidden");app.classList.remove("hidden");
+  document.getElementById("emailConfirmationPage")?.classList.add("hidden");
   document.body.classList.remove("login-gate-active");
   await checkAdmin();
   await settleExpiredTrades(false);
   await refreshEverything();
+  hidePageLoader();
 }
 
 async function checkAdmin(){
@@ -7155,13 +7414,24 @@ function clearNexaCache(){
 
 
 async function restoreSessionOnBoot(){
-  // Keep the app hidden only while Supabase checks the saved session.
+  // Keep the loading screen visible while Supabase resolves saved sessions / email redirects.
   app.classList.add("hidden");
   authScreen.classList.add("hidden");
+  document.getElementById("emailConfirmationPage")?.classList.add("hidden");
 
   try{
     const {data:{session},error}=await sb.auth.getSession();
     if(error) throw error;
+
+    if(isEmailConfirmationRedirect()){
+      const confirmed=!!(session?.user?.email_confirmed_at||session?.user?.confirmed_at);
+      if(confirmed){
+        currentUser=session.user;
+        await ensureNewUserStartsAtZero(session.user);
+        showEmailConfirmationSuccess(currentUser||session.user);
+        return;
+      }
+    }
 
     if(session?.user){
       await enterApp(session.user);
@@ -7178,6 +7448,7 @@ async function restoreSessionOnBoot(){
   app.classList.add("hidden");
   authScreen.classList.remove("hidden");
   document.body.classList.add("login-gate-active");
+  hidePageLoader();
 }
 
 sb.auth.onAuthStateChange((event,session)=>{
