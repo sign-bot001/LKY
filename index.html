@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#f6fff2">
+<meta name="color-scheme" content="light">
 <title>NexaTrade DEMO</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -935,6 +937,425 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 .nav .nav-icon{width:44px;height:39px;display:flex;align-items:center;justify-content:center;margin:0 auto 2px;line-height:1}
 .nav .ref-nav-svg{width:39px;height:39px;fill:none;stroke:currentColor;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;opacity:.72}
 .nav button.active .ref-nav-svg{opacity:1;stroke-width:3.7}
+
+
+/* =========================================================
+   NEXATRADE — PROFESSIONAL FINISHING LAYER
+   Visual-only polish. Existing app logic remains unchanged.
+   ========================================================= */
+
+:root{
+  --nx-bg:#f6fff2;
+  --nx-surface:#ffffff;
+  --nx-surface-soft:#edf5ea;
+  --nx-ink:#171b18;
+  --nx-muted:#858e88;
+  --nx-line:#e0e9de;
+  --nx-green:#5bd94a;
+  --nx-green-bright:#76f66b;
+  --nx-green-deep:#28b638;
+  --nx-dark:#292c2f;
+  --nx-shadow:0 12px 34px rgba(26,55,31,.08);
+  --nx-shadow-soft:0 7px 22px rgba(26,55,31,.06);
+  --nx-radius-xl:30px;
+  --nx-radius-lg:24px;
+  --nx-radius-md:18px;
+}
+
+html{
+  background:#eaf1e7;
+  -webkit-text-size-adjust:100%;
+  text-rendering:optimizeLegibility;
+  scroll-behavior:smooth;
+}
+body{
+  overscroll-behavior-y:none;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-tap-highlight-color:transparent;
+}
+button,a,.action,.assets-action,.quote-row,.crypto-card,.hot-card,.personal-row{
+  -webkit-tap-highlight-color:transparent;
+}
+button{
+  transition:transform .16s ease,box-shadow .2s ease,background-color .2s ease,
+             border-color .2s ease,color .2s ease,opacity .2s ease;
+}
+button:not(:disabled):active{transform:scale(.975)}
+button:disabled{cursor:not-allowed}
+input,select,textarea{transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 4px rgba(91,217,74,.16)!important;
+}
+
+/* App shell */
+.app{
+  position:relative;
+  overflow-x:hidden;
+  min-height:100dvh;
+}
+@media(min-width:620px){
+  .app{
+    margin:18px auto;
+    min-height:calc(100dvh - 36px);
+    border-radius:34px;
+    overflow:hidden;
+    box-shadow:0 20px 70px rgba(27,47,31,.14);
+  }
+  .nav{bottom:18px}
+}
+
+/* Soft page entrance without slowing navigation */
+.page.active{
+  animation:nxPageIn .22s ease both;
+}
+@keyframes nxPageIn{
+  from{opacity:.62;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* Bottom navigation: clean, balanced and adaptive for normal/admin accounts */
+.nav{
+  grid-template-columns:repeat(4,1fr);
+  width:calc(100% - 18px);
+  max-width:542px;
+  margin:0 auto;
+  bottom:9px;
+  border:1px solid rgba(255,255,255,.07)!important;
+  border-radius:27px!important;
+  background:rgba(42,44,47,.97)!important;
+  padding:11px 8px calc(11px + env(safe-area-inset-bottom))!important;
+  box-shadow:0 12px 35px rgba(20,25,21,.22)!important;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  z-index:700;
+}
+.nav:has(#adminNav:not(.hidden)){grid-template-columns:repeat(5,1fr)}
+.nav button{
+  position:relative;
+  min-height:58px;
+  color:#a7aaa8!important;
+  font-size:11px!important;
+  font-weight:650;
+  letter-spacing:.1px;
+  border-radius:18px;
+}
+.nav button.active{color:#83f875!important}
+.nav button.active:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-3px;
+  width:6px;height:6px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:#78f66e;
+  box-shadow:0 0 12px rgba(120,246,110,.7);
+}
+.nav .nav-icon{
+  width:42px;height:35px;
+  margin:0 auto 2px!important;
+}
+.nav .ref-nav-svg{
+  width:34px;height:34px;
+  stroke-width:3!important;
+  opacity:.82!important;
+}
+.nav button.active .ref-nav-svg{stroke-width:3.3!important;opacity:1!important}
+
+/* Remove older page-specific nav geometry so every section feels like one product */
+.app:has(#home.active) .nav,
+.app:has(#quotes.active) .nav,
+.app:has(#trade.active) .nav,
+.app:has(#assets.active) .nav{
+  width:calc(100% - 18px);
+  max-width:542px;
+  border-radius:27px!important;
+  padding:11px 8px calc(11px + env(safe-area-inset-bottom))!important;
+}
+
+/* HOME */
+#home{
+  background:
+    radial-gradient(circle at 85% 2%,rgba(110,246,105,.13),transparent 28%),
+    var(--nx-bg);
+}
+.home-top{margin-bottom:34px}
+.home-icon-btn{
+  border:1px solid #3b3e41;
+  box-shadow:0 7px 18px rgba(28,31,29,.13);
+}
+.currency-banner{
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 10px 25px rgba(35,40,36,.10);
+  letter-spacing:-.2px;
+}
+.hot-panel{
+  box-shadow:0 15px 35px rgba(66,178,65,.13);
+  border:1px solid rgba(76,194,74,.14);
+}
+.hot-card,.crypto-card,.service-card,.adv-card{
+  border:1px solid #e4ebe2;
+  box-shadow:var(--nx-shadow-soft);
+}
+.hot-card,.crypto-card{transition:transform .18s ease,box-shadow .18s ease}
+.hot-card:active,.crypto-card:active{transform:translateY(1px) scale(.99)}
+.news-card{
+  border:1px solid #dce6d9;
+  box-shadow:var(--nx-shadow-soft);
+}
+.home-section-title{
+  letter-spacing:-1.1px;
+  line-height:1.03;
+}
+
+/* QUOTES */
+#quotes{
+  background:
+    radial-gradient(circle at 92% 0%,rgba(114,247,107,.11),transparent 25%),
+    var(--nx-bg);
+}
+.quotes-search{
+  border:1px solid transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
+}
+.quotes-search:focus{
+  border-color:#b8e9b5;
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(91,217,74,.10);
+}
+.quotes-category{
+  border-width:3px;
+  box-shadow:0 8px 20px rgba(50,155,55,.09);
+}
+.quote-row{
+  border-bottom:1px solid rgba(213,224,211,.72);
+  transition:background .15s ease,transform .15s ease;
+}
+.quote-row:last-child{border-bottom:0}
+.quote-row:active{background:rgba(230,244,227,.72)}
+.quote-change{font-weight:750}
+
+/* TRADE */
+#trade{
+  background:#fbfdfb;
+}
+.trade-topbar{
+  background:linear-gradient(145deg,#292c2f,#333639);
+  box-shadow:0 12px 28px rgba(28,31,29,.14);
+  border:1px solid rgba(255,255,255,.06);
+}
+.trade-pair-icon{
+  box-shadow:0 0 0 5px rgba(124,255,114,.09);
+}
+.trade-delivery{
+  font-weight:800;
+  box-shadow:0 7px 17px rgba(77,220,75,.16);
+}
+.trade-window{
+  border-radius:10px;
+  border:1px solid #ececec;
+}
+.trade-tabs{
+  scrollbar-width:none;
+}
+.trade-tabs::-webkit-scrollbar{display:none}
+.trade-chart-wrap{
+  background:#fff;
+}
+.trade-select,.trade-amount{
+  border-color:#d7ddd6;
+  box-shadow:0 2px 8px rgba(25,40,27,.025);
+}
+.trade-select:focus,.trade-amount:focus{border-color:#75d96e}
+.trade-pcts button{
+  border-color:#9bcffa;
+  font-weight:750;
+}
+.trade-actions button{
+  box-shadow:0 9px 21px rgba(30,50,32,.09);
+}
+.trade-call{background:linear-gradient(135deg,#76e97a,#52d85b)}
+.trade-put{background:linear-gradient(135deg,#f38aa7,#ed6f95)}
+.trade-history-card,.trade-empty-panel{
+  border:1px solid #e5e9e4;
+  box-shadow:var(--nx-shadow-soft);
+}
+
+/* MY ASSETS */
+#assets{
+  background:
+    radial-gradient(circle at 88% 0%,rgba(113,247,107,.12),transparent 26%),
+    var(--nx-bg);
+}
+.assets-records-btn{
+  border:1px solid #3a3d40;
+  box-shadow:0 8px 19px rgba(31,34,32,.12);
+}
+.assets-valuation-card{
+  background:linear-gradient(145deg,#292c2f,#34373a);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 15px 35px rgba(31,34,32,.14);
+}
+.assets-balance{
+  letter-spacing:-1.3px;
+  text-shadow:0 0 22px rgba(105,245,114,.08);
+}
+.assets-actions-card,.assets-account-card{
+  border:1px solid #dce8d8;
+  box-shadow:var(--nx-shadow-soft);
+}
+.assets-action-icon{
+  border-width:1.5px;
+  background:linear-gradient(145deg,#62e95c,#27cb35);
+  box-shadow:0 8px 18px rgba(49,198,59,.18);
+}
+.assets-action:active .assets-action-icon{transform:scale(.95)}
+.assets-action-icon{transition:transform .16s ease}
+.assets-account-card{
+  transition:transform .17s ease,box-shadow .17s ease;
+}
+.assets-account-card:active{transform:scale(.99)}
+
+/* AUTH — same visual identity as the product */
+.auth-screen{
+  background:
+    radial-gradient(circle at 80% 5%,rgba(111,247,104,.28),transparent 30%),
+    linear-gradient(180deg,#eaffdf 0%,#f8fff6 48%,#fff 100%);
+  color:var(--nx-ink);
+}
+.auth-box{
+  max-width:440px;
+  background:rgba(255,255,255,.88);
+  border:1px solid rgba(216,230,212,.92);
+  border-radius:30px;
+  padding:30px 26px;
+  box-shadow:0 20px 54px rgba(46,89,50,.11);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.auth-box .brand{color:#1c211d;letter-spacing:-.7px}
+.auth-box label{color:#7e8880}
+.auth-box .input{
+  background:#f1f4f1;
+  color:#171b18;
+  border:1px solid #e4e9e3;
+  border-radius:16px;
+  min-height:52px;
+}
+.auth-box .input::placeholder{color:#b0b6b1}
+.auth-box .input:focus{background:#fff;border-color:#9ee699}
+.auth-box .primary{
+  min-height:54px;
+  border-radius:17px;
+  background:linear-gradient(135deg,#68e65b,#48cf3d);
+  box-shadow:0 10px 23px rgba(67,201,61,.19);
+}
+.auth-box .secondary{
+  min-height:52px;
+  border-radius:17px;
+  background:#edf3eb;
+  color:#313833;
+}
+.auth-switch{color:#828b84}
+.auth-switch span{color:#3bc63a}
+.auth-box .message.error{background:#fff0f1;color:#c74956;border:1px solid #f4dadd}
+.auth-box .message.success{background:#eaf9e8;color:#2d8737;border:1px solid #d4efd2}
+
+/* Personal center, identity verification and wallet sheets */
+.personal-overlay,.personal-subpage,.wallet-action-page,.funding-page{
+  background:
+    radial-gradient(circle at 90% 0%,rgba(107,240,101,.10),transparent 25%),
+    var(--nx-bg);
+}
+.personal-profile,.personal-form-card,.kyc-camera-card,
+.wallet-field,.wallet-notice,.funding-record{
+  border:1px solid #dde8da;
+  box-shadow:var(--nx-shadow-soft);
+}
+.personal-row{
+  border-bottom-color:#e7ede5!important;
+  transition:background .16s ease;
+}
+.personal-row:active{background:#f0f7ee}
+.personal-primary,.wallet-primary,.kyc-camera-btn.primary{
+  background:linear-gradient(135deg,#65e457,#44ce3c)!important;
+  box-shadow:0 9px 21px rgba(60,193,57,.16);
+}
+.personal-input,.wallet-input,.wallet-search{
+  border-color:#dce4da!important;
+}
+.personal-input:focus,.wallet-input:focus,.wallet-search:focus{
+  border-color:#8cdd85!important;
+}
+.kyc-status-box,.wallet-notice{
+  border-radius:18px;
+}
+
+/* Funding / withdrawal / deposit finishing */
+.deposit-detail-page,.withdraw-success-page{
+  background:
+    radial-gradient(circle at 90% 0%,rgba(105,239,99,.09),transparent 24%),
+    #fff;
+}
+.deposit-step-card,.deposit-confirm-card,.withdraw-success-wait{
+  border:1px solid #e2ebe0;
+  box-shadow:var(--nx-shadow-soft);
+}
+.deposit-primary,.deposit-sent-btn,.withdraw-success-done{
+  background:linear-gradient(135deg,#61df53,#3cc833);
+  box-shadow:0 10px 23px rgba(58,193,53,.17);
+}
+.deposit-qr-wrap{
+  border:1px solid #e3e9e2;
+  box-shadow:var(--nx-shadow-soft);
+}
+
+/* ADMIN */
+#admin{
+  background:
+    radial-gradient(circle at 90% 0%,rgba(94,225,83,.12),transparent 25%),
+    linear-gradient(180deg,#f8fff6 0%,#f0faed 100%);
+}
+#admin .card{
+  box-shadow:0 10px 28px rgba(37,105,45,.07);
+}
+#admin .primary,#admin .mini{
+  box-shadow:0 6px 15px rgba(43,183,58,.13);
+}
+#admin .admin-user,#admin .admin-code,#admin .admin-request{
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+#admin .admin-user:hover,#admin .admin-code:hover,#admin .admin-request:hover{
+  box-shadow:0 8px 22px rgba(37,105,45,.06);
+}
+
+/* Better spacing and compact behavior on small phones */
+@media(max-width:390px){
+  #home,#quotes{padding-left:18px;padding-right:18px}
+  .assets-head,.assets-account-title,.assets-account-list{margin-left:18px;margin-right:18px}
+  .assets-valuation-card{margin-left:18px;margin-right:18px}
+  .assets-actions-card{margin-left:18px;margin-right:18px}
+  .assets-action-label{font-size:15px}
+  .assets-action-icon{width:62px;height:62px}
+  .nav{width:calc(100% - 12px);bottom:6px}
+  .nav button{font-size:10px!important}
+}
+
+/* Desktop hover refinements only where hover exists */
+@media(hover:hover){
+  .home-icon-btn:hover,.assets-records-btn:hover{transform:translateY(-1px)}
+  .hot-card:hover,.crypto-card:hover,.assets-account-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(26,55,31,.10);
+  }
+  .nav button:hover{color:#d1d4d2!important}
+  .nav button.active:hover{color:#83f875!important}
+}
 
 </style>
 </head>
@@ -1966,11 +2387,19 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
   </div>
 
   <nav class="nav">
-    <button class="active" onclick="showPage('home',this)"><span class="nav-icon">⌂</span>Home</button>
+    <button class="active" onclick="showPage('home',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true">
+  <ellipse cx="23" cy="25" rx="15" ry="9"/>
+  <path d="M8 27c-3-1-5-3-4-5 1-3 7-4 15-3 7 1 15 4 20 7 5 4 6 7 4 9-2 2-8 1-15-1"/>
+  <path d="M20 16c2-5 6-8 10-7 4 1 6 6 5 12"/>
+</svg></span>Home</button>
     <button onclick="showPage('quotes',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true"><path d="M7 38h34M10 31l10-10 7 6 12-15M31 12h8v8M13 36v-5M22 36v-9M31 36v-7M40 36V19"/></svg></span>Quotes</button>
     <button onclick="showPage('trade',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true"><path d="M36 15a16 16 0 0 0-25 1M11 9v8h8M12 33a16 16 0 0 0 25-1M37 39v-8h-8"/><path d="M24 17l7 7-7 7-7-7z"/></svg></span>Trade</button>
     <button onclick="showPage('assets',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="15" r="8"/><path d="M10 39v-6c0-6 6-10 14-10s14 4 14 10v6c-8 3-20 3-28 0z"/></svg></span>my assets</button>
-    <button id="adminNav" class="hidden" onclick="showPage('admin',this)"><span class="nav-icon">⚙</span>Admin</button>
+    <button id="adminNav" class="hidden" onclick="showPage('admin',this)"><span class="nav-icon"><svg class="ref-nav-svg" viewBox="0 0 48 48" aria-hidden="true">
+  <circle cx="24" cy="24" r="6"/>
+  <path d="M24 7v5M24 36v5M7 24h5M36 24h5M12 12l4 4M32 32l4 4M36 12l-4 4M16 32l-4 4"/>
+  <circle cx="24" cy="24" r="14"/>
+</svg></span>Admin</button>
   </nav>
 </div>
 
