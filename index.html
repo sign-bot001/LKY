@@ -6228,7 +6228,7 @@ function syncFundingAccessUI(){
   if(note){
     note.classList.toggle("verified",unlocked);
     if(unlocked){
-      note.textContent="Account authenticated · Deposit and withdrawal are available.";
+      note.textContent="";
     }else if(!isEmailVerified()){
       note.textContent="Confirm your email to begin account authentication.";
     }else{
