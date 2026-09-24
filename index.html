@@ -3091,18 +3091,14 @@ const SUPABASE_URL = "https://khhexjfvwvfoehaqybzm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_iGxqDljv0d0t0nYgQVyyFQ_CXXdKpOu";
 
 /*
-  Security/session behaviour:
-  - authentication lives only in the current page memory;
-  - refreshing or reopening the page always returns to Login;
-  - remembered email/phone can stay saved separately, but NOT the auth session.
+  Session behaviour:
+  - the authenticated Supabase session is persisted locally;
+  - refreshing the page keeps the user connected;
+  - Logout still clears the session and returns to Login.
 */
-try{
-  localStorage.removeItem("sb-khhexjfvwvfoehaqybzm-auth-token");
-}catch(_){}
-
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,{
   auth:{
-    persistSession:false,
+    persistSession:true,
     autoRefreshToken:true,
     detectSessionInUrl:true
   }
@@ -3643,6 +3639,24 @@ let tradeCandles=[];
 let tradeChartGranularity=60;
 let candleBootstrapBusy=false;
 
+/* Live BTC volume tracking. Coinbase/Kraken ticker volume is cumulative,
+   so only the positive delta is added to the active 1-minute candle. */
+let btcLiveVolumeSource=null;
+let btcLastCumulativeVolume=null;
+function liveBtcVolumeDelta(cumulative,source){
+  const v=Number(cumulative);
+  if(!Number.isFinite(v)||v<0)return 0;
+  const src=String(source||'market');
+  if(btcLiveVolumeSource!==src || !Number.isFinite(btcLastCumulativeVolume)){
+    btcLiveVolumeSource=src;
+    btcLastCumulativeVolume=v;
+    return 0;
+  }
+  const delta=v-btcLastCumulativeVolume;
+  btcLastCumulativeVolume=v;
+  return Number.isFinite(delta)&&delta>0 ? delta : 0;
+}
+
 /* Trade direction controls the live price line:
    CALL / achat = green
    PUT / vente = red */
@@ -3723,17 +3737,22 @@ function candleBucket(ts=Date.now(),seconds=tradeChartGranularity){
   return Math.floor(ts/ms)*ms;
 }
 
-function ingestBtcTick(rawPrice,ts=Date.now()){
+function ingestBtcTick(rawPrice,ts=Date.now(),cumulativeVolume=null,volumeSource='market'){
   const p=Number(rawPrice); if(!Number.isFinite(p))return;
-  const bucket=candleBucket(ts);
+  // tradeCandles is the 1-minute source series; larger timeframes are aggregated later.
+  const bucket=candleBucket(ts,60);
+  const volumeDelta=liveBtcVolumeDelta(cumulativeVolume,volumeSource);
   let c=tradeCandles[tradeCandles.length-1];
   if(!c||c.time!==bucket){
     const open=c?c.close:p;
-    c={time:bucket,open,high:Math.max(open,p),low:Math.min(open,p),close:p,volume:0};
+    c={time:bucket,open,high:Math.max(open,p),low:Math.min(open,p),close:p,volume:volumeDelta};
     tradeCandles.push(c);
     if(tradeCandles.length>300)tradeCandles.shift();
   }else{
-    c.high=Math.max(c.high,p);c.low=Math.min(c.low,p);c.close=p;
+    c.high=Math.max(c.high,p);
+    c.low=Math.min(c.low,p);
+    c.close=p;
+    c.volume=Number(c.volume||0)+volumeDelta;
   }
   drawTradeChart();
 }
@@ -3750,6 +3769,8 @@ async function bootstrapTradeCandles(){
     const rows=key ? payload.result[key] : null;
     if(!Array.isArray(rows))throw new Error("Invalid candle response");
     tradeCandles=rows.slice(-300).map(a=>({time:Number(a[0])*1000,open:Number(a[1]),high:Number(a[2]),low:Number(a[3]),close:Number(a[4]),volume:Number(a[6]||0)})).filter(c=>[c.open,c.high,c.low,c.close].every(Number.isFinite));
+    btcLiveVolumeSource=null;
+    btcLastCumulativeVolume=null;
     if(status){status.textContent="CONNECTING · 1m";status.classList.remove("live")}
     drawTradeChart();
   }catch(e){
@@ -3830,12 +3851,21 @@ function drawTradeChart(){
  x.strokeStyle="#edf0f2";x.beginPath();x.moveTo(left,volTop);x.lineTo(W-right,volTop);x.stroke();
  candles.forEach((v,i)=>{const cx=left+(i+.5)*step,vh=(+v.volume||0)/maxVol*(volBottom-volTop-9);x.fillStyle=v.close>=v.open?"rgba(40,189,137,.66)":"rgba(243,55,98,.66)";x.fillRect(cx-bw/2,volBottom-vh,bw,Math.max(1,vh))});
 
- // MA and volume values.
+ // Live VOLUME and volume moving averages (MA5 / MA10 / MA20).
  const li=candles.length-1;
+ const avgVol=(idx,n)=>{
+   if(idx<n-1)return null;
+   let total=0;
+   for(let j=idx-n+1;j<=idx;j++)total+=Number(candles[j].volume||0);
+   return total/n;
+ };
  x.font="10px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";x.textAlign="left";
  let lx=left+4,legendY=volTop+13;
  const legend=(label,val,col)=>{const t=label+": "+(val==null?"--":compact(val));x.fillStyle=col;x.fillText(t,lx,legendY);lx+=x.measureText(t).width+7};
- legend("MA5",avg(li,5),"#ff8a00");legend("MA10",avg(li,10),"#9867d7");legend("MA20",avg(li,20),"#287cf5");legend("VOLUME",vols[li],"#28bd89");
+ legend("MA5",avgVol(li,5),"#ff8a00");
+ legend("MA10",avgVol(li,10),"#9867d7");
+ legend("MA20",avgVol(li,20),"#287cf5");
+ legend("VOLUME",vols[li],"#28bd89");
 
  // Volume levels on right: dynamically displays K/M values such as 30K, 300K, 1.5M.
  x.fillStyle="#7f8996";x.textAlign="left";
@@ -5534,7 +5564,7 @@ async function refreshBtcChartFallback(){
     applyMarketUpdate("BTCUSDT",{
       price:p,
       change24h:previous.change||0,
-      volume:previous.volume||0,
+      volume:Number(ticker?.v?.[1] ?? previous.volume ?? 0),
       source:"kraken-rest-fallback"
     });
     setTradeChartConnectionStatus("LIVE · FALLBACK","live");
@@ -5677,7 +5707,7 @@ function applyMarketUpdate(symbol,data={}){
 
   if(symbol==="BTCUSDT"){
     btcChartLastLiveTick=Date.now();
-    ingestBtcTick(p,Date.now());
+    ingestBtcTick(p,Date.now(),vol,data.source||'market');
     updateTradeFromMarket();
 
     if(data.source==="coinbase-ws"){
@@ -6302,43 +6332,45 @@ function clearNexaCache(){
 }
 
 
-async function showLoginGateOnBoot(){
-  // Every page load / refresh starts on the Login screen.
+async function restoreSessionOnBoot(){
+  // Keep the app hidden only while Supabase checks the saved session.
+  app.classList.add("hidden");
+  authScreen.classList.add("hidden");
+
+  try{
+    const {data:{session},error}=await sb.auth.getSession();
+    if(error) throw error;
+
+    if(session?.user){
+      await enterApp(session.user);
+      return;
+    }
+  }catch(err){
+    console.warn("Session restore:",err);
+  }
+
+  currentUser=null;
+  profile=null;
+  trades=[];
+  isCurrentUserAdmin=false;
   app.classList.add("hidden");
   authScreen.classList.remove("hidden");
   document.body.classList.add("login-gate-active");
-
-  currentUser=null;
-  profile=null;
-  trades=[];
-  isCurrentUserAdmin=false;
-
-  // Defensive cleanup in case an older site version left a persisted session.
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    if(session) await sb.auth.signOut({scope:"local"});
-  }catch(err){
-    console.warn("Login gate initialization:",err);
-  }
 }
 
-window.addEventListener("pagehide",()=>{
-  currentUser=null;
-  profile=null;
-  trades=[];
-  isCurrentUserAdmin=false;
-});
-
-sb.auth.onAuthStateChange((event)=>{
+sb.auth.onAuthStateChange((event,session)=>{
   if(event==="SIGNED_OUT"){
     currentUser=null;
+    profile=null;
+    trades=[];
+    isCurrentUserAdmin=false;
     app.classList.add("hidden");
     authScreen.classList.remove("hidden");
     document.body.classList.add("login-gate-active");
   }
 });
 if(document.readyState!=="loading") setLanguage(localStorage.getItem("nexaLanguage")||"en");
-showLoginGateOnBoot();
+restoreSessionOnBoot();
 </script>
 </body>
 </html>
