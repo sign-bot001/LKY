@@ -1924,6 +1924,73 @@ body.login-gate-active{
   border-color:rgba(243,55,98,.30)!important;
 }
 
+
+/* ===== CLEAR LOGIN ERROR FEEDBACK ===== */
+#loginMessage.login-feedback{
+  margin-top:16px!important;
+  padding:14px 15px 14px 44px!important;
+  min-height:48px;
+  position:relative;
+  border-radius:14px!important;
+  font-size:14px!important;
+  line-height:1.4;
+  font-weight:650;
+}
+#loginMessage.login-feedback.error{
+  display:block!important;
+  background:#fff1f2!important;
+  border:1px solid #f4c8ce!important;
+  color:#b73545!important;
+  box-shadow:0 7px 18px rgba(169,47,66,.08);
+}
+#loginMessage.login-feedback.error:before{
+  content:"!";
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:21px;
+  height:21px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#dc5261;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+}
+#loginMessage.login-feedback.success{
+  display:block!important;
+  background:#eef9eb!important;
+  border:1px solid #ccebc7!important;
+  color:#287a31!important;
+}
+.login-feedback-shake{animation:nexaLoginShake .28s ease}
+@keyframes nexaLoginShake{
+  0%,100%{transform:translateX(0)}
+  30%{transform:translateX(-5px)}
+  65%{transform:translateX(5px)}
+}
+#loginSubmitButton.loading{
+  opacity:.72;
+  cursor:wait;
+}
+
+/* ===== LIVE CHART CONNECTION STATES ===== */
+.trade-chart-status{
+  transition:color .2s ease,background .2s ease,border-color .2s ease;
+}
+.trade-chart-status.reconnecting{
+  color:#a66d16!important;
+  background:rgba(255,247,225,.92)!important;
+  border-color:#f0d69f!important;
+}
+.trade-chart-status.offline{
+  color:#b8404d!important;
+  background:rgba(255,239,241,.94)!important;
+  border-color:#efc2c8!important;
+}
+
 </style>
 </head>
 <body>
@@ -1968,8 +2035,8 @@ body.login-gate-active{
 
       <label class="remember-row"><input id="rememberLogin" type="checkbox"> <span>remember my password</span></label>
 
-      <button class="reference-submit" type="button" onclick="login()">Submit</button>
-      <div id="loginMessage" class="message"></div>
+      <button id="loginSubmitButton" class="reference-submit" type="button" onclick="login()">Submit</button>
+      <div id="loginMessage" class="message login-feedback" role="alert" aria-live="assertive"></div>
 
       <div class="reference-login-links">
         <button type="button" onclick="showSignup()">sign up now</button>
@@ -3014,7 +3081,24 @@ body.login-gate-active{
 <script>
 const SUPABASE_URL = "https://khhexjfvwvfoehaqybzm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_iGxqDljv0d0t0nYgQVyyFQ_CXXdKpOu";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/*
+  Security/session behaviour:
+  - authentication lives only in the current page memory;
+  - refreshing or reopening the page always returns to Login;
+  - remembered email/phone can stay saved separately, but NOT the auth session.
+*/
+try{
+  localStorage.removeItem("sb-khhexjfvwvfoehaqybzm-auth-token");
+}catch(_){}
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,{
+  auth:{
+    persistSession:false,
+    autoRefreshToken:true,
+    detectSessionInUrl:true
+  }
+});
 
 let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false;
 let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[];
@@ -3219,34 +3303,108 @@ function restoreRememberedLogin(){
 }
 setTimeout(restoreRememberedLogin,0);
 
+
+function friendlyLoginError(error){
+  const raw=String(error?.message||error||"").trim();
+  const low=raw.toLowerCase();
+
+  if(low.includes("invalid login credentials") || low.includes("invalid credentials")){
+    return loginMode==="phone"
+      ? "Numéro de téléphone ou mot de passe incorrect."
+      : "Adresse email ou mot de passe incorrect.";
+  }
+  if(low.includes("email not confirmed") || low.includes("email_not_confirmed")){
+    return "Ton adresse email n’est pas encore vérifiée. Ouvre l’email de confirmation reçu puis réessaie.";
+  }
+  if(low.includes("phone not confirmed")){
+    return "Ton numéro de téléphone n’est pas encore vérifié.";
+  }
+  if(low.includes("provider") && low.includes("disabled")){
+    return loginMode==="phone"
+      ? "La connexion par numéro de téléphone n’est pas encore activée."
+      : "Ce mode de connexion n’est pas disponible.";
+  }
+  if(low.includes("rate limit") || low.includes("too many")){
+    return "Trop de tentatives. Attends un moment avant de réessayer.";
+  }
+  if(low.includes("network") || low.includes("fetch") || low.includes("failed to fetch")){
+    return "Impossible de joindre le serveur. Vérifie ta connexion Internet puis réessaie.";
+  }
+  return raw ? "Connexion impossible : "+raw : "Connexion impossible. Vérifie tes informations puis réessaie.";
+}
+
+function showLoginError(error){
+  const box=document.getElementById("loginMessage");
+  showMessage("loginMessage",friendlyLoginError(error),"error");
+  box?.classList.remove("login-feedback-shake");
+  void box?.offsetWidth;
+  box?.classList.add("login-feedback-shake");
+  box?.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function setLoginBusy(busy){
+  const btn=document.getElementById("loginSubmitButton");
+  if(!btn)return;
+  btn.disabled=!!busy;
+  btn.textContent=busy?"Connexion…":"Submit";
+  btn.classList.toggle("loading",!!busy);
+}
+
 async function login(){
   clearMessage("loginMessage");
+
   const password=String(document.getElementById("loginPassword")?.value||"");
-  if(!password)return showMessage("loginMessage","Entre ton mot de passe.","error");
+  if(!password){
+    showLoginError("Entre ton mot de passe.");
+    return;
+  }
 
   let credentials,rememberIdentifier="";
   if(loginMode==="phone"){
     const national=String(document.getElementById("loginPhone")?.value||"").trim();
-    if(!national)return showMessage("loginMessage","Entre ton numéro de téléphone.","error");
+    if(!national){
+      showLoginError("Entre ton numéro de téléphone.");
+      return;
+    }
     credentials={phone:normalizeLoginPhone(),password};
     rememberIdentifier=national;
   }else{
     const email=String(document.getElementById("loginEmail")?.value||"").trim();
-    if(!email)return showMessage("loginMessage","Entre ton adresse email.","error");
+    if(!email){
+      showLoginError("Entre ton adresse email.");
+      return;
+    }
     credentials={email,password};
     rememberIdentifier=email;
   }
 
-  const {data,error}=await sb.auth.signInWithPassword(credentials);
-  if(error)return showMessage("loginMessage","Connexion impossible : "+error.message,"error");
+  setLoginBusy(true);
+  try{
+    const {data,error}=await sb.auth.signInWithPassword(credentials);
+    if(error){
+      showLoginError(error);
+      return;
+    }
 
-  if(document.getElementById("rememberLogin")?.checked){
-    localStorage.setItem("nexaRememberLogin",JSON.stringify({
-      mode:loginMode,identifier:rememberIdentifier,country:selectedLoginCountry.iso
-    }));
-  }else localStorage.removeItem("nexaRememberLogin");
+    if(!data?.user){
+      showLoginError("Aucun compte n’a pu être ouvert avec ces informations.");
+      return;
+    }
 
-  await enterApp(data.user);
+    if(document.getElementById("rememberLogin")?.checked){
+      localStorage.setItem("nexaRememberLogin",JSON.stringify({
+        mode:loginMode,identifier:rememberIdentifier,country:selectedLoginCountry.iso
+      }));
+    }else{
+      localStorage.removeItem("nexaRememberLogin");
+    }
+
+    await enterApp(data.user);
+  }catch(error){
+    showLoginError(error);
+  }finally{
+    setLoginBusy(false);
+  }
 }
 
 async function logout(){
@@ -3520,6 +3678,7 @@ function updateTradeChartZoomLabel(){}
 
 function zoomTradeChart(direction,anchorRatio=.5){
   const before=tradeChartVisibleCount;
+  const wasAtLiveEdge=tradeChartOffset===0;
   const factor=direction>0 ? .78 : 1.28;
   const next=Math.round(before*factor);
   const total=chartCandlesForTimeframe().length;
@@ -3528,7 +3687,9 @@ function zoomTradeChart(direction,anchorRatio=.5){
 
   // Keep approximately the same candle under the cursor/fingers.
   const delta=before-tradeChartVisibleCount;
-  tradeChartOffset=Math.max(0,tradeChartOffset+Math.round(delta*(1-anchorRatio)));
+  tradeChartOffset=wasAtLiveEdge
+    ? 0
+    : Math.max(0,tradeChartOffset+Math.round(delta*(1-anchorRatio)));
   clampTradeChartView();
   updateTradeChartZoomLabel();
   drawTradeChart();
@@ -3580,12 +3741,12 @@ async function bootstrapTradeCandles(){
     const rows=key ? payload.result[key] : null;
     if(!Array.isArray(rows))throw new Error("Invalid candle response");
     tradeCandles=rows.slice(-300).map(a=>({time:Number(a[0])*1000,open:Number(a[1]),high:Number(a[2]),low:Number(a[3]),close:Number(a[4]),volume:Number(a[6]||0)})).filter(c=>[c.open,c.high,c.low,c.close].every(Number.isFinite));
-    if(status){status.textContent="LIVE · 1m · 5h";status.classList.add("live")}
+    if(status){status.textContent="CONNECTING · 1m";status.classList.remove("live")}
     drawTradeChart();
   }catch(e){
     console.warn("CANDLE BOOTSTRAP:",e);
     if(!tradeCandles.length&&Number.isFinite(btcPrice))ingestBtcTick(btcPrice);
-    if(status){status.textContent="LIVE TICKS · 1m";status.classList.add("live")}
+    if(status){status.textContent="CONNECTING · 1m";status.classList.remove("live")}
   }finally{candleBootstrapBusy=false}
 }
 
@@ -5283,6 +5444,60 @@ let marketSocketWatchdog = null;
 let marketRefreshBusy = false;
 let marketFallbackTimer = null;
 let lastBtcChartPush = 0;
+let btcChartFallbackBusy = false;
+let btcChartLastLiveTick = 0;
+
+function setTradeChartConnectionStatus(text,state="live"){
+  const el=document.getElementById("tradeChartStatus");
+  if(!el)return;
+  el.textContent=text;
+  el.classList.toggle("live",state==="live");
+  el.classList.toggle("reconnecting",state==="reconnecting");
+  el.classList.toggle("offline",state==="offline");
+}
+
+async function refreshBtcChartFallback(){
+  if(btcChartFallbackBusy)return;
+  const age=Date.now()-Math.max(
+    btcChartLastLiveTick||0,
+    Number(LIVE_MARKET.BTCUSDT?.updatedAt||0)
+  );
+
+  // WebSocket is healthy: no REST polling is necessary.
+  if(age<6000)return;
+
+  btcChartFallbackBusy=true;
+  try{
+    const response=await fetch(
+      "https://api.kraken.com/0/public/Ticker?pair=XBTUSD&_="+Date.now(),
+      {cache:"no-store"}
+    );
+    if(!response.ok)throw new Error("BTC fallback HTTP "+response.status);
+    const payload=await response.json();
+    if(payload?.error?.length)throw new Error(payload.error.join(", "));
+    const key=Object.keys(payload?.result||{})[0];
+    const ticker=key ? payload.result[key] : null;
+    const p=Number(ticker?.c?.[0]);
+    if(!Number.isFinite(p))throw new Error("Invalid BTC fallback price");
+
+    const previous=LIVE_MARKET.BTCUSDT||{};
+    applyMarketUpdate("BTCUSDT",{
+      price:p,
+      change24h:previous.change||0,
+      volume:previous.volume||0,
+      source:"kraken-rest-fallback"
+    });
+    setTradeChartConnectionStatus("LIVE · FALLBACK","live");
+  }catch(error){
+    console.warn("BTC CHART FALLBACK:",error);
+    setTradeChartConnectionStatus(
+      navigator.onLine ? "RECONNECTING…" : "OFFLINE",
+      navigator.onLine ? "reconnecting" : "offline"
+    );
+  }finally{
+    btcChartFallbackBusy=false;
+  }
+}
 
 function livePriceFormat(value){
   const n=Number(value);
@@ -5411,8 +5626,15 @@ function applyMarketUpdate(symbol,data={}){
   updateHomeFromMarket(symbol);
 
   if(symbol==="BTCUSDT"){
+    btcChartLastLiveTick=Date.now();
     ingestBtcTick(p,Date.now());
     updateTradeFromMarket();
+
+    if(data.source==="coinbase-ws"){
+      setTradeChartConnectionStatus("LIVE · REAL TIME","live");
+    }else if(data.source==="smooth-api"){
+      setTradeChartConnectionStatus("LIVE · API","live");
+    }
   }
 
   return true;
@@ -5574,6 +5796,7 @@ function connectMarketWebSocket(){
   clearMarketSocketReconnect();
 
   console.log("MARKET WS: connecting...");
+  setTradeChartConnectionStatus("CONNECTING…","reconnecting");
 
   try{
     marketSocket=new WebSocket(COINBASE_WS_URL);
@@ -5585,6 +5808,7 @@ function connectMarketWebSocket(){
 
   marketSocket.onopen=()=>{
     console.log("MARKET WS: connected");
+    setTradeChartConnectionStatus("LIVE · CONNECTED","live");
 
     marketSocketReconnectAttempts=0;
     marketSocketLastMessageAt=Date.now();
@@ -5631,6 +5855,10 @@ function connectMarketWebSocket(){
     );
 
     marketSocket=null;
+    setTradeChartConnectionStatus(
+      navigator.onLine ? "RECONNECTING…" : "OFFLINE",
+      navigator.onLine ? "reconnecting" : "offline"
+    );
 
     /*
       Immediately refresh through smooth-api so the UI does not
@@ -5687,28 +5915,37 @@ function startLiveMarket(){
 
   marketFallbackTimer=setInterval(()=>{
     refreshLiveMarket();
-  },15000);
+    refreshBtcChartFallback();
+  },7000);
+
+  // First fallback check shortly after startup in case WebSocket is blocked.
+  setTimeout(refreshBtcChartFallback,3500);
 }
 
 document.addEventListener("visibilitychange",()=>{
   if(!document.hidden){
     refreshLiveMarket();
+    refreshBtcChartFallback();
     connectMarketWebSocket();
   }
 });
 
 window.addEventListener("focus",()=>{
   refreshLiveMarket();
+  refreshBtcChartFallback();
   connectMarketWebSocket();
 });
 
 window.addEventListener("online",()=>{
+  setTradeChartConnectionStatus("CONNECTING…","reconnecting");
   refreshLiveMarket();
+  refreshBtcChartFallback();
   connectMarketWebSocket();
 });
 
 window.addEventListener("offline",()=>{
   console.warn("MARKET: browser offline");
+  setTradeChartConnectionStatus("OFFLINE","offline");
 });
 
 window.addEventListener("beforeunload",()=>{
@@ -6016,27 +6253,31 @@ function clearNexaCache(){
 
 
 async function showLoginGateOnBoot(){
-  // Every new visit starts at the login screen.
-  // A previous browser session is cleared locally so the account cannot
-  // be displayed before the user authenticates again.
+  // Every page load / refresh starts on the Login screen.
   app.classList.add("hidden");
   authScreen.classList.remove("hidden");
   document.body.classList.add("login-gate-active");
-
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    if(session){
-      await sb.auth.signOut({scope:"local"});
-    }
-  }catch(err){
-    console.warn("Login gate initialization:",err);
-  }
 
   currentUser=null;
   profile=null;
   trades=[];
   isCurrentUserAdmin=false;
+
+  // Defensive cleanup in case an older site version left a persisted session.
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(session) await sb.auth.signOut({scope:"local"});
+  }catch(err){
+    console.warn("Login gate initialization:",err);
+  }
 }
+
+window.addEventListener("pagehide",()=>{
+  currentUser=null;
+  profile=null;
+  trades=[];
+  isCurrentUserAdmin=false;
+});
 
 sb.auth.onAuthStateChange((event)=>{
   if(event==="SIGNED_OUT"){
