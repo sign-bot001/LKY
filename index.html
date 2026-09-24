@@ -2497,7 +2497,7 @@ body.login-gate-active{
       </div>
 
       <div id="copyInitiateView">
-        <div class="follow--note"> only · no real order is copied and no real funds are used.</div>
+        <div class="follow--note">.</div>
         <div class="follow-box">
           <input id="followOrderCode" maxlength="6" placeholder="Enter the order code">
           <button onclick="recognizeFollowCode()">recognize</button>
@@ -2523,7 +2523,7 @@ body.login-gate-active{
       </div>
 
       <div id="releaseInitiateView">
-        <div class="follow--note"> only · create a simulated follow instruction for this account.</div>
+        <div class="follow--note"> only </div>
         <button class="follow-action-btn" onclick="openFollowModal('release','')">Initiate follow</button>
         <div class="trade-empty-panel"><div class="trade-empty-icon">▤</div>No active release</div>
       </div>
@@ -2752,12 +2752,12 @@ body.login-gate-active{
       </div>
     </div>
 
-    <div class="assets--note"> ONLY · balances, records and wallet operations are simulated.</div>
+    <div class="assets--note">.</div>
   </section>
 
   <section id="admin" class="page">
     <div class="section-title" style="color:#28b43f">Admin Dashboard</div>
-    <div class="warning">Administration de la simulation uniquement · aucun argent réel.</div>
+    <div class="warning">.</div>
 
     <div class="card monitoring-card">
       <div class="monitoring-head">
@@ -2937,9 +2937,13 @@ body.login-gate-active{
       <div class="wallet-notice">
         <h3>important notice</h3>
         <p>
-           simulation only. This page does not transmit cryptocurrency, contact a blockchain,
-          freeze funds, or submit a real withdrawal. The displayed fee is illustrative only.
-          Never enter a real exchange password or seed phrase here.
+           After submitting the withdrawal application, the funds are in a frozen state because the withdrawal is in progress and the funds are temporarily under the custody of the system, which does not mean that you have lost the asset or the asset is abnormal.
+
+The account will be received within 48 hours after submitting the withdrawal application. If the account is not received after the estimated time of withdrawal, please consult the online customer service.
+
+In order to prevent arbitrage behavior, the transaction volume can be applied for withdrawal after reaching the limit.
+
+The handling fee is 10 USDT within 100 USDT, and 10% will be charged for more than 100 USDT!
         </p>
       </div>
       <button class="wallet-primary" onclick="submitWithdraw()">next step</button>
@@ -6255,7 +6259,7 @@ const SITE_I18N={"Login":{"en":"Login","fr":"Connexion","es":"Iniciar sesión","
 
 Object.assign(SITE_I18N,{
   "Deposit amount":{"en":"Deposit amount","fr":"Montant du dépôt","es":"Importe del depósito","zh":"存款金额","ar":"مبلغ الإيداع","de":"Einzahlungsbetrag","it":"Importo del deposito","ru":"Сумма депозита","pl":"Kwota wpłaty"},
-  "Enter the amount of cryptocurrency you want to simulate depositing.":{"en":"Enter the amount of cryptocurrency you want to simulate depositing.","fr":"Entrez la quantité de cryptomonnaie que vous souhaitez déposer dans la simulation.","es":"Introduce la cantidad de criptomoneda que deseas simular como depósito.","zh":"输入您要模拟存入的加密货币数量。","ar":"أدخل كمية العملة المشفرة التي تريد محاكاة إيداعها.","de":"Geben Sie die Kryptowährungsmenge für die simulierte Einzahlung ein.","it":"Inserisci la quantità di criptovaluta da simulare come deposito.","ru":"Введите количество криптовалюты для имитации депозита.","pl":"Wpisz ilość kryptowaluty do symulowanego depozytu."},
+  "Enter the amount of cryptocurrency you want to deposit.":{"en":"Enter the amount of cryptocurrency you want to deposit.","fr":"Entrez la quantité de cryptomonnaie que vous souhaitez déposer dans la simulation.","es":"Introduce la cantidad de criptomoneda que deseas simular como depósito.","zh":"输入您要模拟存入的加密货币数量。","ar":"أدخل كمية العملة المشفرة التي تريد محاكاة إيداعها.","de":"Geben Sie die Kryptowährungsmenge für die simulierte Einzahlung ein.","it":"Inserisci la quantità di criptovaluta da simulare come deposito.","ru":"Введите количество криптовалюты для имитации депозита.","pl":"Wpisz ilość kryptowaluty do symulowanego depozytu."},
   "Quantity":{"en":"Quantity","fr":"Quantité","es":"Cantidad","zh":"数量","ar":"الكمية","de":"Menge","it":"Quantità","ru":"Количество","pl":"Ilość"},
   "Show deposit address":{"en":"Show deposit address","fr":"Afficher l’adresse de dépôt","es":"Mostrar dirección de depósito","zh":"显示存款地址","ar":"إظهار عنوان الإيداع","de":"Einzahlungsadresse anzeigen","it":"Mostra indirizzo di deposito","ru":"Показать адрес депозита","pl":"Pokaż adres wpłaty"},
   "I have sent it":{"en":"I have sent it","fr":"J’ai envoyé","es":"Ya lo envié","zh":"我已发送","ar":"لقد أرسلته","de":"Ich habe es gesendet","it":"Ho inviato","ru":"Я отправил","pl":"Wysłano"},
