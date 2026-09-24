@@ -737,6 +737,34 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
   color:#fff;font-size:20px;font-weight:900;cursor:pointer
 }
 
+
+/* ===== DEPOSIT DETAILS — DEMO NETWORKS ===== */
+.deposit-detail-page{position:fixed;z-index:940;inset:0;background:#fff;color:#111;overflow:auto;padding:72px max(22px,calc((100vw - 560px)/2 + 22px)) 110px}
+.deposit-detail-inner{max-width:516px;margin:0 auto}
+.deposit-detail-head{display:grid;grid-template-columns:55px 1fr 55px;align-items:center}
+.deposit-detail-head button{border:0;background:transparent;font-size:38px;cursor:pointer}
+.deposit-detail-title{text-align:center;font-size:31px;font-weight:900}
+.deposit-demo-note{text-align:center;color:#8a9096;font-size:13px;margin-top:9px}
+.deposit-qr-wrap{width:270px;height:270px;margin:38px auto 45px;background:#f4f4f4;border-radius:25px;padding:14px;display:grid;place-items:center}
+.deposit-qr-wrap img{width:100%;height:100%;object-fit:contain;border-radius:16px}
+.deposit-address-label{font-size:17px;color:#929292;margin-bottom:15px}
+.deposit-address-box{display:grid;grid-template-columns:1fr 62px;gap:14px;align-items:center;padding-bottom:28px;border-bottom:1px solid #e6e6e6}
+.deposit-address{font-size:21px;font-weight:850;line-height:1.22;word-break:break-all}
+.deposit-copy{width:58px;height:58px;border:0;border-radius:50%;background:#f4f4f4;font-size:25px;cursor:pointer}
+.deposit-network-picker{width:100%;border:0;background:transparent;display:flex;align-items:center;justify-content:space-between;padding:28px 0 18px;font-size:20px;cursor:pointer}
+.deposit-network-picker strong{font-size:20px}
+.deposit-network-value{color:#686868}
+.deposit-info-row{display:flex;justify-content:space-between;gap:20px;padding:19px 0;font-size:18px}
+.deposit-info-row strong{font-weight:800}
+.deposit-info-row span{color:#686868;text-align:right}
+.deposit-warning{background:#f6f6f6;border:1px solid #dedede;border-radius:15px;padding:15px 17px;line-height:1.45;margin:18px 0 8px;font-size:14px}
+.deposit-network-sheet{position:fixed;z-index:1000;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.deposit-network-sheet-card{width:min(560px,100%);background:#fff;border-radius:28px 28px 0 0;padding:20px 22px 38px}
+.deposit-network-sheet-title{font-size:24px;font-weight:900;margin:8px 0 15px}
+.deposit-network-option{width:100%;min-height:72px;border:0;border-top:1px solid #eee;background:#fff;display:flex;justify-content:space-between;align-items:center;font-size:19px;cursor:pointer}
+.deposit-network-option small{display:block;color:#888;font-size:13px;text-align:left;margin-top:4px}
+.deposit-copy-toast{position:fixed;z-index:1100;left:50%;bottom:105px;transform:translateX(-50%);background:#111;color:#fff;padding:11px 18px;border-radius:999px;font-size:14px}
+
 </style>
 </head>
 <body>
@@ -1373,6 +1401,49 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
       </div>
     </div>
   </div>
+
+  <!-- DEPOSIT DETAILS — DEMO ONLY -->
+  <div id="depositDetailPage" class="deposit-detail-page hidden">
+    <div class="deposit-detail-inner">
+      <div class="deposit-detail-head">
+        <button onclick="closeDepositDetail()">‹</button>
+        <div id="depositDetailTitle" class="deposit-detail-title">Deposit USDT</div>
+        <div></div>
+      </div>
+      <div class="deposit-demo-note">DEMO — adresses fictives uniquement. Ne jamais envoyer de vraie cryptomonnaie.</div>
+
+      <div class="deposit-qr-wrap">
+        <img id="depositQr" alt="Demo deposit QR code">
+      </div>
+
+      <div class="deposit-address-label">Address</div>
+      <div class="deposit-address-box">
+        <div id="depositAddress" class="deposit-address"></div>
+        <button class="deposit-copy" onclick="copyDepositAddress()" aria-label="Copy address">▣</button>
+      </div>
+
+      <button class="deposit-network-picker" onclick="openDepositNetworkSheet()">
+        <strong>Network</strong>
+        <span><span id="depositNetworkIcon"></span> <span id="depositNetworkName" class="deposit-network-value"></span> ›</span>
+      </button>
+
+      <div class="deposit-info-row"><strong>Deposit account</strong><span>Trading account</span></div>
+      <div class="deposit-info-row"><strong>Minimum deposit ⓘ</strong><span id="depositMinimum"></span></div>
+      <div class="deposit-info-row"><strong>Arrival time ⓘ</strong><span id="depositArrival"></span></div>
+      <div class="deposit-info-row"><strong>Withdrawal available in ⓘ</strong><span id="depositWithdrawTime"></span></div>
+      <div class="deposit-info-row"><strong>Token contract</strong><span id="depositContract"></span></div>
+
+      <div id="depositWarning" class="deposit-warning"></div>
+    </div>
+  </div>
+
+  <div id="depositNetworkSheet" class="deposit-network-sheet hidden" onclick="if(event.target===this)closeDepositNetworkSheet()">
+    <div class="deposit-network-sheet-card">
+      <div class="deposit-network-sheet-title">Select network</div>
+      <div id="depositNetworkOptions"></div>
+    </div>
+  </div>
+  <div id="depositCopyToast" class="deposit-copy-toast hidden">Address copied</div>
 
   <!-- FUND TRANSFER DEMO -->
   <div id="transferPage" class="wallet-action-page hidden">
@@ -2691,7 +2762,7 @@ function walletAvailableFor(currency){
   return currency==="USDT" ? Number(profile?.balance||0) : 0;
 }
 function openWalletPage(id){
-  ["withdrawPage","rechargePage","transferPage","exchangePage"].forEach(x=>document.getElementById(x)?.classList.add("hidden"));
+  ["withdrawPage","rechargePage","transferPage","exchangePage","depositDetailPage"].forEach(x=>document.getElementById(x)?.classList.add("hidden"));
   document.getElementById(id)?.classList.remove("hidden");
 }
 function closeWalletPage(id){
@@ -2846,16 +2917,152 @@ function filterRechargeCurrencies(){
     row.style.display=(!q||(row.dataset.currency||"").includes(q))?"flex":"none";
   });
 }
+const DEMO_DEPOSIT_NETWORKS={
+  USDT:[
+    {
+      id:"erc20",
+      name:"Ethereum (ERC20)",
+      icon:"🔷",
+      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABrElEQVR4nO2ZwW7DMAxDH4f+/y9zB8mOnaFDD0OsAVIPSRMCIQRapiyZD+LrE1CjGtWoRj2KegEo7i2wLAPyfHqEV1XUC4icIMCKTNny9bQs+1P5QmCwMCNj8+kRXv8CJYQACasQr6oo5/LzLGk1eBVC5Xr0uOj6s9xUZX8qX6kmefmtGqvK/nmU1n5ImHQTYn1Rlf0hlJCQlHVrqC1fnONVEBX6SpWFV50Ki8LffnWNSA5RsIbnChvmab/Ksj/m79OkZpaijC3Sq8r+qJ+IdEULSRZ82Wd4lUYZIZlcipG5rvdvUYpW26OYGdLku/vHPYb/Wq8a++IsYlXZn/NfIElcNszhxNzrcYu5CU49bR1k6+sW4zA1zrrGphhvrsxVZX9wf8RhU/P8SwLbK+p5XmVRw65iT7UhzWayNvsnUcv5vTNpnt5CY9esyv5Qvq5JkIbpEsi4/f0t9vlQzjuwLxN2hldV1H0+FEeGypPpMSGqyv4wKlafQlY2uP3Er6iUmUNpuNfjPbb5UOyMc1bk7h9/xD4fGmdfJuZDra97bPOhR77YqEY1qlF/g/oGeSOvcvPzpKwAAAAASUVORK5CYII=',
+      minimum:"USDT 0.01",
+      arrival:"~7 minutes",
+      withdraw:"~20 minutes",
+      contract:"***831ec7",
+      warning:"DEMO — adresse fictive reproduite pour l’interface. N’envoyez aucune cryptomonnaie réelle."
+    },
+    {
+      id:"trc20",
+      name:"Tron (TRC20)",
+      icon:"🔺",
+      address:"TEYyEs1H26SoPvM7fW5792cpZVkoeN3nsJ",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABr0lEQVR4nO2Zy24EMQgEq6P9/1/uHAA7zks5RGMOeKVNxippW2gaA5b5w3r7CzTUUEMN9Sj1AlD8bwEYQN67V3R1pV5AxQjLMiAQrt0rurpSES8UMTOg/Zrlbl/1lymhCJfTm010NaJe56PDlnyqyrqqvxavjI8q2WvZ85KurlTEq8xn5QfLbEt2VX8pXtt9mevlOh5v6WpNCRBSJq8wo6TYuaerLSVAxsKyXQUY5dTe6h+njCJ3AZa00v7UXz9QznBZYCP0HfW8rp6UQCttgWyIjK+ruhpS2lnKyChyWG1lFuuq/tb7Ze/YOEsvY2TP+fgNpYhSuFKWDDmruKqrLSVhSbvRjrmO06/N1T9I5bxr9Y3VB62/l3R1pbIfWsVEfm1AM1/9uPY8J7wnU4djjVqv6GpNSZYVXSQ1Vo2GcuqJc8kfH6opYtdgE69jHfdD0Q6RqV4uk7ZVfyt/1f0QUXZpX3VMPXGu435IOJJWTMFYdu2q/ub5CFjbj1Xhjx9/o1zDinqceuJc5/1QBMx1UK7Ds6v6W/HK90llwWySpp74so7665FfHGqooYb6H+odeYaqdQLETKwAAAAASUVORK5CYII=',
+      minimum:"USDT 0.1",
+      arrival:"~1 minute",
+      withdraw:"~2 minutes",
+      contract:"***gjLj6t",
+      warning:"DEMO — adresse fictive reproduite pour l’interface. N’envoyez aucun USDT réel."
+    }
+  ],
+  BTC:[
+    {
+      id:"solana",
+      name:"Solana",
+      icon:"◎",
+      address:"3JgG9kMPchc7YwnVkFS1WRWRWjFk3Dscvha3L1noGisM",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFIAQAAAAAab1qeAAACEUlEQVR4nO2a22rEMAxEZ0r//5enDxrZTh9KUkhjpdqFJRsfsCxk3WwKJz8fZ8Emm2yyyX9BfgIA41l+FCiAotaRKivaQJ8QADAVS4kKlY6Rp+UsRpLTEhWa9ZsxsoWc5Uhq2qn0E3nH7G8jY39L8Zve869mfwMZ/jPcJChQEAHF4xi5afb3kaHPaYji+H4bqbKiZ0kefKSzJSDyJayDVVa0AZnxnBBEyomoxLbPi+Sy3zUSev8SCmvtfP40mfk8IUYgwtjqAkCp8/nL/tPFEFxlzjBkRd81+/vI1F5YJ5Z/tlfEvn9azlKkBLpYD0+avwLo+LSDnFVIUhDSf8oNEUB2p7vIWYB0feROUuSbIqNIytfs/X72Q+uL3uQRgcYQ239eIx3VwxbTJjM+acb9p+UsRmrYZ1qpRpnkTugWcm5PznwprZHpMjkq+d7v18hodS5elGmwAjpf+hUZpTrpip06RKi7Z38N6fNNb/HMl6xSkZniPy1nFXLW77C3dKK09uzbf54mnX+6wEyXubxE90Ou2+f446wzfaeWrL7KirbwnwAAyedweUmEo3x6XM4q5OF+SDpNzSN43xZ5XM4qZPZD8mZItpf4/fCjzIo2Itd8U2BcEPHBx05yViEzAQXlol0YNdNGcm5MHu6HzEYTEV40fGfb52lyPX07lJjZJxlBqsqKNtDnY7M32WSTTdYlvwAAXPOPgr15ugAAAABJRU5ErkJggg==',
+      minimum:"BTC 0.00000001",
+      arrival:"~1 minute",
+      withdraw:"~1 minute",
+      contract:"***aznnkn",
+      warning:"DEMO — exemple d’un dépôt BTC via Solana. Aucun dépôt, conversion ou crédit blockchain réel n’est effectué."
+    },
+    {
+      id:"bitcoin",
+      name:"Bitcoin",
+      icon:"₿",
+      address:"bc1qfqcg934wdtzszs4z3ukhjnvn3lxqqr27cujj9llrecvelvla3dlqj8qerf",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFIAQAAAAAab1qeAAACGUlEQVR4nO1a0Y7DMAizT/v/X/Y9YNJU97JM6hp6VKqaLZZCEAFDoPDm8/MusJGNbGQj/wXyBQCMsUABzK/mmbvlrIJ8AQh9gaAoQB5RVM7cLmcVZOgTtE7DLAVQ/mvMVNnRTkgCIuLMQ3nav7X6E5Cv+cfwmuIYX7r685DWZx52COlDld70wtWfhwx9+mBTtFEO0zyOfJUdbaDP41xrvII4z5TZ0b1I+8sYEo5Hed4dlHS/nFWQRzwy5aRAWLPB7nnd6s9DcnBMjnc65RRDr3fLWQWZ+VFqkhIYfIn2pG2fq8hQHyFRIAUoGOgw3T3kLICc+LySyBORI/mJOFVmR3voM8KQXFsaFRIB7T+XkQRDd2SEH0WUEsBk+DvIWQapiEKI+hxFkGmemSrtIOf+yKzXyQVPArADxRGNup68iBRDlVRYYzIlqeufS0jzeY0vAMC1JYepzjdX+We4TNN5AJRpk6P+JnJWQTqoUxCJYKJwXOr8/QOkQoWkh3KOFF9uI2cZZNDM6f6NTKvt/OiT+hIAh6GJdboUet3qz0Oe7tzyetMFkvPFcZUdbcDnswtEo40hnWbzpUXkqT9k1JLgC+OYCC5aZUc76HMYoSBCkReFbbb/XEKe+hmcF1Ek3Mw0UvkyO9oLedx3OmPK9GgzOXdF/ukPcU/IQZvY9ZBlfU79Ich03s5z9DFV2dFG/PPrqzeykY1sZF3kL/r9+pqVFaxrAAAAAElFTkSuQmCC',
+      minimum:"BTC 0.00003",
+      arrival:"~22 minutes",
+      withdraw:"~33 minutes",
+      contract:"—",
+      warning:"DEMO — utilisez cette adresse uniquement dans la simulation. N’envoyez aucun BTC, NFT, inscription ou autre actif réel."
+    }
+  ],
+  ETH:[
+    {
+      id:"erc20",
+      name:"Ethereum (ERC20)",
+      icon:"◆",
+      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABrElEQVR4nO2ZwW7DMAxDH4f+/y9zB8mOnaFDD0OsAVIPSRMCIQRapiyZD+LrE1CjGtWoRj2KegEo7i2wLAPyfHqEV1XUC4icIMCKTNny9bQs+1P5QmCwMCNj8+kRXv8CJYQACasQr6oo5/LzLGk1eBVC5Xr0uOj6s9xUZX8qX6kmefmtGqvK/nmU1n5ImHQTYn1Rlf0hlJCQlHVrqC1fnONVEBX6SpWFV50Ki8LffnWNSA5RsIbnChvmab/Ksj/m79OkZpaijC3Sq8r+qJ+IdEULSRZ82Wd4lUYZIZlcipG5rvdvUYpW26OYGdLku/vHPYb/Wq8a++IsYlXZn/NfIElcNszhxNzrcYu5CU49bR1k6+sW4zA1zrrGphhvrsxVZX9wf8RhU/P8SwLbK+p5XmVRw65iT7UhzWayNvsnUcv5vTNpnt5CY9esyv5Qvq5JkIbpEsi4/f0t9vlQzjuwLxN2hldV1H0+FEeGypPpMSGqyv4wKlafQlY2uP3Er6iUmUNpuNfjPbb5UOyMc1bk7h9/xD4fGmdfJuZDra97bPOhR77YqEY1qlF/g/oGeSOvcvPzpKwAAAAASUVORK5CYII=',
+      minimum:"ETH 0.00007",
+      arrival:"~7 minutes",
+      withdraw:"~20 minutes",
+      contract:"***831ec7",
+      warning:"DEMO — adresse fictive reproduite pour l’interface. N’envoyez aucun ETH réel."
+    }
+  ],
+  USDC:[
+    {
+      id:"erc20",
+      name:"Ethereum (ERC20)",
+      icon:"🔷",
+      address:"0x43d7408e2bd1a48b50301607df93bf5a9769301c",
+      qr:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABrElEQVR4nO2ZwW7DMAxDH4f+/y9zB8mOnaFDD0OsAVIPSRMCIQRapiyZD+LrE1CjGtWoRj2KegEo7i2wLAPyfHqEV1XUC4icIMCKTNny9bQs+1P5QmCwMCNj8+kRXv8CJYQACasQr6oo5/LzLGk1eBVC5Xr0uOj6s9xUZX8qX6kmefmtGqvK/nmU1n5ImHQTYn1Rlf0hlJCQlHVrqC1fnONVEBX6SpWFV50Ki8LffnWNSA5RsIbnChvmab/Ksj/m79OkZpaijC3Sq8r+qJ+IdEULSRZ82Wd4lUYZIZlcipG5rvdvUYpW26OYGdLku/vHPYb/Wq8a++IsYlXZn/NfIElcNszhxNzrcYu5CU49bR1k6+sW4zA1zrrGphhvrsxVZX9wf8RhU/P8SwLbK+p5XmVRw65iT7UhzWayNvsnUcv5vTNpnt5CY9esyv5Qvq5JkIbpEsi4/f0t9vlQzjuwLxN2hldV1H0+FEeGypPpMSGqyv4wKlafQlY2uP3Er6iUmUNpuNfjPbb5UOyMc1bk7h9/xD4fGmdfJuZDra97bPOhR77YqEY1qlF/g/oGeSOvcvPzpKwAAAAASUVORK5CYII=',
+      minimum:"USDC 0.01",
+      arrival:"~7 minutes",
+      withdraw:"~20 minutes",
+      contract:"***831ec7",
+      warning:"DEMO — adresse fictive reproduite pour l’interface. N’envoyez aucun USDC réel."
+    }
+  ]
+};
+let depositCurrency="USDT";
+let depositNetworkId="erc20";
+
 function selectRechargeCurrency(currency){
-  if(!["USDT","ETH","BTC","USDC"].includes(currency))return;
+  if(!DEMO_DEPOSIT_NETWORKS[currency])return;
   rechargeCurrency=currency;
-  const box=document.getElementById("rechargeDemoBox");
-  const label=document.getElementById("rechargeSelectedCurrency");
-  const input=document.getElementById("rechargeAmount");
-  if(label)label.textContent=currency;
-  if(input)input.value="";
-  box?.classList.remove("hidden");
-  box?.scrollIntoView({behavior:"smooth",block:"nearest"});
+  depositCurrency=currency;
+  depositNetworkId=DEMO_DEPOSIT_NETWORKS[currency][0].id;
+  renderDepositDetail();
+  document.getElementById("rechargePage")?.classList.add("hidden");
+  document.getElementById("depositDetailPage")?.classList.remove("hidden");
+}
+function currentDepositNetwork(){
+  return (DEMO_DEPOSIT_NETWORKS[depositCurrency]||[]).find(x=>x.id===depositNetworkId)
+      || (DEMO_DEPOSIT_NETWORKS[depositCurrency]||[])[0];
+}
+function renderDepositDetail(){
+  const n=currentDepositNetwork();
+  if(!n)return;
+  document.getElementById("depositDetailTitle").textContent=`Deposit ${depositCurrency}`;
+  document.getElementById("depositAddress").textContent=n.address;
+  document.getElementById("depositNetworkIcon").textContent=n.icon;
+  document.getElementById("depositNetworkName").textContent=n.name;
+  document.getElementById("depositMinimum").textContent=n.minimum;
+  document.getElementById("depositArrival").textContent=n.arrival;
+  document.getElementById("depositWithdrawTime").textContent=n.withdraw;
+  document.getElementById("depositContract").textContent=n.contract;
+  document.getElementById("depositWarning").textContent=n.warning;
+
+  // The QR is generated from the exact fictitious address shown on screen.
+  document.getElementById("depositQr").src=n.qr;
+}
+function closeDepositDetail(){
+  document.getElementById("depositDetailPage")?.classList.add("hidden");
+  document.getElementById("rechargePage")?.classList.remove("hidden");
+}
+function openDepositNetworkSheet(){
+  const host=document.getElementById("depositNetworkOptions");
+  host.innerHTML=(DEMO_DEPOSIT_NETWORKS[depositCurrency]||[]).map(n=>`
+    <button class="deposit-network-option" onclick="selectDepositNetwork('${n.id}')">
+      <span><strong>${n.icon} ${n.name}</strong><small>${n.minimum} minimum</small></span>
+      <span>${n.id===depositNetworkId?"✓":""}</span>
+    </button>`).join("");
+  document.getElementById("depositNetworkSheet")?.classList.remove("hidden");
+}
+function closeDepositNetworkSheet(){
+  document.getElementById("depositNetworkSheet")?.classList.add("hidden");
+}
+function selectDepositNetwork(id){
+  depositNetworkId=id;
+  closeDepositNetworkSheet();
+  renderDepositDetail();
+}
+async function copyDepositAddress(){
+  const address=currentDepositNetwork()?.address||"";
+  try{
+    await navigator.clipboard.writeText(address);
+  }catch{
+    const ta=document.createElement("textarea");
+    ta.value=address; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+  }
+  const toast=document.getElementById("depositCopyToast");
+  toast?.classList.remove("hidden");
+  setTimeout(()=>toast?.classList.add("hidden"),1400);
 }
 function submitRechargeDemo(){
   const amount=Number(document.getElementById("rechargeAmount")?.value||0);
