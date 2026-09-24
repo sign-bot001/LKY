@@ -1080,8 +1080,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* HOME */
 #home{
-  background:
-    radial-gradient(circle at 85% 2%,rgba(110,246,105,.13),transparent 28%),
+  background: radial-gradient(circle at 85% 2%,rgba(110,246,105,.13),transparent 28%),
     var(--nx-bg);
 }
 .home-top{margin-bottom:34px}
@@ -1115,8 +1114,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* QUOTES */
 #quotes{
-  background:
-    radial-gradient(circle at 92% 0%,rgba(114,247,107,.11),transparent 25%),
+  background: radial-gradient(circle at 92% 0%,rgba(114,247,107,.11),transparent 25%),
     var(--nx-bg);
 }
 .quotes-search{
@@ -1188,8 +1186,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* MY ASSETS */
 #assets{
-  background:
-    radial-gradient(circle at 88% 0%,rgba(113,247,107,.12),transparent 26%),
+  background: radial-gradient(circle at 88% 0%,rgba(113,247,107,.12),transparent 26%),
     var(--nx-bg);
 }
 .assets-records-btn{
@@ -1223,8 +1220,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* AUTH — same visual identity as the product */
 .auth-screen{
-  background:
-    radial-gradient(circle at 80% 5%,rgba(111,247,104,.28),transparent 30%),
+  background: radial-gradient(circle at 80% 5%,rgba(111,247,104,.28),transparent 30%),
     linear-gradient(180deg,#eaffdf 0%,#f8fff6 48%,#fff 100%);
   color:var(--nx-ink);
 }
@@ -1268,8 +1264,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* Personal center, identity verification and wallet sheets */
 .personal-overlay,.personal-subpage,.wallet-action-page,.funding-page{
-  background:
-    radial-gradient(circle at 90% 0%,rgba(107,240,101,.10),transparent 25%),
+  background: radial-gradient(circle at 90% 0%,rgba(107,240,101,.10),transparent 25%),
     var(--nx-bg);
 }
 .personal-profile,.personal-form-card,.kyc-camera-card,
@@ -1298,8 +1293,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* Funding / withdrawal / deposit finishing */
 .deposit-detail-page,.withdraw-success-page{
-  background:
-    radial-gradient(circle at 90% 0%,rgba(105,239,99,.09),transparent 24%),
+  background: radial-gradient(circle at 90% 0%,rgba(105,239,99,.09),transparent 24%),
     #fff;
 }
 .deposit-step-card,.deposit-confirm-card,.withdraw-success-wait{
@@ -1317,8 +1311,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* ADMIN */
 #admin{
-  background:
-    radial-gradient(circle at 90% 0%,rgba(94,225,83,.12),transparent 25%),
+  background: radial-gradient(circle at 90% 0%,rgba(94,225,83,.12),transparent 25%),
     linear-gradient(180deg,#f8fff6 0%,#f0faed 100%);
 }
 #admin .card{
@@ -1504,8 +1497,7 @@ body.login-gate-active{
     padding:24px!important;
     display:grid!important;
     place-items:center;
-    background:
-      radial-gradient(circle at 18% 16%,rgba(123,255,111,.28),transparent 30%),
+    background: radial-gradient(circle at 18% 16%,rgba(123,255,111,.28),transparent 30%),
       #edf3ea!important;
   }
   .reference-login.hidden{display:none!important}
@@ -1520,8 +1512,7 @@ body.login-gate-active{
     grid-template-rows:105px 1fr;
     border-radius:34px;
     overflow:hidden;
-    background:
-      linear-gradient(135deg,#8ff681 0%,#caffc2 47%,#ffffff 47%,#ffffff 100%);
+    background: linear-gradient(135deg,#8ff681 0%,#caffc2 47%,#ffffff 47%,#ffffff 100%);
     box-shadow:0 28px 85px rgba(38,69,42,.16);
     border:1px solid rgba(255,255,255,.75);
     position:relative;
@@ -3018,7 +3009,7 @@ The handling fee is 10 USDT within 100 USDT, and 10% will be charged for more th
         <div id="depositDetailTitle" class="deposit-detail-title">Deposit USDT</div>
         <div></div>
       </div>
-      <div class="deposit--note"> — adresses fictives uniquement. Ne jamais envoyer de vraie cryptomonnaie.</div>
+      <div class="deposit--note"> </div>
 
       <!-- STEP 1: amount before revealing the fictitious wallet -->
       <div id="depositAmountStep">
@@ -3442,8 +3433,7 @@ const SUPABASE_URL = "https://khhexjfvwvfoehaqybzm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_iGxqDljv0d0t0nYgQVyyFQ_CXXdKpOu";
 
 /*
-  Session behaviour:
-  - the authenticated Supabase session is persisted locally;
+  Session behaviour: - the authenticated Supabase session is persisted locally;
   - refreshing the page keeps the user connected;
   - Logout still clears the session and returns to Login.
 */
@@ -3488,8 +3478,7 @@ let chartValues=Array.from({length:28},(_,i)=>112600+i*8+Math.random()*90);
 function money(n){
   const value=Number(n||0);
   if(!Number.isFinite(value))return "0.00";
-  // Monetary balances are displayed without a thousands separator:
-  // 10000.00 instead of 10,000.00
+  // Monetary balances are displayed without a thousands separator: // 10000.00 instead of 10,000.00
   return value.toFixed(2);
 }
 function price(n){return Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
@@ -3717,9 +3706,7 @@ function friendlyLoginError(error){
   const low=raw.toLowerCase();
 
   if(low.includes("invalid login credentials") || low.includes("invalid credentials")){
-    return loginMode==="phone"
-      ? "Numéro de téléphone ou mot de passe incorrect."
-      : "Adresse email ou mot de passe incorrect.";
+    return loginMode==="phone" ? "Numéro de téléphone ou mot de passe incorrect." : "Adresse email ou mot de passe incorrect.";
   }
   if(low.includes("email not confirmed") || low.includes("email_not_confirmed")){
     return "Ton adresse email n’est pas encore vérifiée. Ouvre l’email de confirmation reçu puis réessaie.";
@@ -3728,9 +3715,7 @@ function friendlyLoginError(error){
     return "Ton numéro de téléphone n’est pas encore vérifié.";
   }
   if(low.includes("provider") && low.includes("disabled")){
-    return loginMode==="phone"
-      ? "La connexion par numéro de téléphone n’est pas encore activée."
-      : "Ce mode de connexion n’est pas disponible.";
+    return loginMode==="phone" ? "La connexion par numéro de téléphone n’est pas encore activée." : "Ce mode de connexion n’est pas disponible.";
   }
   if(low.includes("rate limit") || low.includes("too many")){
     return "Trop de tentatives. Attends un moment avant de réessayer.";
@@ -4189,8 +4174,7 @@ function liveBtcVolumeDelta(cumulative,source){
   return Number.isFinite(delta)&&delta>0 ? delta : 0;
 }
 
-/* Trade direction controls the live price line:
-   CALL / achat = green
+/* Trade direction controls the live price line: CALL / achat = green
    PUT / vente = red */
 let tradeChartDirection="CALL";
 
@@ -4553,8 +4537,7 @@ function showFollowSubtab(name,el){
     "copy-initiate":"copyInitiateView",
     "copy-history":"copyHistoryView",
     "release-initiate":"releaseInitiateView",
-    "release-history":"releaseHistoryView"
-  };
+    "release-history":"releaseHistoryView" };
   document.getElementById(map[name])?.classList.remove("hidden");
   if(name==="copy-history"||name==="release-history") renderFollowHistory();
 }
@@ -5427,8 +5410,7 @@ function renderFundingCalendar(){
       outMonth?"muted":"",
       inRange?"in-range":"",
       selectedStart||selectedEnd?"selected":"",
-      selectedStart?"selected-start":""
-    ].filter(Boolean).join(" ");
+      selectedStart?"selected-start":"" ].filter(Boolean).join(" ");
 
     cells.push(`<button class="${cls}" onclick="chooseFundingDate('${calendarDayKey(d)}')">${d.getDate()}</button>`);
   }
@@ -5771,8 +5753,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***SYWa",
-      warning:""
-    },
+      warning:"" },
     {
       id:"ethereum",
       name:"Ethereum",
@@ -5783,8 +5764,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive USDT/Ethereum fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
-    },
+      warning:" privé — adresse fictive USDT/Ethereum fournie pour cette simulation. Ne pas utiliser pour un transfert réel." },
     {
       id:"solana",
       name:"Solana",
@@ -5795,8 +5775,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~1 minute",
       contract:"***JU4qt",
-      warning:" privé — adresse fictive USDT/Solana fournie pour cette simulation. Ne pas utiliser pour un transfert réel."
-    }
+      warning:" privé — adresse fictive USDT/Solana fournie pour cette simulation. Ne pas utiliser pour un transfert réel." }
   ],
   BTC:[
     {
@@ -5809,8 +5788,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~10 minutes",
       withdraw:"~20 minutes",
       contract:"—",
-      warning:" privé — adresse fictive BTC/Taproot fournie pour cette simulation."
-    },
+      warning:" privé — adresse fictive BTC/Taproot fournie pour cette simulation." },
     {
       id:"legacy",
       name:"Héritage",
@@ -5821,8 +5799,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~10 minutes",
       withdraw:"~20 minutes",
       contract:"—",
-      warning:" privé — adresse fictive BTC/Héritage fournie pour cette simulation."
-    }
+      warning:" privé — adresse fictive BTC/Héritage fournie pour cette simulation." }
   ],
   ETH:[
     {
@@ -5835,8 +5812,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive ETH/Ethereum fournie pour cette simulation."
-    },
+      warning:" privé — adresse fictive ETH/Ethereum fournie pour cette simulation." },
     {
       id:"xlayer",
       name:"X Layer",
@@ -5847,8 +5823,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive ETH/X Layer fournie pour cette simulation."
-    }
+      warning:" privé — adresse fictive ETH/X Layer fournie pour cette simulation." }
   ],
   SOL:[
     {
@@ -5861,8 +5836,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~1 minute",
       contract:"—",
-      warning:" privé — adresse fictive SOL/Solana fournie pour cette simulation."
-    },
+      warning:" privé — adresse fictive SOL/Solana fournie pour cette simulation." },
     {
       id:"xlayer",
       name:"X Layer",
@@ -5873,8 +5847,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~1 minute",
       withdraw:"~2 minutes",
       contract:"***dea8a",
-      warning:" privé — adresse fictive SOL/X Layer fournie pour cette simulation."
-    }
+      warning:" privé — adresse fictive SOL/X Layer fournie pour cette simulation." }
   ],
   USDC:[
     {
@@ -5887,8 +5860,7 @@ const _DEPOSIT_NETWORKS={
       arrival:"~7 minutes",
       withdraw:"~20 minutes",
       contract:"***831ec7",
-      warning:" — adresse fictive reproduite pour l’interface. N’envoyez aucun USDC réel."
-    }
+      warning:" — adresse fictive reproduite pour l’interface. N’envoyez aucun USDC réel." }
   ]
 };
 let depositCurrency="USDT";
@@ -6159,8 +6131,7 @@ function toggleNexaSupport(force){
       nexaSupportGreetingShown=true;
       addNexaSupportMessage(
         "assistant",
-        "Bonjour 👋 Je suis l’assistant IA NexaTrade . Je peux vous aider avec Trade, My Assets, Funding records, Follow, Recharge, Transfer, Exchange et les fonctions du site."
-      );
+        "Bonjour 👋 Je suis l’assistant IA NexaTrade . Je peux vous aider avec Trade, My Assets, Funding records, Follow, Recharge, Transfer, Exchange et les fonctions du site." );
     }
     setTimeout(()=>document.getElementById("nexaSupportInput")?.focus(),80);
   }
@@ -6240,8 +6211,7 @@ async function sendNexaSupportMessage(){
     console.error("NEXA SUPPORT:",error);
     addNexaSupportMessage(
       "assistant",
-      "Le service IA n’est pas disponible pour le moment. Vérifie que la fonction Supabase « nexa-support » est déployée et que sa clé API serveur est configurée."
-    );
+      "Le service IA n’est pas disponible pour le moment. Vérifie que la fonction Supabase « nexa-support » est déployée et que sa clé API serveur est configurée." );
   }finally{
     nexaSupportBusy=false;
     typing?.classList.add("hidden");
@@ -6366,15 +6336,13 @@ async function refreshBtcChartFallback(){
       price:p,
       change24h:previous.change||0,
       volume:Number(ticker?.v?.[1] ?? previous.volume ?? 0),
-      source:"kraken-rest-fallback"
-    });
+      source:"kraken-rest-fallback" });
     setTradeChartConnectionStatus("LIVE · FALLBACK","live");
   }catch(error){
     console.warn("BTC CHART FALLBACK:",error);
     setTradeChartConnectionStatus(
       navigator.onLine ? "RECONNECTING…" : "OFFLINE",
-      navigator.onLine ? "reconnecting" : "offline"
-    );
+      navigator.onLine ? "reconnecting" : "offline" );
   }finally{
     btcChartFallbackBusy=false;
   }
@@ -6451,8 +6419,7 @@ function updateTradeFromMarket(){
 
   if(tradeEl){
     tradeEl.textContent=livePriceFormat(market.price);
-    // The large BTC price follows the currently forming candle:
-    // green when close >= open, red when close < open.
+    // The large BTC price follows the currently forming candle: // green when close >= open, red when close < open.
     const activeCandle=tradeCandles?.[tradeCandles.length-1];
     const candleUp=!activeCandle || Number(activeCandle.close)>=Number(activeCandle.open);
     tradeEl.style.color=candleUp?"#20bd8a":"#f33762";
@@ -6504,8 +6471,7 @@ function applyMarketUpdate(symbol,data={}){
     change:Number.isFinite(ch)?ch:0,
     volume:Number.isFinite(vol)?vol:0,
     updatedAt:Date.now(),
-    source:data.source||previous.source||"market"
-  };
+    source:data.source||previous.source||"market" };
 
   if(symbol==="BTCUSDT") btcPrice=p;
   if(symbol==="ETHUSDT") ethPrice=p;
@@ -6550,8 +6516,7 @@ async function refreshLiveMarket(){
       method:"GET",
       cache:"no-store",
       headers:{
-        "Accept":"application/json"
-      }
+        "Accept":"application/json" }
     });
 
     if(!response.ok){
@@ -6573,8 +6538,7 @@ async function refreshLiveMarket(){
         price:item.price,
         change24h:item.change24h,
         volume:item.quoteVolume ?? item.volume,
-        source:"smooth-api"
-      })){
+        source:"smooth-api" })){
         updated++;
       }
     }
@@ -6595,8 +6559,7 @@ async function refreshLiveMarket(){
     console.log(
       "MARKET REST SNAPSHOT:",
       updated+"/"+LIVE_SYMBOLS.length,
-      payload.source||""
-    );
+      payload.source||"" );
   }catch(error){
     console.error("MARKET REST ERROR:",error);
   }finally{
@@ -6617,8 +6580,7 @@ function scheduleMarketSocketReconnect(){
   clearMarketSocketReconnect();
 
   /*
-    Exponential reconnect:
-    1s, 2s, 4s, 8s ... max 30s.
+    Exponential reconnect: 1s, 2s, 4s, 8s ... max 30s.
   */
   const delay=Math.min(
     30000,
@@ -6670,8 +6632,7 @@ function handleCoinbaseTickerMessage(message){
         price:ticker.price,
         change24h:ticker.price_percent_chg_24_h,
         volume:ticker.volume_24_h,
-        source:"coinbase-ws"
-      });
+        source:"coinbase-ws" });
     }
   }
 }
@@ -6710,8 +6671,7 @@ function connectMarketWebSocket(){
     const subscription={
       type:"subscribe",
       product_ids:Object.keys(COINBASE_PRODUCTS),
-      channel:"ticker"
-    };
+      channel:"ticker" };
 
     marketSocket.send(JSON.stringify(subscription));
 
@@ -6745,14 +6705,12 @@ function connectMarketWebSocket(){
     console.warn(
       "MARKET WS: disconnected",
       event.code,
-      event.reason||""
-    );
+      event.reason||"" );
 
     marketSocket=null;
     setTradeChartConnectionStatus(
       navigator.onLine ? "RECONNECTING…" : "OFFLINE",
-      navigator.onLine ? "reconnecting" : "offline"
-    );
+      navigator.onLine ? "reconnecting" : "offline" );
 
     /*
       Immediately refresh through smooth-api so the UI does not
@@ -6943,8 +6901,7 @@ function openAuthentication(){
 function refreshPersonalVerification(){
   const saved=JSON.parse(localStorage.getItem(kycStorageKey())||"{}");
   const serverStatus=String(profile?.identity_status||"").toUpperCase();
-  const status=serverStatus==="VERIFIED"?"verified":
-    (["SUBMITTED","PENDING"].includes(serverStatus)?"submitted":(saved.status||"not verified"));
+  const status=serverStatus==="VERIFIED"?"verified": (["SUBMITTED","PENDING"].includes(serverStatus)?"submitted":(saved.status||"not verified"));
   const p=document.getElementById("personalVerifyStatus"), k=document.getElementById("kycStatusText");
   if(p){p.textContent=status;p.classList.toggle("verified",status==="verified")}
   if(k)k.textContent=status==="verified"?"Verified":status==="submitted"?"Submitted — awaiting administrator verification":status;
@@ -7005,8 +6962,7 @@ async function startKycCamera(){
     showKycCameraState("idle");
     const insecure=location.protocol!=="https:"&&location.hostname!=="localhost";
     setKycCameraStatus(insecure
-      ?"Camera access requires HTTPS. Open NexaTrade from its secure HTTPS address."
-      :"Camera permission was denied or no front camera is available.");
+      ?"Camera access requires HTTPS. Open NexaTrade from its secure HTTPS address." :"Camera permission was denied or no front camera is available.");
   }
 }
 async function captureKycSelfie(){
