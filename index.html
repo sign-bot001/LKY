@@ -810,6 +810,126 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
 .code-schedule{margin-top:5px;color:#9fb0c2;font-size:11px;line-height:1.45}
 @media(max-width:520px){.admin-schedule-grid,.admin-create-grid,.admin-request-grid{grid-template-columns:1fr}}
 
+
+/* ===== ADMIN GREEN THEME — aligned with NexaTrade UI ===== */
+#admin{
+  background:linear-gradient(180deg,#f6fff6 0%,#effcf0 100%);
+  color:#142018;
+  min-height:100vh;
+}
+#admin .section-title{
+  color:#14321b;
+  font-weight:900;
+}
+#admin .warning{
+  background:#e8fbe9;
+  border:1px solid #c9f0cc;
+  color:#2d6a37;
+}
+#admin .card{
+  background:#ffffff;
+  border:1px solid #dff1e1;
+  box-shadow:0 8px 26px rgba(44,150,61,.08);
+  color:#17221a;
+}
+#admin .muted,
+#admin .admin-subtitle,
+#admin .admin-idline,
+#admin .code-schedule,
+#admin .admin-referral-note{
+  color:#6c7b70!important;
+}
+#admin .stat{
+  background:#effbf0;
+  border:1px solid #d8f1da;
+}
+#admin .stat strong{
+  color:#28b43f;
+}
+#admin .input,
+#admin select.input{
+  background:#f7fbf7;
+  border:1px solid #d9eadb;
+  color:#17321b;
+}
+#admin .input:focus,
+#admin select.input:focus{
+  border-color:#52d663;
+  box-shadow:0 0 0 3px rgba(82,214,99,.12);
+}
+#admin .primary{
+  background:linear-gradient(135deg,#55df65,#2fc447);
+  color:#fff;
+  box-shadow:0 8px 18px rgba(47,196,71,.22);
+}
+#admin .secondary{
+  background:#eef9ef;
+  color:#238f35;
+  border:1px solid #d4edd7;
+}
+#admin .mini{
+  background:#45cf58;
+  color:#fff;
+  border:0;
+}
+#admin .mini.gray{
+  background:#eef7ef;
+  color:#257f34;
+  border:1px solid #d6ead8;
+}
+#admin .mini.redbtn{
+  background:#fff3f3;
+  color:#d44747;
+  border:1px solid #f0d1d1;
+}
+#admin .admin-user,
+#admin .admin-code,
+#admin .admin-request{
+  background:#f8fdf8;
+  border:1px solid #dceede;
+  color:#17221a;
+  box-shadow:none;
+}
+#admin .admin-request-grid div,
+#admin .admin-referral-note{
+  background:#eef9ef;
+  border:1px solid #ddf0df;
+}
+#admin .admin-request-grid span{
+  color:#718278;
+}
+#admin .status.on{
+  background:#dff8e3;
+  color:#199337;
+}
+#admin .status.off{
+  background:#fff0f0;
+  color:#d74848;
+}
+#admin .generated-code{
+  color:#26b642;
+}
+#admin .admin-code strong,
+#admin .admin-user-email,
+#admin .row-between strong{
+  color:#17321b;
+}
+#admin .search{
+  background:#f8fcf8;
+}
+#admin .stats-grid{
+  gap:12px;
+}
+#admin .stat{
+  border-radius:16px;
+}
+#admin .card,
+#admin .admin-user,
+#admin .admin-code,
+#admin .admin-request{
+  border-radius:18px;
+}
+
 </style>
 </head>
 <body>
@@ -1246,7 +1366,7 @@ html[dir="rtl"] .personal-back,html[dir="rtl"] .funding-back,html[dir="rtl"] .wa
   </section>
 
   <section id="admin" class="page">
-    <div class="section-title">Admin Dashboard</div>
+    <div class="section-title" style="color:#28b43f">Admin Dashboard</div>
     <div class="warning">Administration de la simulation uniquement · aucun argent réel.</div>
 
     <div class="card">
