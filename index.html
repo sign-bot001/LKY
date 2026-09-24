@@ -2090,7 +2090,7 @@ async function signup(){
   });
   if(error)return showMessage("signupMessage",error.message,"error");
   if(data.session) await enterApp(data.user);
-  else showMessage("signupMessage","Compte créé. Vérifie ton email si la confirmation est activée.","success");
+  else showMessage("signupMessage","Compte créé. Vérifie obligatoirement ton email avant de pouvoir utiliser ton compte.","success");
 }
 
 async function login(){
@@ -2711,7 +2711,7 @@ async function loadAdminAll(){
 }
 
 async function loadAdminUsers(){
-  const {data,error}=await sb.from("profiles").select("user_id,email,display_name,account_id,referral_code,balance,suspended,created_at").order("created_at",{ascending:false});
+  const {data,error}=await sb.from("profiles").select("user_id,email,display_name,account_id,referral_code,balance,suspended,identity_status,created_at").order("created_at",{ascending:false});
   if(error){console.error(error);return}
   adminUsers=data||[];renderAdminUsers();
 }
@@ -2740,6 +2740,11 @@ function renderAdminUsers(){
       <div class="inline" style="margin-top:8px">
         <button class="mini gray" onclick="setExactBalance('${u.user_id}')">Solde exact</button>
         <button class="mini ${u.suspended?"":"redbtn"}" onclick="toggleSuspend('${u.user_id}',${!u.suspended})">${u.suspended?"Débloquer":"Bloquer"}</button>
+      </div>
+      <div class="inline" style="margin-top:8px">
+        <span class="status ${String(u.identity_status||'UNVERIFIED').toUpperCase()==='VERIFIED'?"on":"off"}">IDENTITY ${esc(String(u.identity_status||'UNVERIFIED').toUpperCase())}</span>
+        <button class="mini" onclick="adminSetIdentity('${u.user_id}','VERIFIED')">Vérifier identité</button>
+        <button class="mini gray" onclick="adminSetIdentity('${u.user_id}','UNVERIFIED')">Réinitialiser</button>
       </div>
     </div>`).join("");
 }
@@ -2798,6 +2803,13 @@ async function adminCreateUser(){
   }catch(err){
     if(msg){msg.className="message error";msg.textContent=String(err?.message||err)}
   }
+}
+
+async function adminSetIdentity(userId,status){
+  if(!isCurrentUserAdmin)return;
+  const {error}=await sb.rpc("admin_set_identity_status",{p_user_id:userId,p_status:status});
+  if(error)return alert(error.message);
+  await loadAdminUsers();
 }
 
 async function loadAdminFundingRequests(){
@@ -3190,6 +3202,26 @@ function walletAvailableFor(currency){
   // Current NexaTrade DEMO has one Supabase demo balance denominated in USDT.
   return currency==="USDT" ? Number(profile?.balance||0) : 0;
 }
+
+function isEmailVerified(){
+  return !!(currentUser?.email_confirmed_at || currentUser?.confirmed_at);
+}
+function isIdentityVerified(){
+  return String(profile?.identity_status||"").toUpperCase()==="VERIFIED";
+}
+function routeFundingVerification(action){
+  localStorage.setItem("nexaPendingFundingAction",action||"");
+  if(!isEmailVerified()){
+    alert("Vérifie d’abord ton adresse email. Le dépôt et le retrait restent verrouillés tant que ton email n’est pas confirmé.");
+    return false;
+  }
+  if(!isIdentityVerified()){
+    alert("Vérifie ton identité avant d’effectuer un dépôt ou un retrait.");
+    openAuthentication();
+    return false;
+  }
+  return true;
+}
 function openWalletPage(id){
   ["withdrawPage","rechargePage","transferPage","exchangePage","depositDetailPage"].forEach(x=>document.getElementById(x)?.classList.add("hidden"));
   document.getElementById(id)?.classList.remove("hidden");
@@ -3200,9 +3232,11 @@ function closeWalletPage(id){
 function openAssetAction(type){
   const t=String(type||"").toLowerCase();
   if(t==="withdraw"){
+    if(!routeFundingVerification("withdraw"))return;
     refreshWithdrawUI();
     openWalletPage("withdrawPage");
   }else if(t==="recharge"){
+    if(!routeFundingVerification("recharge"))return;
     document.getElementById("rechargeDemoBox")?.classList.add("hidden");
     const s=document.getElementById("rechargeSearch"); if(s)s.value="";
     filterRechargeCurrencies();
@@ -3307,6 +3341,7 @@ function updateWithdrawFee(){
   if(el)el.textContent=amount>0?`(${money(fee)} ${withdrawCurrency})`:`(-- ${withdrawCurrency})`;
 }
 async function submitWithdrawDemo(){
+  if(!routeFundingVerification("withdraw"))return;
   const amount=Number(document.getElementById("withdrawQuantity")?.value||0);
   const address=(document.getElementById("withdrawAddress")?.value||"").trim();
   const pass=(document.getElementById("withdrawFundPassword")?.value||"").trim();
@@ -3504,6 +3539,7 @@ function continueToDepositWallet(){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 async function confirmDemoDepositSent(){
+  if(!routeFundingVerification("recharge"))return;
   const n=currentDepositNetwork();
   if(!n||pendingDepositAmount<=0)return;
 
