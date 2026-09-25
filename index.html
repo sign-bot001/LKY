@@ -2747,6 +2747,26 @@ input,select,textarea,button{max-width:100%}
   color:#42ae3d;
 }
 
+
+
+/* ===== TRADE MARKET DIRECTION % ===== */
+.trade-actions button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+.trade-market-pct{
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
+/* Desktop edition used display:flex!important on every nav button.
+   This stronger rule keeps Admin hidden for non-admin users. */
+#adminNav.hidden{
+  display:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -3050,8 +3070,8 @@ input,select,textarea,button{max-width:100%}
       </div>
       <div class="trade-available"><span>available&nbsp;&nbsp; <strong id="tradeAvailable">0.00</strong></span><span>USDT</span></div>
       <div class="trade-actions">
-        <button class="trade-call" onclick="placeTrade('CALL')">CALL</button>
-        <button class="trade-put" onclick="placeTrade('PUT')">PUT</button>
+        <button id="tradeCallButton" class="trade-call" onclick="placeTrade('CALL')"><span>CALL</span> <span id="tradeCallMarketPct" class="trade-market-pct">50.00%</span></button>
+        <button id="tradePutButton" class="trade-put" onclick="placeTrade('PUT')"><span>PUT</span> <span id="tradePutMarketPct" class="trade-market-pct">50.00%</span></button>
       </div>
       <div class="trade-direct-note"> · Le montant engagé correspond au pourcentage de capital choisi. Le P/L suit le mouvement réel affiché du BTC entre l’ouverture et la clôture de la position (exposition 1×).</div>
       <!-- Copy Trading  card removed from the visible Trade page.
@@ -3412,6 +3432,17 @@ input,select,textarea,button{max-width:100%}
       <div id="adminCreateUserMsg" class="message"></div>
     </div>
 
+    <div id="superAdminManager" class="card hidden">
+      <strong>Administrators</strong>
+      <div class="admin-subtitle">L’administrateur général peut donner ou retirer l’accès administrateur à un compte existant.</div>
+      <div class="inline" style="margin-top:10px">
+        <input id="newAdminEmail" class="input" type="email" placeholder="Email du compte">
+        <button class="mini" onclick="setAdminAccess(true)">Ajouter admin</button>
+      </div>
+      <div id="adminRoleMessage" class="message"></div>
+      <div id="adminRoleList" style="margin-top:12px"><div class="muted center">Chargement...</div></div>
+    </div>
+
     <div class="card">
       <strong>Default Balance</strong>
       <div class="muted" style="margin-top:5px">Solde fictif attribué aux nouveaux comptes.</div>
@@ -3421,6 +3452,9 @@ input,select,textarea,button{max-width:100%}
       </div>
       <div class="admin-referral-note">Parrainage : lorsqu’un administrateur ajoute pour la première fois du solde fictif à un nouvel utilisateur parrainé, le parrain reçoit automatiquement 100 USDT , une seule fois.</div>
     </div>
+
+    <div class="section-title">Verification Requests</div>
+    <div id="adminVerificationRequests" class="card"><div class="muted center">Chargement...</div></div>
 
     <div class="section-title">Funding Requests</div>
     <div id="adminFundingRequests" class="card"><div class="muted center">Chargement...</div></div>
@@ -4037,8 +4071,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,{
   }
 });
 
-let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false;
-let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[];
+let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false, isCurrentUserSuperAdmin=false;
+let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[], adminRoleRows=[];
 let btcPrice=112840.00, ethPrice=4410.00, settlingTrades=new Set();
 
 const SUPPORTED_ASSETS=["USDT","BTC","ETH","SOL"];
@@ -4472,11 +4506,30 @@ async function login(){
 
 async function logout(){
   await sb.auth.signOut();
-  currentUser=null;profile=null;trades=[];isCurrentUserAdmin=false;
+  currentUser=null;profile=null;trades=[];isCurrentUserAdmin=false;isCurrentUserSuperAdmin=false;
   app.classList.add("hidden");authScreen.classList.remove("hidden");
   document.body.classList.add("login-gate-active");
   showLogin();
   window.scrollTo({top:0,behavior:"instant"});
+}
+
+function resetAppToHome(){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("home")?.classList.add("active");
+
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  const homeButton=Array.from(document.querySelectorAll(".nav button")).find(
+    b=>(b.getAttribute("onclick")||"").includes("showPage('home'")
+  );
+  homeButton?.classList.add("active");
+
+  [
+    "personalOverlay","fundingRecordsPage","withdrawPage","withdrawSuccessPage",
+    "rechargePage","transferPage","exchangePage","depositDetailPage",
+    "notificationsPage","accountPage","securityPage","authenticationPage"
+  ].forEach(id=>document.getElementById(id)?.classList.add("hidden"));
+
+  window.scrollTo({top:0,left:0,behavior:"instant"});
 }
 
 async function enterApp(user){
@@ -4494,13 +4547,31 @@ async function enterApp(user){
   await checkAdmin();
   await settleExpiredTrades(false);
   await refreshEverything();
+  resetAppToHome();
+  updateTradeMarketPercentages(true);
   return true;
 }
 
 async function checkAdmin(){
   const {data,error}=await sb.rpc("is_admin");
   isCurrentUserAdmin=!error && data===true;
+  isCurrentUserSuperAdmin=false;
+
+  if(isCurrentUserAdmin){
+    try{
+      const {data:hasSuper,error:hasError}=await sb.rpc("nexa_has_super_admin");
+      if(!hasError && hasSuper===false){
+        await sb.rpc("nexa_claim_super_admin");
+      }
+
+      const {data:superData,error:superError}=await sb.rpc("nexa_is_super_admin");
+      if(!superError)isCurrentUserSuperAdmin=superData===true;
+    }catch(_){}
+  }
+
   adminNav.classList.toggle("hidden",!isCurrentUserAdmin);
+  document.getElementById("superAdminManager")
+    ?.classList.toggle("hidden",!isCurrentUserSuperAdmin);
 }
 
 async function loadAssetBalances(){
@@ -4780,6 +4851,90 @@ function updateTradeActionState(){
     btn.setAttribute("aria-disabled",ready?"false":"true");
   });
 }
+let tradeMarketCallPct=50;
+
+function clampTradeMarketPct(value,min=20,max=80){
+  const n=Number(value);
+  return Math.max(min,Math.min(max,Number.isFinite(n)?n:50));
+}
+
+/*
+  Direction score based only on the live BTC market already used by the app:
+  recent price momentum, candle direction, volume direction and 24h change.
+  CALL + PUT always equals 100%.
+*/
+function updateTradeMarketPercentages(force=false){
+  const callEl=document.getElementById("tradeCallMarketPct");
+  const putEl=document.getElementById("tradePutMarketPct");
+  if(!callEl||!putEl)return;
+
+  let candles=[];
+  try{
+    candles=typeof chartCandlesForTimeframe==="function"
+      ? chartCandlesForTimeframe()
+      : (tradeCandles||[]);
+  }catch(_){
+    candles=tradeCandles||[];
+  }
+
+  candles=(candles||[]).filter(c=>
+    Number.isFinite(Number(c?.open)) &&
+    Number.isFinite(Number(c?.close))
+  );
+
+  const market=LIVE_MARKET?.BTCUSDT||{};
+  const change24h=Number(market.change||0);
+  let signal=Number.isFinite(change24h)?Math.tanh(change24h/4)*0.20:0;
+
+  if(candles.length>=6){
+    const recent=candles.slice(-30);
+    const closes=recent.map(c=>Number(c.close));
+    const last=closes[closes.length-1];
+
+    const priceReturn=(lookback)=>{
+      const idx=Math.max(0,closes.length-1-lookback);
+      const base=Number(closes[idx]);
+      if(!Number.isFinite(base)||base<=0||!Number.isFinite(last))return 0;
+      return ((last/base)-1)*100;
+    };
+
+    const shortMomentum=priceReturn(Math.min(3,closes.length-1));
+    const mediumMomentum=priceReturn(Math.min(10,closes.length-1));
+
+    const dirSample=recent.slice(-12);
+    const upCount=dirSample.reduce((sum,c)=>sum+(Number(c.close)>=Number(c.open)?1:0),0);
+    const candleBias=dirSample.length
+      ? ((upCount/dirSample.length)-0.5)*2
+      : 0;
+
+    let signedVolume=0,totalVolume=0;
+    dirSample.forEach(c=>{
+      const v=Math.max(0,Number(c.volume||0));
+      totalVolume+=v;
+      signedVolume+=(Number(c.close)>=Number(c.open)?1:-1)*v;
+    });
+    const volumeBias=totalVolume>0?signedVolume/totalVolume:0;
+
+    signal=
+      Math.tanh(shortMomentum*18)*0.34 +
+      Math.tanh(mediumMomentum*9)*0.26 +
+      candleBias*0.20 +
+      volumeBias*0.10 +
+      Math.tanh(change24h/4)*0.10;
+  }
+
+  const rawCall=clampTradeMarketPct(50+signal*24);
+  tradeMarketCallPct=force
+    ? rawCall
+    : (tradeMarketCallPct*0.72 + rawCall*0.28);
+
+  const callPct=clampTradeMarketPct(tradeMarketCallPct);
+  const putPct=100-callPct;
+
+  callEl.textContent=callPct.toFixed(2)+"%";
+  putEl.textContent=putPct.toFixed(2)+"%";
+}
+
 let placingTrade=false;
 async function placeTrade(direction){
   if(placingTrade)return;
@@ -5004,6 +5159,7 @@ function ingestBtcTick(rawPrice,ts=Date.now(),cumulativeVolume=null,volumeSource
     const active=tradeCandles[tradeCandles.length-1];
     if(active)headerPrice.style.color=Number(active.close)>=Number(active.open)?"#20bd8a":"#f33762";
   }
+  updateTradeMarketPercentages();
 }
 
 async function bootstrapTradeCandles(){
@@ -5021,6 +5177,7 @@ async function bootstrapTradeCandles(){
     btcLiveVolumeSource=null;
     btcLastCumulativeVolume=null;
     if(status){status.textContent="CONNECTING · 1m";status.classList.remove("live")}
+    updateTradeMarketPercentages(true);
     drawTradeChart();
   }catch(e){
     console.warn("CANDLE BOOTSTRAP:",e);
@@ -5037,6 +5194,7 @@ function setChartTimeframe(seconds,el){
   tradeChartVisibleCount=60;
   clampTradeChartView();
   updateTradeChartZoomLabel();
+  updateTradeMarketPercentages(true);
   drawTradeChart();
 }
 function chartCandlesForTimeframe(){
@@ -5599,7 +5757,7 @@ async function settleTrade(id){
     const pnl=Number(data.profit||0);
     const prefix=pnl>0?"+":"";
     const label=pnl>0?"Gain ":(pnl<0?"Perte ":"Résultat ");
-    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT fictifs.`,pnl>=0?"success":"error");
+    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT.`,pnl>=0?"success":"error");
   }
 }
 
@@ -5667,8 +5825,78 @@ async function copyGeneratedCode(){
   try{await navigator.clipboard.writeText(code);alert("Code copié : "+code)}catch{alert("Code : "+code)}
 }
 
+async function loadAdminRoles(){
+  const manager=document.getElementById("superAdminManager");
+  const list=document.getElementById("adminRoleList");
+  if(!manager||!list)return;
+
+  manager.classList.toggle("hidden",!isCurrentUserSuperAdmin);
+  if(!isCurrentUserSuperAdmin)return;
+
+  const {data,error}=await sb.rpc("nexa_list_admins");
+  if(error){
+    list.innerHTML='<div class="muted center">La migration des rôles administrateur doit être installée dans Supabase.</div>';
+    return;
+  }
+
+  adminRoleRows=Array.isArray(data)?data:[];
+  if(!adminRoleRows.length){
+    list.innerHTML='<div class="muted center">Aucun administrateur enregistré.</div>';
+    return;
+  }
+
+  list.innerHTML=adminRoleRows.map(row=>`
+    <div class="admin-user">
+      <div class="row-between">
+        <div>
+          <div class="admin-user-email">${esc(row.display_name||row.email||"Admin")}</div>
+          <div class="admin-idline">${esc(row.email||"-")}</div>
+        </div>
+        <span class="status on">${esc(row.role||"ADMIN")}</span>
+      </div>
+      ${String(row.role||"").toUpperCase()!=="SUPER_ADMIN"?`
+        <button class="mini redbtn" style="margin-top:10px" onclick="setAdminAccess(false,'${esc(row.email||"")}')">Retirer admin</button>
+      `:""}
+    </div>
+  `).join("");
+}
+
+async function setAdminAccess(enabled,emailOverride=""){
+  if(!isCurrentUserSuperAdmin)return;
+
+  const input=document.getElementById("newAdminEmail");
+  const msg=document.getElementById("adminRoleMessage");
+  const email=String(emailOverride||(input?.value||"")).trim().toLowerCase();
+
+  if(msg){msg.className="message";msg.textContent=""}
+  if(!email){
+    if(msg){msg.className="message error";msg.textContent="Entre l’e-mail du compte."}
+    return;
+  }
+
+  const {data,error}=await sb.rpc("nexa_set_admin",{
+    p_email:email,
+    p_enabled:!!enabled
+  });
+
+  if(error){
+    if(msg){msg.className="message error";msg.textContent=error.message}
+    return;
+  }
+
+  if(input&&!emailOverride)input.value="";
+  if(msg){
+    msg.className="message success";
+    msg.textContent=enabled?"Accès administrateur ajouté.":"Accès administrateur retiré.";
+  }
+
+  await loadAdminRoles();
+}
+
 async function loadAdminAll(){
-  await Promise.all([loadAdminUsers(),loadAdminCodes(),loadAdminTrades(),loadAdminFundingRequests(),loadSettings()]);
+  const jobs=[loadAdminUsers(),loadAdminCodes(),loadAdminTrades(),loadAdminFundingRequests(),loadSettings()];
+  if(isCurrentUserSuperAdmin)jobs.push(loadAdminRoles());
+  await Promise.all(jobs);
   initAdminScheduleDefaults();
   updateAdminStats();
 }
@@ -5676,7 +5904,41 @@ async function loadAdminAll(){
 async function loadAdminUsers(){
   const {data,error}=await sb.from("profiles").select("user_id,email,display_name,account_id,referral_code,balance,suspended,identity_status,created_at").order("created_at",{ascending:false});
   if(error){console.error(error);return}
-  adminUsers=data||[];renderAdminUsers();
+  adminUsers=data||[];
+  renderAdminUsers();
+  renderAdminVerificationRequests();
+}
+
+function renderAdminVerificationRequests(){
+  const el=document.getElementById("adminVerificationRequests");
+  if(!el)return;
+
+  const requests=adminUsers.filter(u=>
+    ["SUBMITTED","PENDING"].includes(String(u.identity_status||"").toUpperCase())
+  );
+
+  if(!requests.length){
+    el.innerHTML='<div class="muted center">Aucune demande de vérification en attente.</div>';
+    return;
+  }
+
+  el.innerHTML=requests.map(u=>`
+    <div class="admin-request">
+      <div class="row-between">
+        <strong>${esc(u.display_name||u.email||"Compte")}</strong>
+        <span class="status off">${esc(String(u.identity_status||"SUBMITTED").toUpperCase())}</span>
+      </div>
+      <div class="admin-idline">ID ${esc(u.account_id||"-")} · ${esc(u.email||"-")}</div>
+      <div class="admin-request-grid">
+        <div><span>Automatic pre-check</span><strong>Passed</strong></div>
+        <div><span>Account created</span><strong>${formatDate(u.created_at)}</strong></div>
+      </div>
+      <div class="admin-request-actions">
+        <button class="mini" onclick="adminSetIdentity('${u.user_id}','VERIFIED')">Confirmer</button>
+        <button class="mini redbtn" onclick="adminSetIdentity('${u.user_id}','UNVERIFIED')">Rejeter</button>
+      </div>
+    </div>
+  `).join("");
 }
 
 function renderAdminUsers(){
@@ -8027,6 +8289,7 @@ async function restoreSessionOnBoot(){
   profile=null;
   trades=[];
   isCurrentUserAdmin=false;
+  isCurrentUserSuperAdmin=false;
   app.classList.add("hidden");
   authScreen.classList.remove("hidden");
   document.body.classList.add("login-gate-active");
