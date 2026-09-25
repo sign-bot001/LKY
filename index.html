@@ -4502,20 +4502,10 @@ async function checkAdmin(){
   const controls=document.getElementById("adminRoleControls");
 
   if(isCurrentUserAdmin){
-    // The Administrators section must be visible in the Admin panel.
     manager?.classList.remove("hidden");
 
-    try{
-      const {data:hasSuper,error:hasError}=await sb.rpc("nexa_has_super_admin");
-      if(!hasError && hasSuper===false){
-        await sb.rpc("nexa_claim_super_admin");
-      }
-
-      const {data:superData,error:superError}=await sb.rpc("nexa_is_super_admin");
-      if(!superError)isCurrentUserSuperAdmin=superData===true;
-    }catch(_){
-      isCurrentUserSuperAdmin=false;
-    }
+    const {data:superData,error:superError}=await sb.rpc("nexa_is_super_admin");
+    if(!superError)isCurrentUserSuperAdmin=superData===true;
   }else{
     manager?.classList.add("hidden");
   }
@@ -5815,17 +5805,29 @@ async function loadAdminRoles(){
   if(!isCurrentUserAdmin)return;
 
   if(!isCurrentUserSuperAdmin){
-    list.innerHTML='<div class="muted center">Gestion réservée à l’administrateur général. Si ce compte est l’administrateur principal, exécute le patch SQL administrateurs puis reconnecte-toi.</div>';
+    list.innerHTML='<div class="muted center">Gestion réservée à l’administrateur général.</div>';
     return;
   }
 
-  const {data,error}=await sb.rpc("nexa_list_admins");
+  const {data,error}=await sb.from("admins")
+    .select("user_id,created_at")
+    .order("created_at",{ascending:true});
+
   if(error){
-    list.innerHTML='<div class="muted center">Le backend de gestion des administrateurs n’est pas encore installé. Exécute le patch SQL administrateurs fourni.</div>';
+    list.innerHTML='<div class="muted center">Le patch SQL administrateurs doit être exécuté dans Supabase.</div>';
     return;
   }
 
-  adminRoleRows=Array.isArray(data)?data:[];
+  adminRoleRows=(data||[]).map((row,index)=>{
+    const profileRow=adminUsers.find(u=>String(u.user_id)===String(row.user_id))||{};
+    return {
+      ...row,
+      email:profileRow.email||"",
+      display_name:profileRow.display_name||"",
+      role:index===0?"SUPER_ADMIN":"ADMIN"
+    };
+  });
+
   if(!adminRoleRows.length){
     list.innerHTML='<div class="muted center">Aucun administrateur enregistré.</div>';
     return;
@@ -5836,11 +5838,11 @@ async function loadAdminRoles(){
       <div class="row-between">
         <div>
           <div class="admin-user-email">${esc(row.display_name||row.email||"Admin")}</div>
-          <div class="admin-idline">${esc(row.email||"-")}</div>
+          <div class="admin-idline">${esc(row.email||row.user_id||"-")}</div>
         </div>
-        <span class="status on">${esc(row.role||"ADMIN")}</span>
+        <span class="status on">${esc(row.role)}</span>
       </div>
-      ${String(row.role||"").toUpperCase()!=="SUPER_ADMIN"?`
+      ${row.role!=="SUPER_ADMIN"?`
         <button class="mini redbtn" style="margin-top:10px" onclick="setAdminAccess(false,'${esc(row.email||"")}')">Retirer admin</button>
       `:""}
     </div>
@@ -5860,10 +5862,26 @@ async function setAdminAccess(enabled,emailOverride=""){
     return;
   }
 
-  const {data,error}=await sb.rpc("nexa_set_admin",{
-    p_email:email,
-    p_enabled:!!enabled
-  });
+  const target=adminUsers.find(u=>String(u.email||"").trim().toLowerCase()===email);
+  if(!target){
+    if(msg){msg.className="message error";msg.textContent="Utilisateur introuvable. Le compte doit déjà exister."}
+    return;
+  }
+
+  let error=null;
+
+  if(enabled){
+    const result=await sb.from("admins").insert({user_id:target.user_id});
+    error=result.error;
+    if(error && String(error.code||"") === "23505") error=null;
+  }else{
+    if(String(target.user_id)===String(currentUser?.id)){
+      if(msg){msg.className="message error";msg.textContent="Tu ne peux pas retirer ton propre accès administrateur."}
+      return;
+    }
+    const result=await sb.from("admins").delete().eq("user_id",target.user_id);
+    error=result.error;
+  }
 
   if(error){
     if(msg){msg.className="message error";msg.textContent=error.message}
