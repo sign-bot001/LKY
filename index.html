@@ -3376,7 +3376,7 @@ input,select,textarea,button{max-width:100%}
     <div id="superAdminManager" class="card hidden">
       <strong>Administrators</strong>
       <div class="admin-subtitle">L’administrateur général peut donner ou retirer l’accès administrateur à un compte existant.</div>
-      <div class="inline" style="margin-top:10px">
+      <div id="adminRoleControls" class="inline" style="margin-top:10px">
         <input id="newAdminEmail" class="input" type="email" placeholder="Email du compte">
         <button class="mini" onclick="setAdminAccess(true)">Ajouter admin</button>
       </div>
@@ -4498,7 +4498,13 @@ async function checkAdmin(){
   isCurrentUserAdmin=!error && data===true;
   isCurrentUserSuperAdmin=false;
 
+  const manager=document.getElementById("superAdminManager");
+  const controls=document.getElementById("adminRoleControls");
+
   if(isCurrentUserAdmin){
+    // The Administrators section must be visible in the Admin panel.
+    manager?.classList.remove("hidden");
+
     try{
       const {data:hasSuper,error:hasError}=await sb.rpc("nexa_has_super_admin");
       if(!hasError && hasSuper===false){
@@ -4507,12 +4513,15 @@ async function checkAdmin(){
 
       const {data:superData,error:superError}=await sb.rpc("nexa_is_super_admin");
       if(!superError)isCurrentUserSuperAdmin=superData===true;
-    }catch(_){}
+    }catch(_){
+      isCurrentUserSuperAdmin=false;
+    }
+  }else{
+    manager?.classList.add("hidden");
   }
 
   adminNav.classList.toggle("hidden",!isCurrentUserAdmin);
-  document.getElementById("superAdminManager")
-    ?.classList.toggle("hidden",!isCurrentUserSuperAdmin);
+  controls?.classList.toggle("hidden",!isCurrentUserSuperAdmin);
 }
 
 async function loadAssetBalances(){
@@ -5742,22 +5751,51 @@ function initAdminScheduleDefaults(){
 async function generateCode(){
   if(!isCurrentUserAdmin)return;
   initAdminScheduleDefaults();
+
   const y=(document.getElementById("adminYield")?.value||"").trim();
   const scheduledRaw=document.getElementById("adminScheduledFor")?.value;
   if(!scheduledRaw)return alert("Choisis l’heure précise de la position.");
+
   const scheduled=new Date(scheduledRaw);
   if(!Number.isFinite(scheduled.getTime()))return alert("Heure invalide.");
-  const {data,error}=await sb.rpc("generate_demo_code",{
+
+  const baseParams={
     p_direction:document.getElementById("adminDirection")?.value||"CALL",
     p_yield_pct:y===""?null:Number(y),
-    p_scheduled_for:scheduled.toISOString(),
+    p_scheduled_for:scheduled.toISOString()
+  };
+
+  // Current backend: 60-second code window.
+  let result=await sb.rpc("generate_demo_code",{
+    ...baseParams,
     p_valid_seconds:60
   });
-  if(error)return alert(error.message);
-  const r=Array.isArray(data)?data[0]:data;
+
+  // Compatibility with the preceding backend migration.
+  if(result.error && /could not find the function|schema cache/i.test(String(result.error.message||""))){
+    result=await sb.rpc("generate_demo_code",{
+      ...baseParams,
+      p_valid_minutes:1
+    });
+  }
+
+  if(result.error){
+    const message=String(result.error.message||result.error);
+    if(/could not find the function|schema cache/i.test(message)){
+      return alert("La fonction de génération de code n’est pas installée dans Supabase avec l’une des signatures prises en charge. Vérifie la migration du générateur de codes, puis recharge la page.");
+    }
+    return alert(message);
+  }
+
+  const r=Array.isArray(result.data)?result.data[0]:result.data;
+  if(!r?.generated_code)return alert("Supabase n’a retourné aucun code.");
+
+  const scheduledFor=r.generated_scheduled_for||scheduled.toISOString();
+  const validFrom=r.generated_valid_from||new Date(new Date(scheduledFor).getTime()-60000).toISOString();
+
   generatedBox.classList.remove("hidden");
   generatedCode.textContent=r.generated_code;
-  generatedDetails.textContent=`${r.generated_direction} · +${Number(r.generated_yield).toFixed(2)}%  · code valide ${formatDate(r.generated_valid_from)} → ${formatDate(r.generated_scheduled_for)} · trade ${formatDate(r.generated_scheduled_for)} → ${formatDate(new Date(new Date(r.generated_scheduled_for).getTime()+60000))} · usage unique`;
+  generatedDetails.textContent=`${r.generated_direction} · +${Number(r.generated_yield).toFixed(2)}%  · code valide ${formatDate(validFrom)} → ${formatDate(scheduledFor)} · trade ${formatDate(scheduledFor)} → ${formatDate(new Date(new Date(scheduledFor).getTime()+60000))} · usage unique`;
   await loadAdminAll();
 }
 
@@ -5768,15 +5806,22 @@ async function copyGeneratedCode(){
 
 async function loadAdminRoles(){
   const manager=document.getElementById("superAdminManager");
+  const controls=document.getElementById("adminRoleControls");
   const list=document.getElementById("adminRoleList");
   if(!manager||!list)return;
 
-  manager.classList.toggle("hidden",!isCurrentUserSuperAdmin);
-  if(!isCurrentUserSuperAdmin)return;
+  manager.classList.toggle("hidden",!isCurrentUserAdmin);
+  controls?.classList.toggle("hidden",!isCurrentUserSuperAdmin);
+  if(!isCurrentUserAdmin)return;
+
+  if(!isCurrentUserSuperAdmin){
+    list.innerHTML='<div class="muted center">Gestion réservée à l’administrateur général. Si ce compte est l’administrateur principal, exécute le patch SQL administrateurs puis reconnecte-toi.</div>';
+    return;
+  }
 
   const {data,error}=await sb.rpc("nexa_list_admins");
   if(error){
-    list.innerHTML='<div class="muted center">La migration des rôles administrateur doit être installée dans Supabase.</div>';
+    list.innerHTML='<div class="muted center">Le backend de gestion des administrateurs n’est pas encore installé. Exécute le patch SQL administrateurs fourni.</div>';
     return;
   }
 
@@ -5836,7 +5881,7 @@ async function setAdminAccess(enabled,emailOverride=""){
 
 async function loadAdminAll(){
   const jobs=[loadAdminUsers(),loadAdminCodes(),loadAdminTrades(),loadAdminFundingRequests(),loadSettings()];
-  if(isCurrentUserSuperAdmin)jobs.push(loadAdminRoles());
+  if(isCurrentUserAdmin)jobs.push(loadAdminRoles());
   await Promise.all(jobs);
   initAdminScheduleDefaults();
   updateAdminStats();
