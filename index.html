@@ -5611,66 +5611,78 @@ function updateProfessionalPortfolio(){
   paintPnl(document.getElementById("statAveragePnl"),st.avg);
   const dd=document.getElementById("statMaxDrawdown");if(dd)dd.textContent=st.maxDd.toFixed(2)+"%";
 
-  // Live P/L for currently rendered order cards.
-  st.pending.forEach(t=>{
-    const pnl=liveMarketPnlForTrade(t);
-    const move=Number(t.open_price)>0
-      ? ((Number(btcPrice||0)-Number(t.open_price))/Number(t.open_price))*100
-      : 0;
-    paintPnl(document.getElementById("live-pnl-"+t.id),pnl," USDT");
-    const m=document.getElementById("live-move-"+t.id);
-    if(m)m.textContent=(move>0?"+":"")+move.toFixed(3)+"%";
-  });
-
   setTradeRiskPercent(tradeRiskPercent);
 }
 
+function tradeClockLabel(value){
+  const d=new Date(value);
+  if(!Number.isFinite(d.getTime()))return "--:--";
+  return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+
 function activePositionHTML(t){
-  return `<div class="card position" data-trade-id="${t.id}">
-    <div class="position-header">
-      <div><div class="position-title">${esc(t.symbol)}</div><div class="muted">${t.code==="DIRECT"?"Direct ":esc(t.code||"Direct ")}</div></div>
-      <div class="direction ${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</div>
+  const startsAt=new Date(t.opened_at);
+  const settlesAt=new Date(t.settle_at);
+  const duration=Math.max(1,Math.round((settlesAt-startsAt)/1000));
+  const expectedYield=Number(t.yield_pct||0);
+
+  return `<div class="trade-history-card pending-order-card" data-trade-id="${t.id}">
+    <div class="trade-history-title">
+      <span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span>
+      <span>${esc(t.symbol||"BTCUSDT")}</span>
+      <span class="cycle">${duration}s</span>
     </div>
-    <div class="countdown" id="countdown-${t.id}">${Date.now()<new Date(t.opened_at).getTime()?"Starts in "+Math.max(0,Math.ceil((new Date(t.opened_at)-Date.now())/1000))+"S":Math.max(0,Math.ceil((new Date(t.settle_at)-Date.now())/1000))+"S"}</div>
-    <div class="progress"><div id="progress-${t.id}" class="progress-inner"></div></div>
-    <div class="trade-grid">
-      <div class="trade-detail"><span class="muted">Product Cycle</span><strong>${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}S</strong></div>
-      <div class="trade-detail"><span class="muted">Capital Used</span><strong>${money(t.capital_pct)}%</strong></div>
-      <div class="trade-detail"><span class="muted">Order Amount</span><strong>${money(t.amount)} USDT</strong></div>
-      <div class="trade-detail"><span class="muted">Live P/L</span><strong id="live-pnl-${t.id}">0.00 USDT</strong></div>
-      <div class="trade-detail"><span class="muted">Market move</span><strong id="live-move-${t.id}">0.000%</strong></div>
-      <div class="trade-detail"><span class="muted">Opening Price</span><strong>${price(t.open_price)}</strong></div>
-      <div class="trade-detail"><span class="muted">${Date.now()<new Date(t.opened_at).getTime()?"Starts at":"Order Time"}</span><strong>${formatDate(t.opened_at)}</strong></div>
-    </div>
+    <div class="trade-history-line"><span>time period</span><strong>${tradeClockLabel(startsAt)} ~ ${tradeClockLabel(settlesAt)}</strong></div>
+    <div class="trade-history-line"><span>rate of return</span><strong class="profit-pos">${expectedYield>0?"+":""}${expectedYield.toFixed(2)}%</strong></div>
+    <div class="trade-history-line"><span>order quantity</span><strong>${money(t.amount)}</strong></div>
+    <div class="trade-history-line"><span>opening price</span><strong>--</strong></div>
+    <div class="trade-history-line"><span>settlement price</span><strong>--</strong></div>
+    <div class="trade-history-line"><span>start time</span><strong>${formatDate(t.opened_at)}</strong></div>
   </div>`;
 }
 
-function renderPositions(){
-  const pending=trades.filter(t=>t.status==="PENDING");
-  activePositions.innerHTML=pending.length?pending.map(activePositionHTML).join(""):`<div class="card center muted">Aucune position active.</div>`;
+function pendingOrdersWaitingToStart(){
+  const now=Date.now();
+  return trades.filter(t=>{
+    if(t.status!=="PENDING")return false;
+    const startsAt=new Date(t.opened_at).getTime();
+    return Number.isFinite(startsAt) && now<startsAt;
+  });
 }
 
+function renderPositions(){
+  const waiting=pendingOrdersWaitingToStart();
+  activePositions.innerHTML=waiting.length
+    ?waiting.map(activePositionHTML).join("")
+    :`<div class="trade-empty"><div class="trade-empty-icon">▤</div>No data</div>`;
+}
+
+let lastPendingOrderPhase="";
 async function updateCountdowns(){
-  for(const t of trades.filter(x=>x.status==="PENDING")){
-    const now=Date.now();
-    const startsAt=new Date(t.opened_at).getTime();
+  const pending=trades.filter(x=>x.status==="PENDING");
+  const now=Date.now();
+
+  // Delivery Order contains only orders that have been placed
+  // but whose market period has not started yet.
+  const phase=pending
+    .filter(t=>now<new Date(t.opened_at).getTime())
+    .map(t=>String(t.id))
+    .sort()
+    .join(",");
+
+  if(phase!==lastPendingOrderPhase){
+    lastPendingOrderPhase=phase;
+    renderPositions();
+  }
+
+  // Once the position starts it disappears from Delivery Order.
+  // Settlement still runs in the background and the completed
+  // position is rendered later by renderHistory().
+  for(const t of pending){
     const settlesAt=new Date(t.settle_at).getTime();
-    const c=document.getElementById("countdown-"+t.id), p=document.getElementById("progress-"+t.id);
+    if(!Number.isFinite(settlesAt))continue;
 
-    if(now<startsAt){
-      const untilStart=Math.max(0,Math.ceil((startsAt-now)/1000));
-      if(c)c.textContent="Starts in "+untilStart+"S";
-      if(p)p.style.width="0%";
-      continue;
-    }
-
-    const remaining=Math.max(0,Math.ceil((settlesAt-now)/1000));
-    if(c)c.textContent=remaining+"S";
-    if(p){
-      const duration=Math.max(1,Math.round((settlesAt-startsAt)/1000));
-      p.style.width=Math.max(0,Math.min(100,remaining/duration*100))+"%";
-    }
-    if(remaining<=0&&!settlingTrades.has(t.id)){
+    if(now>=settlesAt && !settlingTrades.has(t.id)){
       settlingTrades.add(t.id);
       await settleTrade(t.id);
     }
