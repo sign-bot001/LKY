@@ -2687,66 +2687,10 @@ input,select,textarea,button{max-width:100%}
 
 
 
-/* ===== FUNDING ACCESS — LOCKED UNTIL ACCOUNT AUTHENTICATION ===== */
+/* ===== FUNDING ACTIONS ===== */
 .assets-action{
   position:relative;
 }
-
-.assets-action.funding-locked{
-  opacity:.48!important;
-  filter:grayscale(.15);
-}
-
-.assets-action.funding-locked .assets-action-icon{
-  background:#dfe6dc!important;
-  color:#687168!important;
-  border-color:#aeb8ad!important;
-  position:relative;
-}
-
-.assets-action.funding-locked .assets-action-icon::after{
-  content:"🔒";
-  position:absolute;
-  right:-5px;
-  bottom:-5px;
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:#303236;
-  color:#fff;
-  font-size:12px;
-  border:2px solid #fff;
-  box-shadow:0 3px 10px rgba(0,0,0,.16);
-}
-
-.assets-action.funding-unlocked{
-  opacity:1!important;
-  filter:none!important;
-}
-
-.assets-action.funding-unlocked .assets-action-icon{
-  transition:transform .16s ease, background .2s ease, border-color .2s ease;
-}
-
-.assets-action[aria-disabled="true"]{
-  cursor:pointer;
-}
-
-.assets-action-access-note{
-  grid-column:1/-1;
-  margin:4px 4px 0;
-  text-align:center;
-  font-size:11px;
-  line-height:1.35;
-  color:#89928b;
-}
-
-.assets-action-access-note.verified{
-  color:#42ae3d;
-}
-
 
 
 /* ===== TRADE MARKET DIRECTION % ===== */
@@ -3300,11 +3244,11 @@ input,select,textarea,button{max-width:100%}
     </div>
 
     <div class="assets-actions-card">
-      <button id="assetsWithdrawBtn" class="assets-action funding-locked" aria-disabled="true" onclick="openAssetAction('withdraw')">
+      <button id="assetsWithdrawBtn" class="assets-action" onclick="openAssetAction('withdraw')">
         <span class="assets-action-icon">⇧</span>
         <span class="assets-action-label">withdraw</span>
       </button>
-      <button id="assetsRechargeBtn" class="assets-action funding-locked" aria-disabled="true" onclick="openAssetAction('recharge')">
+      <button id="assetsRechargeBtn" class="assets-action" onclick="openAssetAction('recharge')">
         <span class="assets-action-icon">▤</span>
         <span class="assets-action-label">recharge</span>
       </button>
@@ -3316,9 +3260,6 @@ input,select,textarea,button{max-width:100%}
         <span class="assets-action-icon">ϟ</span>
         <span class="assets-action-label">exchange</span>
       </button>
-      <div id="fundingAccessNote" class="assets-action-access-note">
-        Deposit and withdrawal unlock after account authentication.
-      </div>
     </div>
 
     <div class="assets-account-title">my account</div>
@@ -6473,57 +6414,22 @@ function fundingAccessGranted(){
   return isEmailVerified() && isIdentityVerified();
 }
 function syncFundingAccessUI(){
-  const unlocked=fundingAccessGranted();
   const buttons=[
     document.getElementById("assetsWithdrawBtn"),
     document.getElementById("assetsRechargeBtn")
   ].filter(Boolean);
 
   buttons.forEach(btn=>{
-    btn.classList.toggle("funding-locked",!unlocked);
-    btn.classList.toggle("funding-unlocked",unlocked);
-    btn.setAttribute("aria-disabled",unlocked?"false":"true");
-    btn.title=unlocked
-      ?"Available"
-      :"Account authentication required";
+    btn.removeAttribute("aria-disabled");
+    btn.removeAttribute("title");
   });
-
-  const note=document.getElementById("fundingAccessNote");
-  if(note){
-    note.classList.toggle("verified",unlocked);
-    if(unlocked){
-      note.textContent="";
-    }else if(!isEmailVerified()){
-      note.textContent="Confirm your email to begin account authentication.";
-    }else{
-      const identity=String(profile?.identity_status||"UNVERIFIED").toUpperCase();
-      note.textContent=(identity==="SUBMITTED"||identity==="PENDING")
-        ?"Identity verification pending · Deposit and withdrawal remain locked."
-        :"Complete identity authentication to unlock deposit and withdrawal.";
-    }
-  }
 }
 function routeFundingVerification(action){
   localStorage.setItem("nexaPendingFundingAction",action||"");
-  if(!isEmailVerified()){
-    alert("Adresse e-mail non vérifiée. Confirme ton adresse e-mail avant d’utiliser les fonctions de dépôt ou de retrait.");
+
+  if(!fundingAccessGranted()){
     syncFundingAccessUI();
-    return false;
-  }
-
-  const identity=String(profile?.identity_status||"").toUpperCase();
-
-  if(identity==="SUBMITTED"||identity==="PENDING"){
-    alert("Ta vérification d’identité est en attente de validation. Le dépôt et le retrait seront débloqués automatiquement après validation.");
     openAuthentication();
-    syncFundingAccessUI();
-    return false;
-  }
-
-  if(identity!=="VERIFIED"){
-    alert("Authentification du compte requise. Complète la vérification d’identité pour débloquer le dépôt et le retrait.");
-    openAuthentication();
-    syncFundingAccessUI();
     return false;
   }
 
