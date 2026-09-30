@@ -148,6 +148,10 @@ label{display:block;margin-top:15px;margin-bottom:6px;color:#97a8bb;font-size:13
 }
 .lang-menu button{width:100%;border:0;background:transparent;color:#fff;padding:13px;border-radius:12px;text-align:left;font-size:16px}
 .lang-menu button:hover{background:#44474b}
+.lang-menu button.selected{background:#454b47;color:#9cff87;font-weight:800}
+@media(max-width:430px){
+  .lang-menu{top:max(88px,calc(env(safe-area-inset-top) + 66px));width:calc(100% - 36px)}
+}
 .app:has(#home.active) .nav{
   max-width:560px;background:#2d2f32;border:0;border-radius:28px 28px 0 0;
   padding:15px 8px calc(16px + env(safe-area-inset-bottom));
@@ -3078,66 +3082,66 @@ input,select,textarea,button{max-width:100%}
 </head>
 <body>
 
-<div id="authScreen" class="auth-screen reference-login">
+<div id="authScreen" class="auth-screen reference-login" data-no-i18n>
   <div class="reference-login-shell">
     <div class="reference-login-head">
       <button class="reference-back" type="button" onclick="showLogin()" aria-label="Retour">←</button>
-      <h1>log in</h1>
+      <h1 id="authTitle" data-auth-i18n="loginTitle">log in</h1>
       <button class="reference-globe" type="button" onclick="toggleLanguageMenu()" aria-label="Language">🌐</button>
     </div>
 
     <div id="loginForm" class="reference-login-form">
       <div class="login-mode-switch">
-        <button id="loginMailTab" class="active" type="button" onclick="setLoginMode('mail')">mail</button>
-        <button id="loginPhoneTab" type="button" onclick="setLoginMode('phone')">phone</button>
+        <button id="loginMailTab" class="active" type="button" onclick="setLoginMode('mail')" data-auth-i18n="mailTab">mail</button>
+        <button id="loginPhoneTab" type="button" onclick="setLoginMode('phone')" data-auth-i18n="phoneTab">phone</button>
       </div>
 
       <div id="loginMailFields">
-        <label>your mailbox</label>
-        <input id="loginEmail" class="reference-input" type="email" autocomplete="email" placeholder="mail">
+        <label data-auth-i18n="mailLabel">your mailbox</label>
+        <input id="loginEmail" class="reference-input" type="email" autocomplete="email" placeholder="mail" data-auth-placeholder="mailPlaceholder">
       </div>
 
       <div id="loginPhoneFields" class="hidden">
-        <label>your phone number</label>
+        <label data-auth-i18n="phoneLabel">your phone number</label>
         <div class="phone-login-row">
           <button class="country-picker-btn" type="button" onclick="toggleCountryPicker()">
             <span id="loginCountryFlag">🇨🇦</span>
             <strong id="loginCountryDial">+1</strong>
             <span class="country-caret">⌄</span>
           </button>
-          <input id="loginPhone" class="reference-input phone-number-input" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="phone number">
+          <input id="loginPhone" class="reference-input phone-number-input" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="phone number" data-auth-placeholder="phonePlaceholder">
         </div>
         <div id="countryPicker" class="country-picker hidden"></div>
       </div>
 
-      <label>your password</label>
+      <label data-auth-i18n="passwordLabel">your password</label>
       <div class="password-login-wrap">
-        <input id="loginPassword" class="reference-input" type="password" autocomplete="current-password" placeholder="password">
+        <input id="loginPassword" class="reference-input" type="password" autocomplete="current-password" placeholder="password" data-auth-placeholder="passwordPlaceholder">
         <button type="button" class="password-eye" onclick="toggleLoginPassword()">◉</button>
       </div>
 
-      <label class="remember-row"><input id="rememberLogin" type="checkbox"> <span>remember my password</span></label>
+      <label class="remember-row"><input id="rememberLogin" type="checkbox"> <span data-auth-i18n="remember">remember my password</span></label>
 
-      <button id="loginSubmitButton" class="reference-submit" type="button" onclick="login()">Submit</button>
+      <button id="loginSubmitButton" class="reference-submit" type="button" onclick="login()" data-auth-i18n="submit">Submit</button>
       <div id="loginMessage" class="message login-feedback" role="alert" aria-live="assertive"></div>
 
       <div class="reference-login-links">
-        <button type="button" onclick="showSignup()">sign up now</button>
-        <button type="button" onclick="forgotPassword()">forget password</button>
+        <button type="button" onclick="showSignup()" data-auth-i18n="signupNow">sign up now</button>
+        <button type="button" onclick="forgotPassword()" data-auth-i18n="forgotPassword">forget password</button>
       </div>
-      <button class="download-app-login" type="button" onclick="installNexaTrade()">▦&nbsp; download app</button>
+      <button class="download-app-login" type="button" onclick="installNexaTrade()">▦&nbsp; <span data-auth-i18n="downloadApp">download app</span></button>
     </div>
 
     <div id="signupForm" class="hidden">
-      <h2 style="margin-top:24px">Créer un compte</h2>
-      <label>Nom du compte</label><input id="signupName" class="input" type="text" placeholder="Nom affiché">
-      <label>Email</label><input id="signupEmail" class="input" type="email">
-      <label>Code d’invitation (optionnel)</label><input id="signupInviteCode" class="input" type="text" maxlength="20" placeholder="Code d’invitation">
-      <label>Mot de passe</label><input id="signupPassword" class="input" type="password">
-      <label>Confirmer</label><input id="signupPassword2" class="input" type="password">
-      <button class="primary" onclick="signup()">Créer mon compte</button>
+      <h2 style="margin-top:24px" data-auth-i18n="createAccount">Créer un compte</h2>
+      <label data-auth-i18n="accountName">Nom du compte</label><input id="signupName" class="input" type="text" placeholder="Nom affiché" data-auth-placeholder="displayNamePlaceholder">
+      <label data-auth-i18n="emailLabel">Email</label><input id="signupEmail" class="input" type="email">
+      <label data-auth-i18n="inviteOptional">Code d’invitation (optionnel)</label><input id="signupInviteCode" class="input" type="text" maxlength="20" placeholder="Code d’invitation" data-auth-placeholder="invitePlaceholder">
+      <label data-auth-i18n="signupPassword">Mot de passe</label><input id="signupPassword" class="input" type="password">
+      <label data-auth-i18n="confirmPassword">Confirmer</label><input id="signupPassword2" class="input" type="password">
+      <button class="primary" onclick="signup()" data-auth-i18n="createMyAccount">Créer mon compte</button>
       <div id="signupMessage" class="message"></div>
-      <div class="auth-switch">Déjà inscrit ? <span onclick="showLogin()">Connexion</span></div>
+      <div class="auth-switch"><span data-auth-i18n="alreadyRegistered">Déjà inscrit ?</span> <span onclick="showLogin()" data-auth-i18n="loginLink">Connexion</span></div>
     </div>
   </div>
 </div>
@@ -4251,7 +4255,6 @@ The handling fee is 10 USDT within 100 USDT, and 10% will be charged for more th
           <div class="kyc-camera-hint">Keep your face centered, remove sunglasses, and use good lighting.</div>
         </div>
       </div>
-      <p class="personal-note">This self-built identity check is not regulatory KYC. The live camera stream stays in your browser; only the captured frame is used locally by this page.</p>
       <button class="personal-primary" onclick="submitIdentity()">submit verification</button>
       <div id="kycMsg" class="personal-msg"></div>
     </div>
@@ -4451,6 +4454,49 @@ function updateAdminTimezoneInfo(){
 }
 function showMessage(id,text,type){const e=document.getElementById(id);e.className="message "+type;e.textContent=text}
 function clearMessage(id){const e=document.getElementById(id);e.className="message";e.textContent=""}
+
+function friendlyErrorMessage(error,fallback="Une erreur est survenue. Réessaie."){
+  const raw=String(error?.message||error||"").trim();
+  if(!raw)return fallback;
+
+  const clean=raw
+    .replace(/\bDEMO\b/gi,"")
+    .replace(/\s+/g," ")
+    .trim();
+
+  const rules=[
+    [/AUTHENTICATION REQUIRED|AUTH_REQUIRED|NOT AUTHENTICATED|JWT.*EXPIRED|INVALID JWT/i,
+      "Ta session a expiré. Reconnecte-toi puis réessaie."],
+    [/PROFIL INTROUVABLE|PROFILE.*NOT FOUND/i,
+      "Profil introuvable. Recharge la page puis reconnecte-toi."],
+    [/COMPTE.*SUSPENDU|ACCOUNT.*SUSPEND/i,
+      "Ce compte est suspendu. Contacte le support."],
+    [/CODE INVALIDE|INVALID CODE|CODE.*DÉSACTIVÉ|CODE.*DISABLED|CODE.*EXPIR/i,
+      "Ce code est invalide, désactivé ou expiré."],
+    [/DÉJÀ UTILISÉ CE CODE|ALREADY USED.*CODE/i,
+      "Tu as déjà utilisé ce code."],
+    [/SOLDE.*INSUFFISANT|INSUFFICIENT.*BALANCE|INSUFFICIENT.*FUNDS/i,
+      "Solde insuffisant pour cette opération."],
+    [/LIVE_MARKET_PRICE_REQUIRED/i,
+      "Le prix BTC est momentanément indisponible. Le règlement reprendra automatiquement dès le prochain prix disponible."],
+    [/ROW LEVEL SECURITY|RLS|PERMISSION DENIED/i,
+      "Cette opération n’est pas autorisée pour ce compte."],
+    [/ADMIN ACCESS REQUIRED|SUPER_ADMIN_REQUIRED/i,
+      "Tu n’as pas l’autorisation d’effectuer cette opération."],
+    [/DUPLICATE KEY|23505/i,
+      "Cette opération existe déjà."],
+    [/FAILED TO FETCH|NETWORK ERROR|NETWORK REQUEST FAILED/i,
+      "Connexion au serveur impossible. Vérifie ta connexion puis réessaie."],
+    [/SCHEMA CACHE|COULD NOT FIND THE FUNCTION/i,
+      "Une fonction du serveur n’est pas encore disponible. Recharge la page après la mise à jour Supabase."]
+  ];
+
+  for(const [pattern,message] of rules){
+    if(pattern.test(clean))return message;
+  }
+  return clean||fallback;
+}
+
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
 let assetBalanceVisible=true;
@@ -4554,7 +4600,7 @@ function updateClock(){
 }
 setInterval(updateClock,1000); updateClock();
 
-function showSignup(){loginForm.classList.add("hidden");signupForm.classList.remove("hidden");prefillInviteFromUrl()}
+function showSignup(){loginForm.classList.add("hidden");signupForm.classList.remove("hidden");prefillInviteFromUrl();applyAuthLanguage()}
 
 function prefillInviteFromUrl(){
   const code=(new URLSearchParams(location.search).get("code")||"").trim();
@@ -4563,7 +4609,7 @@ function prefillInviteFromUrl(){
 }
 setTimeout(prefillInviteFromUrl,0);
 
-function showLogin(){signupForm.classList.add("hidden");loginForm.classList.remove("hidden")}
+function showLogin(){signupForm.classList.add("hidden");loginForm.classList.remove("hidden");applyAuthLanguage()}
 
 
 function nexaEmailIsVerified(user){
@@ -4604,7 +4650,7 @@ async function blockUnverifiedEmailAccess(user, targetMessageId="loginMessage"){
 
   showMessage(
     targetMessageId,
-    "Ton compte a été créé, mais ton adresse e-mail doit être confirmée avant tout accès. Ouvre l’e-mail envoyé par NexaTrade et clique sur le lien de confirmation.",
+    authT("emailNotConfirmed"),
     "success"
   );
 
@@ -4616,10 +4662,10 @@ async function signup(){
   const displayName=(document.getElementById("signupName")?.value||"").trim();
   const inviteCode=(document.getElementById("signupInviteCode")?.value||"").trim().toLowerCase();
   const email=signupEmail.value.trim(), password=signupPassword.value, p2=signupPassword2.value;
-  if(!displayName)return showMessage("signupMessage","Entre le nom du compte.","error");
-  if(!email)return showMessage("signupMessage","Entre ton adresse email.","error");
-  if(password.length<6)return showMessage("signupMessage","Mot de passe: minimum 6 caractères.","error");
-  if(password!==p2)return showMessage("signupMessage","Les mots de passe ne correspondent pas.","error");
+  if(!displayName)return showMessage("signupMessage",authT("signupNameRequired"),"error");
+  if(!email)return showMessage("signupMessage",authT("emailRequired"),"error");
+  if(password.length<6)return showMessage("signupMessage",authT("passwordMin6"),"error");
+  if(password!==p2)return showMessage("signupMessage",authT("passwordsMismatch"),"error");
   const {data,error}=await sb.auth.signUp({
     email,
     password,
@@ -4641,7 +4687,7 @@ async function signup(){
 
     showMessage(
       "signupMessage",
-      "Compte créé. Vérifie obligatoirement ton adresse e-mail avant de pouvoir accéder à NexaTrade. Un lien de confirmation vient de t’être envoyé.",
+      authT("signupConfirmation"),
       "success"
     );
     return;
@@ -4706,13 +4752,13 @@ function toggleLoginPassword(){
 async function forgotPassword(){
   clearMessage("loginMessage");
   if(loginMode==="phone"){
-    return showMessage("loginMessage","Pour réinitialiser un compte téléphone, utilise le code SMS de récupération configuré dans Supabase Auth.","success");
+    return showMessage("loginMessage",authT("phoneResetHelp"),"success");
   }
   const email=String(document.getElementById("loginEmail")?.value||"").trim();
-  if(!email)return showMessage("loginMessage","Entre d’abord ton adresse email.","error");
+  if(!email)return showMessage("loginMessage",authT("resetEmailRequired"),"error");
   const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
-  if(error)return showMessage("loginMessage",error.message,"error");
-  showMessage("loginMessage","Email de réinitialisation envoyé.","success");
+  if(error)return showMessage("loginMessage",friendlyLoginError(error),"error");
+  showMessage("loginMessage",authT("resetSent"),"success");
 }
 function restoreRememberedLogin(){
   const saved=localStorage.getItem("nexaRememberLogin");
@@ -4739,28 +4785,36 @@ function friendlyLoginError(error){
   const low=raw.toLowerCase();
 
   if(low.includes("invalid login credentials") || low.includes("invalid credentials")){
-    return loginMode==="phone"
-      ? "Numéro de téléphone ou mot de passe incorrect."
-      : "Adresse email ou mot de passe incorrect.";
+    return loginMode==="phone" ? authT("invalidPhoneLogin") : authT("invalidEmailLogin");
   }
   if(low.includes("email not confirmed") || low.includes("email_not_confirmed")){
-    return "Ton adresse email n’est pas encore vérifiée. Ouvre l’email de confirmation reçu puis réessaie.";
+    return authT("emailNotConfirmed");
   }
   if(low.includes("phone not confirmed")){
-    return "Ton numéro de téléphone n’est pas encore vérifié.";
+    return authT("phoneNotConfirmed");
   }
   if(low.includes("provider") && low.includes("disabled")){
-    return loginMode==="phone"
-      ? "La connexion par numéro de téléphone n’est pas encore activée."
-      : "Ce mode de connexion n’est pas disponible.";
+    return loginMode==="phone" ? authT("phoneProviderDisabled") : authT("loginModeUnavailable");
   }
   if(low.includes("rate limit") || low.includes("too many")){
-    return "Trop de tentatives. Attends un moment avant de réessayer.";
+    return authT("tooManyAttempts");
   }
   if(low.includes("network") || low.includes("fetch") || low.includes("failed to fetch")){
-    return "Impossible de joindre le serveur. Vérifie ta connexion Internet puis réessaie.";
+    return authT("networkError");
   }
-  return raw ? "Connexion impossible : "+raw : "Connexion impossible. Vérifie tes informations puis réessaie.";
+
+  // Known local validation messages are translated by key.
+  const localMap=new Map([
+    ["Entre ton mot de passe.",authT("passwordRequired")],
+    ["Entre ton numéro de téléphone.",authT("phoneRequired")],
+    ["Entre ton adresse email.",authT("emailRequired")],
+    ["Entre ton adresse e-mail.",authT("emailRequired")],
+    ["Aucun compte n’a pu être ouvert avec ces informations.",authT("noAccountOpened")],
+    ["Ton adresse e-mail doit être confirmée avant de pouvoir accéder à ton compte. Ouvre l’e-mail de confirmation reçu puis réessaie.",authT("emailNotConfirmed")]
+  ]);
+  if(localMap.has(raw))return localMap.get(raw);
+
+  return authT("loginFailed");
 }
 
 function showLoginError(error){
@@ -4776,7 +4830,7 @@ function setLoginBusy(busy){
   const btn=document.getElementById("loginSubmitButton");
   if(!btn)return;
   btn.disabled=!!busy;
-  btn.textContent=busy?"Connexion…":"Submit";
+  btn.textContent=busy?authT("signingIn"):authT("submit");
   btn.classList.toggle("loading",!!busy);
 }
 
@@ -5287,10 +5341,10 @@ async function placeTrade(direction){
   const duration=Number(document.getElementById("tradeDuration")?.value||60);
   const openPrice=Number(btcPrice||0);
 
-  if(!currentUser)return showMessage("tradeMessage","Connecte-toi pour ouvrir une position .","error");
-  if(!Number.isFinite(amount)||amount<=0)return showMessage("tradeMessage","Entre un montant  supérieur à 0.","error");
-  if(amount>available)return showMessage("tradeMessage","Solde  insuffisant.","error");
-  if(![60,120,300,600].includes(duration))return showMessage("tradeMessage","Durée  invalide.","error");
+  if(!currentUser)return showMessage("tradeMessage","Connecte-toi pour ouvrir une position.","error");
+  if(!Number.isFinite(amount)||amount<=0)return showMessage("tradeMessage","Entre un montant supérieur à 0.","error");
+  if(amount>available)return showMessage("tradeMessage","Solde insuffisant.","error");
+  if(![60,120,300,600].includes(duration))return showMessage("tradeMessage","Durée invalide.","error");
   if(!Number.isFinite(openPrice)||openPrice<=0)return showMessage("tradeMessage","Le prix BTC est indisponible. Réessaie dans quelques secondes.","error");
 
   placingTrade=true;
@@ -5307,7 +5361,7 @@ async function placeTrade(direction){
     const trade=Array.isArray(data)?data[0]:data;
     document.getElementById("tradeAmount").value="0";
     setTradeChartDirection(dir);
-    showMessage("tradeMessage",`${dir}  ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
+    showMessage("tradeMessage",`${dir} ouvert · ${money(amount)} USDT · ${duration}s.`,"success");
     await refreshEverything();
     const deliveryTab=document.querySelector('.trade-order-tab[onclick*="delivery"]');
     if(deliveryTab)showTradeOrderTab("delivery",deliveryTab);
@@ -5316,7 +5370,8 @@ async function placeTrade(direction){
     if(message.includes("open_demo_trade")){
       showMessage("tradeMessage","Le moteur de trading direct n’est pas encore installé dans Supabase. Exécute le fichier SQL de migration fourni.","error");
     }else{
-      showMessage("tradeMessage",message,"error");
+      console.error("Direct trade:",err);
+      showMessage("tradeMessage",friendlyErrorMessage(err,"Impossible d’ouvrir la position pour le moment."),"error");
     }
   }finally{
     placingTrade=false;
@@ -5773,19 +5828,18 @@ async function recognizeFollowCode(){
   const input=document.getElementById("followOrderCode");
   const code=(input?.value||"").trim().toUpperCase();
   if(code.length!==6)return alert("Le code doit contenir exactement 6 caractères.");
-  if(!btcPrice||btcPrice<=0)return alert("Le prix BTC  n’est pas disponible.");
+  if(!btcPrice||btcPrice<=0)return alert("Le prix BTC n’est pas disponible. Réessaie dans quelques secondes.");
 
   const {data,error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
   if(error){
-    const message=String(error.message||"Erreur de validation")
-      .replace(/\bcode\s+DEMO\b/gi,"");
-    return alert(message);
+    console.error("Code validation:",error);
+    return alert(friendlyErrorMessage(error,"Impossible de valider ce code pour le moment."));
   }
 
   if(input)input.value="";
   const trade=Array.isArray(data)?data[0]:data;
   setTradeChartDirection(trade.direction);
-  alert(`Code  accepté · ${trade.direction} · rendement +${Number(trade.yield_pct).toFixed(2)}% · utilisation unique.`);
+  alert(`Code accepté · ${trade.direction} · utilisation unique.`);
   await refreshEverything();
 
   const delivery=document.querySelector('.trade-order-tab[onclick*="delivery"]');
@@ -5860,7 +5914,7 @@ function confirmFollow(){
     if(min>100||max>100)return alert("Le pourcentage ne peut pas dépasser 100 %.");
     amount=balance*(min/100);
   }
-  if(followMode==="fixed" && amount>balance)return alert("Solde  insuffisant.");
+  if(followMode==="fixed" && amount>balance)return alert("Solde insuffisant.");
 
   const rows=readFollowHistory();
   rows.unshift({
@@ -6026,7 +6080,6 @@ function activePositionHTML(t){
   const startsAt=new Date(t.opened_at);
   const settlesAt=new Date(t.settle_at);
   const duration=Math.max(1,Math.round((settlesAt-startsAt)/1000));
-  const expectedYield=Number(t.yield_pct||0);
 
   return `<div class="trade-history-card pending-order-card" data-trade-id="${t.id}">
     <div class="trade-history-title">
@@ -6035,7 +6088,6 @@ function activePositionHTML(t){
       <span class="cycle">${duration}s</span>
     </div>
     <div class="trade-history-line"><span>time period</span><strong>${tradeClockLabel(startsAt)} ~ ${tradeClockLabel(settlesAt)}</strong></div>
-    <div class="trade-history-line"><span>rate of return</span><strong class="profit-pos">${expectedYield>0?"+":""}${expectedYield.toFixed(2)}%</strong></div>
     <div class="trade-history-line"><span>order quantity</span><strong>${money(t.amount)}</strong></div>
     <div class="trade-history-line"><span>opening price</span><strong>--</strong></div>
     <div class="trade-history-line"><span>settlement price</span><strong>--</strong></div>
@@ -6094,24 +6146,43 @@ setInterval(updateCountdowns,500);
 
 async function settleTrade(id){
   const closePrice=Number(btcPrice||0);
+  const beforeSettlement=trades.find(t=>String(t.id)===String(id))||null;
   const {data,error}=await sb.rpc("settle_demo_trade",{
     p_trade_id:id,
     p_close_price:closePrice>0?closePrice:null
   });
   settlingTrades.delete(id);
+
   if(error){
-    console.error(error);
-    if(String(error.message||"").includes("LIVE_MARKET_PRICE_REQUIRED")){
-      showMessage("tradeMessage","Position arrivée à échéance : attente du prochain prix BTC live pour le règlement.","error");
-    }
+    console.error("Trade settlement:",error);
+    showMessage(
+      "tradeMessage",
+      friendlyErrorMessage(error,"Le règlement de la position n’a pas pu être finalisé. Réessaie dans quelques instants."),
+      "error"
+    );
     return;
   }
+
+  const settled=Array.isArray(data)?data[0]:data;
   await refreshEverything();
-  if(data){
-    const pnl=Number(data.profit||0);
-    const prefix=pnl>0?"+":"";
-    const label=pnl>0?"Gain ":(pnl<0?"Perte ":"Résultat ");
-    showMessage("tradeMessage",`${label} : ${prefix}${money(pnl)} USDT.`,pnl>=0?"success":"error");
+
+  if(settled){
+    const pnl=Number(settled.profit||0);
+    const amount=Number(settled.amount ?? beforeSettlement?.amount ?? 0);
+    const storedYield=Number(settled.yield_pct ?? beforeSettlement?.yield_pct);
+    const realizedReturn=amount>0
+      ? (pnl/amount)*100
+      : (Number.isFinite(storedYield)?storedYield:0);
+
+    const pnlPrefix=pnl>0?"+":"";
+    const returnPrefix=realizedReturn>0?"+":"";
+    const label=pnl>0?"Gain":(pnl<0?"Perte":"Résultat");
+
+    showMessage(
+      "tradeMessage",
+      `Rendement : ${returnPrefix}${realizedReturn.toFixed(2)}% · ${label} : ${pnlPrefix}${money(pnl)} USDT.`,
+      pnl>=0?"success":"error"
+    );
   }
 }
 
@@ -6130,11 +6201,13 @@ function renderHistory(){
     const opened=new Date(t.opened_at),settledAt=new Date(t.settled_at||t.settle_at);
     const hm=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
     const profit=Number(t.profit||0),profitClass=profit>=0?"profit-pos":"profit-neg";
+    const amount=Number(t.amount||0);
+    const realizedReturn=amount>0?(profit/amount)*100:0;
     return `<div class="trade-history-card">
       <div class="trade-history-title"><span class="${t.direction==="CALL"?"call":"put"}">${esc(t.direction)}</span><span>${esc(t.symbol||"BTCUSDT")}</span><span class="cycle">${Math.max(1,Math.round((new Date(t.settle_at)-new Date(t.opened_at))/1000))}s</span></div>
       <div class="trade-history-line"><span>time period</span><strong>${hm(opened)} ~ ${hm(settledAt)}</strong></div>
       <div class="trade-history-line"><span>profit and loss</span><strong class="${profitClass}">${profit>=0?"+":""}${money(profit)}</strong></div>
-      <div class="trade-history-line"><span>return on position</span><strong class="${profit>=0?"profit-pos":"profit-neg"}">${Number(t.amount)>0?((profit/Number(t.amount))*100).toFixed(3):"0.000"}%</strong></div>
+      <div class="trade-history-line"><span>rate of return</span><strong class="${realizedReturn>=0?"profit-pos":"profit-neg"}">${realizedReturn>0?"+":""}${realizedReturn.toFixed(2)}%</strong></div>
       <div class="trade-history-line"><span>capital risk</span><strong>${money(t.capital_pct)}%</strong></div>
       <div class="trade-history-line"><span>order quantity</span><strong>${money(t.amount)}</strong></div>
       <div class="trade-history-line"><span>opening price</span><strong>${price(t.open_price)}</strong></div>
@@ -6188,7 +6261,8 @@ async function generateCode(){
     if(/could not find the function|schema cache/i.test(message)){
       return alert("La fonction de génération de code n’est pas installée dans Supabase avec l’une des signatures prises en charge. Vérifie la migration du générateur de codes, puis recharge la page.");
     }
-    return alert(message);
+    console.error("Code generation:",result.error);
+    return alert(friendlyErrorMessage(result.error,"Impossible de générer le code pour le moment."));
   }
 
   const r=Array.isArray(result.data)?result.data[0]:result.data;
@@ -6450,7 +6524,7 @@ async function adjustBalance(userId,sign){
 
   if(currency==="USDT"){
     const {error}=await sb.rpc("admin_adjust_balance",{p_user_id:userId,p_delta:n*sign});
-    if(error)return alert(error.message);
+    if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   }else{
     const current=adminBalanceFor(user,currency);
     const next=current+n*sign;
@@ -6461,7 +6535,7 @@ async function adjustBalance(userId,sign){
       balance:next,
       updated_at:new Date().toISOString()
     },{onConflict:"user_id,currency"});
-    if(error)return alert(error.message);
+    if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   }
 
   await loadAdminAll();
@@ -6476,7 +6550,7 @@ async function setExactBalance(userId){
 
   if(currency==="USDT"){
     const {error}=await sb.rpc("admin_set_balance",{p_user_id:userId,p_balance:n});
-    if(error)return alert(error.message);
+    if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   }else{
     const {error}=await sb.from("asset_balances").upsert({
       user_id:userId,
@@ -6484,7 +6558,7 @@ async function setExactBalance(userId){
       balance:n,
       updated_at:new Date().toISOString()
     },{onConflict:"user_id,currency"});
-    if(error)return alert(error.message);
+    if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   }
 
   await loadAdminAll();
@@ -6493,7 +6567,7 @@ async function setExactBalance(userId){
 
 async function toggleSuspend(userId,suspended){
   const {error}=await sb.rpc("admin_set_suspended",{p_user_id:userId,p_suspended:suspended});
-  if(error)return alert(error.message);
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   await loadAdminAll();
 }
 
@@ -6534,7 +6608,7 @@ async function adminCreateUser(){
 async function adminSetIdentity(userId,status){
   if(!isCurrentUserAdmin)return;
   const {error}=await sb.rpc("admin_set_identity_status",{p_user_id:userId,p_status:status});
-  if(error)return alert(error.message);
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   await loadAdminUsers();
 }
 
@@ -6580,7 +6654,7 @@ function renderAdminFundingRequests(){
 
 async function adminSetFundingStatus(id,status){
   const {data,error}=await sb.rpc("admin_set_funding_request_status",{p_request_id:id,p_status:status});
-  if(error)return alert(error.message);
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
 
   // CONFIRMED deposit => backend credits the requesting user's  balance.
   // REJECTED withdrawal => backend refunds the amount previously reserved.
@@ -6620,14 +6694,14 @@ function renderAdminCodes(){
 
 async function toggleCode(id,active){
   const {error}=await sb.rpc("admin_toggle_code",{p_code_id:id,p_active:active});
-  if(error)return alert(error.message);
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   await loadAdminAll();
 }
 
 async function deleteCode(id){
   if(!confirm("Supprimer ce code s'il n'a jamais été utilisé ?"))return;
   const {error}=await sb.rpc("admin_delete_unused_code",{p_code_id:id});
-  if(error)return alert(error.message);
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
   await loadAdminAll();
 }
 
@@ -6655,8 +6729,8 @@ async function updateInitialBalance(){
   const n=Number(initialBalanceInput.value);
   if(Number.isNaN(n)||n<0)return;
   const {error}=await sb.rpc("admin_update_initial_balance",{p_balance:n});
-  if(error)return alert(error.message);
-  alert("Nouveau solde initial  enregistré.");
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
+  alert("Nouveau solde initial enregistré.");
 }
 
 
@@ -7217,7 +7291,7 @@ async function submitWithdraw(){
     p_network:withdrawNetwork,
     p_wallet_address:address
   });
-  if(error)return alert(error.message);
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
 
   // The backend reserves/deducts the  amount immediately.
   await loadProfile();
@@ -7464,7 +7538,7 @@ async function confirmDepositSent(){
     p_network:n.name,
     p_wallet_address:n.address
   });
-  if(error)return alert(error.message);
+  if(error){console.error(error);return alert(friendlyErrorMessage(error));}
 
   document.getElementById("depositConfirmAmount").textContent=`${pendingDepositAmount} ${depositCurrency}`;
   document.getElementById("depositConfirmNetwork").textContent=n.name;
@@ -7773,6 +7847,94 @@ function translateTextNodeI18n(node,lang){if(!node||node.nodeType!==Node.TEXT_NO
 function translateAttrI18n(el,attr,lang){if(!el||!el.getAttribute)return;const ds='i18n'+attr.replace(/(^.|-.)/g,m=>m.replace('-','').toUpperCase())+'Key';let k=el.dataset?.[ds];if(!k){k=canonicalI18nKey(el.getAttribute(attr));if(!k)return;if(el.dataset)el.dataset[ds]=k}const next=tSite(k,lang);if(el.getAttribute(attr)!==next)el.setAttribute(attr,next)}
 function translateTreeI18n(root=document,lang=(localStorage.getItem('nexaLanguage')||'en')){if(root.nodeType===Node.TEXT_NODE){translateTextNodeI18n(root,lang);return}if(root.matches?.('[data-no-i18n]'))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];while(w.nextNode())nodes.push(w.currentNode);nodes.forEach(n=>translateTextNodeI18n(n,lang));const els=[];if(root.nodeType===Node.ELEMENT_NODE)els.push(root);if(root.querySelectorAll)els.push(...root.querySelectorAll('[placeholder],[title],[aria-label]'));els.forEach(el=>['placeholder','title','aria-label'].forEach(a=>{if(el.hasAttribute?.(a))translateAttrI18n(el,a,lang)}))}
 
+
+const AUTH_I18N={
+  loginTitle:{en:"log in",fr:"connexion",es:"iniciar sesión",zh:"登入",ar:"تسجيل الدخول",de:"anmelden",it:"accedi",ru:"войти",pl:"zaloguj się"},
+  signupTitle:{en:"sign up",fr:"inscription",es:"registrarse",zh:"註冊",ar:"إنشاء حساب",de:"registrieren",it:"registrati",ru:"регистрация",pl:"rejestracja"},
+  mailTab:{en:"mail",fr:"e-mail",es:"correo",zh:"郵箱",ar:"البريد",de:"E-Mail",it:"email",ru:"почта",pl:"e-mail"},
+  phoneTab:{en:"phone",fr:"téléphone",es:"teléfono",zh:"電話",ar:"الهاتف",de:"Telefon",it:"telefono",ru:"телефон",pl:"telefon"},
+  mailLabel:{en:"your mailbox",fr:"votre adresse e-mail",es:"tu correo electrónico",zh:"您的電子郵箱",ar:"بريدك الإلكتروني",de:"Ihre E-Mail-Adresse",it:"la tua e-mail",ru:"ваша электронная почта",pl:"twój adres e-mail"},
+  mailPlaceholder:{en:"mail",fr:"e-mail",es:"correo",zh:"電子郵箱",ar:"البريد الإلكتروني",de:"E-Mail",it:"email",ru:"почта",pl:"e-mail"},
+  phoneLabel:{en:"your phone number",fr:"votre numéro de téléphone",es:"tu número de teléfono",zh:"您的電話號碼",ar:"رقم هاتفك",de:"Ihre Telefonnummer",it:"il tuo numero di telefono",ru:"ваш номер телефона",pl:"twój numer telefonu"},
+  phonePlaceholder:{en:"phone number",fr:"numéro de téléphone",es:"número de teléfono",zh:"電話號碼",ar:"رقم الهاتف",de:"Telefonnummer",it:"numero di telefono",ru:"номер телефона",pl:"numer telefonu"},
+  passwordLabel:{en:"your password",fr:"votre mot de passe",es:"tu contraseña",zh:"您的密碼",ar:"كلمة المرور",de:"Ihr Passwort",it:"la tua password",ru:"ваш пароль",pl:"twoje hasło"},
+  passwordPlaceholder:{en:"password",fr:"mot de passe",es:"contraseña",zh:"密碼",ar:"كلمة المرور",de:"Passwort",it:"password",ru:"пароль",pl:"hasło"},
+  remember:{en:"remember my password",fr:"mémoriser mes informations",es:"recordar mis datos",zh:"記住我的資訊",ar:"تذكر بياناتي",de:"meine Daten merken",it:"ricorda i miei dati",ru:"запомнить мои данные",pl:"zapamiętaj moje dane"},
+  submit:{en:"Submit",fr:"Se connecter",es:"Entrar",zh:"登入",ar:"دخول",de:"Anmelden",it:"Accedi",ru:"Войти",pl:"Zaloguj się"},
+  signingIn:{en:"Signing in…",fr:"Connexion…",es:"Iniciando sesión…",zh:"登入中…",ar:"جارٍ تسجيل الدخول…",de:"Anmeldung…",it:"Accesso…",ru:"Вход…",pl:"Logowanie…"},
+  signupNow:{en:"sign up now",fr:"créer un compte",es:"crear una cuenta",zh:"立即註冊",ar:"إنشاء حساب",de:"Konto erstellen",it:"crea un account",ru:"создать аккаунт",pl:"utwórz konto"},
+  forgotPassword:{en:"forget password",fr:"mot de passe oublié",es:"olvidé mi contraseña",zh:"忘記密碼",ar:"نسيت كلمة المرور",de:"Passwort vergessen",it:"password dimenticata",ru:"забыли пароль",pl:"nie pamiętam hasła"},
+  downloadApp:{en:"download app",fr:"télécharger l’application",es:"descargar la app",zh:"下載應用程式",ar:"تنزيل التطبيق",de:"App herunterladen",it:"scarica l’app",ru:"скачать приложение",pl:"pobierz aplikację"},
+  createAccount:{en:"Create account",fr:"Créer un compte",es:"Crear una cuenta",zh:"建立帳戶",ar:"إنشاء حساب",de:"Konto erstellen",it:"Crea account",ru:"Создать аккаунт",pl:"Utwórz konto"},
+  accountName:{en:"Account name",fr:"Nom du compte",es:"Nombre de la cuenta",zh:"帳戶名稱",ar:"اسم الحساب",de:"Kontoname",it:"Nome account",ru:"Имя аккаунта",pl:"Nazwa konta"},
+  displayNamePlaceholder:{en:"Display name",fr:"Nom affiché",es:"Nombre para mostrar",zh:"顯示名稱",ar:"الاسم الظاهر",de:"Anzeigename",it:"Nome visualizzato",ru:"Отображаемое имя",pl:"Nazwa wyświetlana"},
+  emailLabel:{en:"Email",fr:"E-mail",es:"Correo electrónico",zh:"電子郵件",ar:"البريد الإلكتروني",de:"E-Mail",it:"Email",ru:"Эл. почта",pl:"E-mail"},
+  inviteOptional:{en:"Invitation code (optional)",fr:"Code d’invitation (optionnel)",es:"Código de invitación (opcional)",zh:"邀請碼（選填）",ar:"رمز الدعوة (اختياري)",de:"Einladungscode (optional)",it:"Codice invito (opzionale)",ru:"Код приглашения (необязательно)",pl:"Kod zaproszenia (opcjonalnie)"},
+  invitePlaceholder:{en:"Invitation code",fr:"Code d’invitation",es:"Código de invitación",zh:"邀請碼",ar:"رمز الدعوة",de:"Einladungscode",it:"Codice invito",ru:"Код приглашения",pl:"Kod zaproszenia"},
+  signupPassword:{en:"Password",fr:"Mot de passe",es:"Contraseña",zh:"密碼",ar:"كلمة المرور",de:"Passwort",it:"Password",ru:"Пароль",pl:"Hasło"},
+  confirmPassword:{en:"Confirm",fr:"Confirmer",es:"Confirmar",zh:"確認",ar:"تأكيد",de:"Bestätigen",it:"Conferma",ru:"Подтвердить",pl:"Potwierdź"},
+  createMyAccount:{en:"Create my account",fr:"Créer mon compte",es:"Crear mi cuenta",zh:"建立我的帳戶",ar:"إنشاء حسابي",de:"Mein Konto erstellen",it:"Crea il mio account",ru:"Создать мой аккаунт",pl:"Utwórz moje konto"},
+  alreadyRegistered:{en:"Already registered?",fr:"Déjà inscrit ?",es:"¿Ya estás registrado?",zh:"已經註冊？",ar:"مسجل بالفعل؟",de:"Bereits registriert?",it:"Già registrato?",ru:"Уже зарегистрированы?",pl:"Masz już konto?"},
+  loginLink:{en:"Login",fr:"Connexion",es:"Iniciar sesión",zh:"登入",ar:"تسجيل الدخول",de:"Anmelden",it:"Accedi",ru:"Войти",pl:"Zaloguj się"},
+
+  passwordRequired:{en:"Enter your password.",fr:"Entre ton mot de passe.",es:"Introduce tu contraseña.",zh:"請輸入密碼。",ar:"أدخل كلمة المرور.",de:"Geben Sie Ihr Passwort ein.",it:"Inserisci la password.",ru:"Введите пароль.",pl:"Wpisz hasło."},
+  phoneRequired:{en:"Enter your phone number.",fr:"Entre ton numéro de téléphone.",es:"Introduce tu número de teléfono.",zh:"請輸入電話號碼。",ar:"أدخل رقم هاتفك.",de:"Geben Sie Ihre Telefonnummer ein.",it:"Inserisci il numero di telefono.",ru:"Введите номер телефона.",pl:"Wpisz numer telefonu."},
+  emailRequired:{en:"Enter your email address.",fr:"Entre ton adresse e-mail.",es:"Introduce tu correo electrónico.",zh:"請輸入電子郵件。",ar:"أدخل بريدك الإلكتروني.",de:"Geben Sie Ihre E-Mail-Adresse ein.",it:"Inserisci l’indirizzo email.",ru:"Введите адрес электронной почты.",pl:"Wpisz adres e-mail."},
+  invalidEmailLogin:{en:"Email or password is incorrect.",fr:"Adresse e-mail ou mot de passe incorrect.",es:"Correo o contraseña incorrectos.",zh:"電子郵件或密碼不正確。",ar:"البريد الإلكتروني أو كلمة المرور غير صحيحة.",de:"E-Mail oder Passwort ist falsch.",it:"Email o password non corretti.",ru:"Неверная почта или пароль.",pl:"Nieprawidłowy e-mail lub hasło."},
+  invalidPhoneLogin:{en:"Phone number or password is incorrect.",fr:"Numéro de téléphone ou mot de passe incorrect.",es:"Número de teléfono o contraseña incorrectos.",zh:"電話號碼或密碼不正確。",ar:"رقم الهاتف أو كلمة المرور غير صحيحة.",de:"Telefonnummer oder Passwort ist falsch.",it:"Numero di telefono o password non corretti.",ru:"Неверный номер телефона или пароль.",pl:"Nieprawidłowy numer telefonu lub hasło."},
+  emailNotConfirmed:{en:"Your email address is not verified yet. Open the confirmation email and try again.",fr:"Ton adresse e-mail n’est pas encore vérifiée. Ouvre l’e-mail de confirmation reçu puis réessaie.",es:"Tu correo aún no está verificado. Abre el correo de confirmación y vuelve a intentarlo.",zh:"您的電子郵件尚未驗證。請開啟確認郵件後再試。",ar:"لم يتم التحقق من بريدك الإلكتروني بعد. افتح رسالة التأكيد ثم أعد المحاولة.",de:"Ihre E-Mail-Adresse ist noch nicht bestätigt. Öffnen Sie die Bestätigungs-E-Mail und versuchen Sie es erneut.",it:"Il tuo indirizzo email non è ancora verificato. Apri l’email di conferma e riprova.",ru:"Ваш e-mail ещё не подтверждён. Откройте письмо подтверждения и повторите попытку.",pl:"Twój e-mail nie został jeszcze potwierdzony. Otwórz wiadomość potwierdzającą i spróbuj ponownie."},
+  phoneNotConfirmed:{en:"Your phone number is not verified yet.",fr:"Ton numéro de téléphone n’est pas encore vérifié.",es:"Tu número de teléfono aún no está verificado.",zh:"您的電話號碼尚未驗證。",ar:"لم يتم التحقق من رقم هاتفك بعد.",de:"Ihre Telefonnummer ist noch nicht bestätigt.",it:"Il tuo numero di telefono non è ancora verificato.",ru:"Ваш номер телефона ещё не подтверждён.",pl:"Twój numer telefonu nie został jeszcze potwierdzony."},
+  phoneProviderDisabled:{en:"Phone login is not enabled yet.",fr:"La connexion par numéro de téléphone n’est pas encore activée.",es:"El acceso por teléfono aún no está activado.",zh:"電話登入尚未啟用。",ar:"تسجيل الدخول بالهاتف غير مفعل بعد.",de:"Die Anmeldung per Telefon ist noch nicht aktiviert.",it:"L’accesso tramite telefono non è ancora attivo.",ru:"Вход по телефону пока не включён.",pl:"Logowanie telefonem nie jest jeszcze aktywne."},
+  loginModeUnavailable:{en:"This login method is not available.",fr:"Ce mode de connexion n’est pas disponible.",es:"Este método de acceso no está disponible.",zh:"此登入方式不可用。",ar:"طريقة تسجيل الدخول هذه غير متاحة.",de:"Diese Anmeldemethode ist nicht verfügbar.",it:"Questo metodo di accesso non è disponibile.",ru:"Этот способ входа недоступен.",pl:"Ta metoda logowania jest niedostępna."},
+  tooManyAttempts:{en:"Too many attempts. Wait a moment and try again.",fr:"Trop de tentatives. Attends un moment avant de réessayer.",es:"Demasiados intentos. Espera un momento y vuelve a intentarlo.",zh:"嘗試次數過多。請稍候再試。",ar:"محاولات كثيرة جداً. انتظر قليلاً ثم أعد المحاولة.",de:"Zu viele Versuche. Warten Sie kurz und versuchen Sie es erneut.",it:"Troppi tentativi. Attendi un momento e riprova.",ru:"Слишком много попыток. Подождите и попробуйте снова.",pl:"Zbyt wiele prób. Poczekaj chwilę i spróbuj ponownie."},
+  networkError:{en:"Unable to reach the server. Check your Internet connection and try again.",fr:"Impossible de joindre le serveur. Vérifie ta connexion Internet puis réessaie.",es:"No se puede contactar con el servidor. Comprueba tu conexión a Internet e inténtalo de nuevo.",zh:"無法連線至伺服器。請檢查網路後再試。",ar:"تعذر الاتصال بالخادم. تحقق من اتصال الإنترنت ثم أعد المحاولة.",de:"Server nicht erreichbar. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",it:"Impossibile raggiungere il server. Controlla la connessione Internet e riprova.",ru:"Не удалось связаться с сервером. Проверьте интернет и повторите попытку.",pl:"Nie można połączyć się z serwerem. Sprawdź Internet i spróbuj ponownie."},
+  loginFailed:{en:"Login failed. Check your information and try again.",fr:"Connexion impossible. Vérifie tes informations puis réessaie.",es:"No se pudo iniciar sesión. Comprueba tus datos y vuelve a intentarlo.",zh:"登入失敗。請檢查資訊後再試。",ar:"تعذر تسجيل الدخول. تحقق من بياناتك ثم أعد المحاولة.",de:"Anmeldung fehlgeschlagen. Prüfen Sie Ihre Angaben und versuchen Sie es erneut.",it:"Accesso non riuscito. Controlla i dati e riprova.",ru:"Не удалось войти. Проверьте данные и повторите попытку.",pl:"Logowanie nie powiodło się. Sprawdź dane i spróbuj ponownie."},
+  noAccountOpened:{en:"No account could be opened with this information.",fr:"Aucun compte n’a pu être ouvert avec ces informations.",es:"No se pudo abrir ninguna cuenta con estos datos.",zh:"無法使用這些資訊登入任何帳戶。",ar:"تعذر فتح أي حساب بهذه المعلومات.",de:"Mit diesen Angaben konnte kein Konto geöffnet werden.",it:"Nessun account può essere aperto con questi dati.",ru:"Не удалось войти в аккаунт с этими данными.",pl:"Nie udało się otworzyć konta przy użyciu tych danych."},
+  resetEmailRequired:{en:"Enter your email address first.",fr:"Entre d’abord ton adresse e-mail.",es:"Introduce primero tu correo electrónico.",zh:"請先輸入電子郵件。",ar:"أدخل بريدك الإلكتروني أولاً.",de:"Geben Sie zuerst Ihre E-Mail-Adresse ein.",it:"Inserisci prima l’indirizzo email.",ru:"Сначала введите адрес электронной почты.",pl:"Najpierw wpisz adres e-mail."},
+  resetSent:{en:"Password reset email sent.",fr:"E-mail de réinitialisation envoyé.",es:"Correo de restablecimiento enviado.",zh:"密碼重設郵件已傳送。",ar:"تم إرسال بريد إعادة تعيين كلمة المرور.",de:"E-Mail zum Zurücksetzen des Passworts wurde gesendet.",it:"Email di reimpostazione inviata.",ru:"Письмо для сброса пароля отправлено.",pl:"Wysłano wiadomość do resetowania hasła."},
+  phoneResetHelp:{en:"For a phone account, use the SMS recovery code configured in Supabase Auth.",fr:"Pour réinitialiser un compte téléphone, utilise le code SMS de récupération configuré dans Supabase Auth.",es:"Para una cuenta telefónica, utiliza el código SMS de recuperación configurado en Supabase Auth.",zh:"電話帳戶請使用 Supabase Auth 中設定的 SMS 復原碼。",ar:"لحساب الهاتف، استخدم رمز الاسترداد عبر SMS المكوّن في Supabase Auth.",de:"Verwenden Sie für ein Telefonkonto den in Supabase Auth konfigurierten SMS-Wiederherstellungscode.",it:"Per un account telefonico, usa il codice SMS di recupero configurato in Supabase Auth.",ru:"Для аккаунта по телефону используйте SMS-код восстановления, настроенный в Supabase Auth.",pl:"Dla konta telefonicznego użyj kodu SMS odzyskiwania skonfigurowanego w Supabase Auth."},
+  signupNameRequired:{en:"Enter the account name.",fr:"Entre le nom du compte.",es:"Introduce el nombre de la cuenta.",zh:"請輸入帳戶名稱。",ar:"أدخل اسم الحساب.",de:"Geben Sie den Kontonamen ein.",it:"Inserisci il nome dell’account.",ru:"Введите имя аккаунта.",pl:"Wpisz nazwę konta."},
+  passwordMin6:{en:"Password must contain at least 6 characters.",fr:"Mot de passe : minimum 6 caractères.",es:"La contraseña debe tener al menos 6 caracteres.",zh:"密碼至少需要 6 個字元。",ar:"يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",de:"Das Passwort muss mindestens 6 Zeichen enthalten.",it:"La password deve contenere almeno 6 caratteri.",ru:"Пароль должен содержать не менее 6 символов.",pl:"Hasło musi mieć co najmniej 6 znaków."},
+  passwordsMismatch:{en:"Passwords do not match.",fr:"Les mots de passe ne correspondent pas.",es:"Las contraseñas no coinciden.",zh:"密碼不一致。",ar:"كلمتا المرور غير متطابقتين.",de:"Die Passwörter stimmen nicht überein.",it:"Le password non coincidono.",ru:"Пароли не совпадают.",pl:"Hasła nie są zgodne."},
+  signupConfirmation:{en:"Account created. Confirm your email address before accessing NexaTrade. A confirmation link has just been sent.",fr:"Compte créé. Vérifie obligatoirement ton adresse e-mail avant de pouvoir accéder à NexaTrade. Un lien de confirmation vient de t’être envoyé.",es:"Cuenta creada. Confirma tu correo antes de acceder a NexaTrade. Acabamos de enviarte un enlace de confirmación.",zh:"帳戶已建立。請先驗證電子郵件才能使用 NexaTrade。確認連結已寄出。",ar:"تم إنشاء الحساب. أكد بريدك الإلكتروني قبل الوصول إلى NexaTrade. تم إرسال رابط التأكيد.",de:"Konto erstellt. Bestätigen Sie Ihre E-Mail-Adresse, bevor Sie auf NexaTrade zugreifen. Ein Bestätigungslink wurde gesendet.",it:"Account creato. Conferma l’indirizzo email prima di accedere a NexaTrade. È stato inviato un link di conferma.",ru:"Аккаунт создан. Подтвердите e-mail перед входом в NexaTrade. Ссылка подтверждения отправлена.",pl:"Konto utworzone. Potwierdź adres e-mail przed dostępem do NexaTrade. Link potwierdzający został wysłany."}
+};
+function authLang(){
+  const lang=localStorage.getItem("nexaLanguage")||"en";
+  return AUTH_I18N.loginTitle[lang] ? lang : "en";
+}
+function authT(key){
+  const row=AUTH_I18N[key];
+  if(!row)return key;
+  const lang=authLang();
+  return row[lang]||row.en||key;
+}
+function applyAuthLanguage(lang=authLang()){
+  if(!AUTH_I18N.loginTitle[lang])lang="en";
+  const auth=document.getElementById("authScreen");
+  if(!auth)return;
+
+  auth.querySelectorAll("[data-auth-i18n]").forEach(el=>{
+    const row=AUTH_I18N[el.dataset.authI18n];
+    if(row)el.textContent=row[lang]||row.en||"";
+  });
+  auth.querySelectorAll("[data-auth-placeholder]").forEach(el=>{
+    const row=AUTH_I18N[el.dataset.authPlaceholder];
+    if(row)el.setAttribute("placeholder",row[lang]||row.en||"");
+  });
+
+  const title=document.getElementById("authTitle");
+  if(title){
+    const signupVisible=!document.getElementById("signupForm")?.classList.contains("hidden");
+    title.textContent=signupVisible
+      ? (AUTH_I18N.signupTitle[lang]||AUTH_I18N.signupTitle.en)
+      : (AUTH_I18N.loginTitle[lang]||AUTH_I18N.loginTitle.en);
+  }
+
+  document.querySelectorAll("#languageMenu [data-lang-choice]").forEach(btn=>{
+    btn.classList.toggle("selected",btn.dataset.langChoice===lang);
+  });
+}
+
 const HOME_I18N={
   digitalCurrency:{en:"Digital Currency",fr:"Monnaie numérique",es:"Moneda digital",zh:"數位貨幣",ar:"العملة الرقمية",de:"Digitale Währung",it:"Valuta digitale",ru:"Цифровая валюта",pl:"Waluta cyfrowa"},
   newsFlash:{en:"News Flash",fr:"Actualités",es:"Noticias",zh:"快訊",ar:"أخبار عاجلة",de:"Aktuelles",it:"Notizie",ru:"Новости",pl:"Aktualności"},
@@ -7808,7 +7970,14 @@ function closeLanguageMenu(){
   document.getElementById('languageMenu')?.classList.add('hidden');
   document.getElementById('languageBackdrop')?.classList.add('hidden');
 }
+function ensureLanguageMenuPortal(){
+  const menu=document.getElementById("languageMenu");
+  const backdrop=document.getElementById("languageBackdrop");
+  if(backdrop && backdrop.parentElement!==document.body)document.body.appendChild(backdrop);
+  if(menu && menu.parentElement!==document.body)document.body.appendChild(menu);
+}
 function toggleLanguageMenu(){
+  ensureLanguageMenuPortal();
   const menu=document.getElementById('languageMenu');
   const backdrop=document.getElementById('languageBackdrop');
   if(!menu)return;
@@ -7816,10 +7985,10 @@ function toggleLanguageMenu(){
   menu.classList.toggle('hidden',!opening);
   backdrop?.classList.toggle('hidden',!opening);
 }
-function setLanguage(lang){const supported=["en", "fr", "es", "zh", "ar", "de", "it", "ru", "pl"];if(!supported.includes(lang))lang='en';localStorage.setItem('nexaLanguage',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';translateTreeI18n(document,lang);applyHomeLanguage(lang);document.querySelectorAll('[data-lang-choice]').forEach(b=>b.classList.toggle('selected',b.dataset.langChoice===lang));closeLanguageMenu();window.dispatchEvent(new CustomEvent('nexa:languagechange',{detail:{lang}}))}
+function setLanguage(lang){const supported=["en", "fr", "es", "zh", "ar", "de", "it", "ru", "pl"];if(!supported.includes(lang))lang='en';localStorage.setItem('nexaLanguage',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';translateTreeI18n(document,lang);applyHomeLanguage(lang);applyAuthLanguage(lang);document.querySelectorAll('[data-lang-choice]').forEach(b=>b.classList.toggle('selected',b.dataset.langChoice===lang));closeLanguageMenu();window.dispatchEvent(new CustomEvent('nexa:languagechange',{detail:{lang}}))}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLanguageMenu()});
 const NEXA_I18N_OBSERVER=new MutationObserver(ms=>{const lang=localStorage.getItem('nexaLanguage')||'en';for(const m of ms){if(m.type==='characterData')translateTextNodeI18n(m.target,lang);if(m.type==='childList')m.addedNodes.forEach(n=>translateTreeI18n(n,lang));if(m.type==='attributes'&&['placeholder','title','aria-label'].includes(m.attributeName))translateAttrI18n(m.target,m.attributeName,lang)}});
-document.addEventListener('DOMContentLoaded',()=>{setLanguage(localStorage.getItem('nexaLanguage')||'en');NEXA_I18N_OBSERVER.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']})});
+document.addEventListener('DOMContentLoaded',()=>{ensureLanguageMenuPortal();setLanguage(localStorage.getItem('nexaLanguage')||'en');NEXA_I18N_OBSERVER.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']})});
 
 
 /* =====================================================
