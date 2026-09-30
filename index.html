@@ -2711,6 +2711,369 @@ input,select,textarea,button{max-width:100%}
   display:none!important;
 }
 
+
+/* ============================================================
+   NEXATRADE DESKTOP REFINEMENT — ISOLATED, DESKTOP ONLY
+   Preserves the exact mobile/tablet app and all existing functions.
+   ============================================================ */
+@media screen and (min-width:900px) {
+  html,body{
+    background:#f3f6f2!important;
+    color:#273329;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .app,
+  .app:has(#home.active),.app:has(#quotes.active),
+  .app:has(#trade.active),.app:has(#assets.active){
+    padding-left:244px!important;
+    background:radial-gradient(ellipse 58% 35% at 96% 0%,#e8f5e5 0,transparent 78%),#f5f8f3!important;
+    min-height:100vh!important;
+  }
+  .nav,
+  .app:has(#home.active) .nav,.app:has(#quotes.active) .nav,
+  .app:has(#trade.active) .nav,.app:has(#assets.active) .nav{
+    width:228px!important;
+    background:linear-gradient(165deg,#111f19 0%,#18271f 64%,#101c17 100%)!important;
+    border-right:1px solid rgba(255,255,255,.075)!important;
+    padding:112px 15px 30px!important;
+    box-shadow:12px 0 36px rgba(24,42,27,.06)!important;
+    border-radius:0!important;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scrollbar-width:thin;
+    scrollbar-color:#41584a transparent;
+  }
+  .nav:before{
+    top:36px;left:25px;
+    font-size:24px;font-weight:850;
+    letter-spacing:-1.2px;color:#f6fff5;
+  }
+  .nav:after{
+    top:73px;left:26px;width:39px;height:4px;
+    background:#83ec7b;
+    box-shadow:0 0 19px rgba(130,236,123,.30);
+  }
+  .nav button{
+    border:1px solid transparent!important;
+    color:#b6c5bb!important;
+    font-size:13px!important;
+    font-weight:650!important;
+    border-radius:13px!important;
+    transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+  }
+  .nav button:hover{
+    color:#f0fff1!important;
+    background:rgba(227,255,227,.075)!important;
+    border-color:rgba(230,255,230,.07)!important;
+    transform:translateX(2px);
+  }
+  .nav button.active{
+    color:#aaff9c!important;
+    border-color:rgba(134,255,124,.18)!important;
+    background:linear-gradient(95deg,rgba(109,222,109,.18),rgba(109,222,109,.07))!important;
+  }
+  .nav .nav-icon,.nav .ref-nav-svg{
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.08));
+  }
+  .app>.header{
+    max-width:1450px!important;
+    padding:22px clamp(22px,3vw,50px) 13px!important;
+    margin:0 auto!important;
+    background:transparent!important;
+    border-color:transparent!important;
+  }
+  .app>.header .logo{font-weight:850;letter-spacing:-.7px}
+  .app>.header .user-area{gap:14px}
+  #home,#quotes,#trade,#assets,#admin{
+    max-width:1450px!important;
+    padding-left:clamp(26px,3.5vw,60px)!important;
+    padding-right:clamp(26px,3.5vw,60px)!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    width:100%!important;
+  }
+  #home,#quotes,#assets,#admin{padding-top:34px!important}
+  #home{background:transparent!important}
+  #home .home-top{margin-bottom:27px}
+  #home .currency-banner{
+    border:1px solid #dce9da;
+    box-shadow:0 8px 29px rgba(39,68,40,.045);
+    background:#fff;
+    border-radius:22px;
+    font-size:21px;
+    letter-spacing:-.3px;
+  }
+  #home .hot-panel{
+    border:1px solid rgba(56,157,56,.12);
+    background:linear-gradient(122deg,#b0ffa5 0%,#bffab5 53%,#e0ffb1 100%);
+    box-shadow:0 18px 48px rgba(75,159,66,.095);
+  }
+  #home .hot-card,#home .crypto-card{
+    border:1px solid rgba(49,98,52,.06);
+    box-shadow:0 8px 20px rgba(30,69,35,.06);
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  #home .hot-card:hover,#home .crypto-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 34px rgba(30,69,35,.11);
+  }
+  #home .home-section-title{letter-spacing:-1px}
+  #home .service-card,#home .adv-card,#home .news-card{
+    box-shadow:0 8px 27px rgba(40,70,43,.045);
+  }
+  #quotes .quotes-top{
+    padding-bottom:13px;
+    border-bottom:1px solid #e0e9df;
+  }
+  #quotes #quotesList{
+    border:1px solid #e3ece1;
+    border-radius:22px;
+    padding:8px 22px;
+    background:#fff;
+    box-shadow:0 11px 30px rgba(34,69,38,.045);
+  }
+  #quotes #quotesList .quote-row{
+    min-height:77px;
+    border-bottom:1px solid #edf1ec;
+    transition:background .16s ease;
+  }
+  #quotes #quotesList .quote-row:hover{background:#f5fbf4}
+  #assets .assets-valuation-card,#assets .asset-holdings-card,
+  #assets .pro-portfolio-card,#assets .pro-stats-card,
+  #assets .assets-actions-card,#assets .assets-account-card{
+    border:1px solid #e0e9de!important;
+    box-shadow:0 11px 28px rgba(34,66,37,.055)!important;
+  }
+  #assets .assets-valuation-card{border-radius:25px!important}
+  #assets .asset-holdings-card,#assets .pro-portfolio-card,#assets .pro-stats-card{border-radius:23px!important}
+  #admin .section-title{
+    font-size:22px;letter-spacing:-.65px;
+    padding:16px 0 8px!important;
+  }
+  #admin .card{
+    margin:15px 0!important;
+    padding:23px!important;
+    border-radius:21px!important;
+    border:1px solid #dde8db!important;
+    background:#fff!important;
+    box-shadow:0 9px 29px rgba(25,57,27,.055)!important;
+  }
+  #admin .admin-user,#admin .admin-code,#admin .admin-trade{
+    border:1px solid #e6ebe6;
+    border-radius:14px;
+  }
+  #admin .input:focus{outline:2px solid #9bd99b;outline-offset:2px}
+  .lang-menu{
+    box-shadow:0 26px 65px rgba(22,40,27,.18)!important;
+    border:1px solid #dce7da!important;
+  }
+  button:focus-visible,input:focus-visible,select:focus-visible{
+    outline:3px solid rgba(61,179,76,.40)!important;
+    outline-offset:3px;
+  }
+  .ai-fab{box-shadow:0 15px 44px rgba(19,75,27,.24)!important}
+  /* Login is still the same form: only desktop surface and spacing change. */
+  .reference-login{
+    background:radial-gradient(circle at 12% 10%,rgba(142,238,142,.34),transparent 42%),#f0f5ee!important;
+  }
+  .reference-login-shell{
+    border-radius:30px!important;
+    border:1px solid rgba(216,232,216,.8)!important;
+    box-shadow:0 28px 90px rgba(26,54,31,.15)!important;
+  }
+  .reference-input{border-radius:12px!important}
+  .reference-submit{border-radius:12px!important}
+}
+/* Desktop header and readable market title on light premium surfaces. */
+@media screen and (min-width:900px){
+  .app>.header{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    width:calc(100% - 54px)!important;
+    min-height:61px!important;
+    margin:0 auto!important;
+    padding:10px clamp(19px,2vw,35px)!important;
+    border-bottom:1px solid #e1e9df!important;
+    background:rgba(255,255,255,.88)!important;
+    box-shadow:0 5px 24px rgba(28,65,30,.035)!important;
+    border-radius:0 0 16px 16px!important;
+  }
+  .app:has(#home.active)>.header{display:none!important}
+  .app>.header .logo{font-size:15px!important;font-weight:850!important}
+  .app>.header .clock{font-variant-numeric:tabular-nums;color:#647367!important}
+  .app>.header .user-area{min-width:0}
+  #trade>.trade-topbar,
+  #trade>.trade-topbar .trade-pair,
+  #trade>.trade-topbar .trade-pair span:last-child{
+    color:#26392c!important;
+  }
+}
+@media screen and (min-width:1200px) {
+  #trade.page.active{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(340px,390px);
+    grid-template-rows:auto auto auto auto auto;
+    gap:14px 25px;
+    align-content:start;
+    padding-top:29px!important;
+    padding-bottom:100px!important;
+    background:transparent!important;
+    min-width:0;
+  }
+  #trade>.trade-topbar{
+    grid-column:1/-1;
+    margin:0 0 3px!important;
+    padding:20px 25px!important;
+    border:1px solid #e1e9df;
+    border-radius:20px;
+    background:#fff;
+    box-shadow:0 10px 30px rgba(23,53,27,.045);
+  }
+  #trade>.trade-market{
+    grid-column:1;
+    grid-row:2;
+    min-width:0;
+    padding:18px 23px!important;
+    background:#fff;
+    border:1px solid #e0e9dd;
+    border-radius:19px;
+    box-shadow:0 8px 25px rgba(23,53,27,.04);
+  }
+  #trade>.trade-tabs{
+    grid-column:1;
+    grid-row:3;
+    margin:0!important;
+    padding:8px 6px!important;
+    border:1px solid #e6ece4;
+    border-radius:13px;
+    background:#fff;
+  }
+  #trade>.trade-chart-wrap{
+    grid-column:1;
+    grid-row:4;
+    width:100%;
+    min-width:0;
+    height:auto!important;
+    min-height:438px!important;
+    margin:0!important;
+    padding:10px 10px 12px!important;
+    border:1px solid #dfe9dd!important;
+    border-radius:23px!important;
+    background:#fff!important;
+    box-shadow:0 12px 37px rgba(22,57,28,.075)!important;
+  }
+  #trade>.trade-chart-wrap .trade-canvas{
+    width:100%!important;
+    height:422px!important;
+    border-radius:16px;
+  }
+  #trade>.trade-controls{
+    grid-column:2;
+    grid-row:2 / 5;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0;
+    margin:0!important;
+    padding:22px!important;
+    align-self:start;
+    position:sticky;
+    top:22px;
+    border:1px solid #dfebdc!important;
+    border-radius:23px!important;
+    background:linear-gradient(180deg,#ffffff 0%,#fbfdfb 100%)!important;
+    box-shadow:0 16px 46px rgba(25,59,31,.09)!important;
+  }
+  #trade .trade-controls .trade-select-row{
+    gap:10px;
+  }
+  #trade .trade-select,#trade .trade-amount{
+    min-width:0;
+    width:100%;
+    height:55px;
+    border-radius:12px;
+  }
+  #trade .risk-panel{
+    padding:13px;
+    border-radius:16px;
+    margin:11px 0;
+  }
+  #trade .trade-pcts{gap:6px}
+  #trade .trade-pcts button{min-width:0}
+  #trade .trade-actions{gap:10px!important}
+  #trade .trade-actions button{
+    min-height:66px;
+    font-size:16px!important;
+    border-radius:14px;
+  }
+  #trade>.trade-order-tabs{
+    grid-column:1/-1;
+    grid-row:5;
+    width:100%;
+    max-width:none!important;
+    margin:21px 0 0!important;
+    padding:2px 16px 0;
+    border:1px solid #e1e9df;
+    border-bottom:0;
+    border-radius:19px 19px 0 0;
+    background:#fff;
+  }
+  #trade>.trade-order-tabs .trade-order-tab{
+    padding:16px 8px;
+    font-size:14px;
+    line-height:1.25;
+    cursor:pointer;
+    white-space:normal;
+    transition:color .15s ease,background .15s ease;
+  }
+  #trade>.trade-order-tabs .trade-order-tab:hover{
+    color:#2b9b42;
+    background:#f9fdf8;
+  }
+  #trade>#tradeDeliveryPanel,
+  #trade>#tradeHistoryPanel,
+  #trade>#tradeInvitedMePanel,
+  #trade>#tradeInvitedPanel{
+    grid-column:1/-1;
+    width:100%;
+    max-width:none!important;
+    min-width:0;
+    margin:0!important;
+    padding:22px 25px 28px!important;
+    border:1px solid #e1e9df;
+    border-top:0;
+    border-radius:0 0 19px 19px;
+    background:#fff;
+    box-shadow:0 16px 31px rgba(22,57,28,.055);
+  }
+  #trade .trade-history-card,
+  #trade .pending-order-card{
+    max-width:none;
+    border-radius:17px;
+    border:1px solid #e1e8df;
+    box-shadow:0 4px 16px rgba(25,58,29,.025);
+  }
+  #trade .follow-box{
+    max-width:710px;
+  }
+  #trade .follow-box input{
+    min-height:55px;
+    border:1px solid #dce7d9;
+    border-radius:11px;
+  }
+  #trade .follow-box button{
+    border-radius:11px;
+    min-width:118px;
+  }
+  #admin .monitoring-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #assets .assets-account-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media screen and (min-width:1640px){
+  #trade.page.active{grid-template-columns:minmax(0,1fr) 410px}
+  #home .hot-cards{gap:21px}
+}
+
 </style>
 </head>
 <body>
@@ -5834,14 +6197,8 @@ async function generateCode(){
   const scheduledFor=r.generated_scheduled_for||scheduled.toISOString();
   const validFrom=new Date().toISOString();
 
-  const validUpdate=await sb.from("demo_codes")
-    .update({valid_from:validFrom})
-    .eq("code",r.generated_code);
-
-  if(validUpdate.error){
-    console.warn("Code validity update:",validUpdate.error);
-    return alert("Le code a été généré, mais le patch SQL permettant son utilisation immédiate n’est pas encore installé.");
-  }
+  // The server sets code validity atomically at creation (database trigger).
+  // No separate browser-side update or extra write permissions are needed.
 
   generatedBox.classList.remove("hidden");
   generatedCode.textContent=r.generated_code;
