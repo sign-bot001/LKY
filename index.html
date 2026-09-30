@@ -2892,15 +2892,15 @@ input,select,textarea,button{max-width:100%}
   </div>
  <div id="languageBackdrop" class="lang-backdrop hidden" onclick="closeLanguageMenu()" aria-hidden="true"></div>
  <div id="languageMenu" class="lang-menu hidden" role="menu" aria-label="Language selection">
-    <button onclick="setLanguage('en')">🇬🇧 English</button>
-    <button onclick="setLanguage('fr')">🇫🇷 Français</button>
-    <button onclick="setLanguage('es')">🇪🇸 Español</button>
-    <button onclick="setLanguage('zh')">🇨🇳 繁體中文</button>
-    <button onclick="setLanguage('ar')">🇸🇦 العربية</button>
-    <button onclick="setLanguage('de')">🇩🇪 Deutsch</button>
-    <button onclick="setLanguage('it')">🇮🇹 Italiano</button>
-    <button onclick="setLanguage('ru')">🇷🇺 Русский</button>
-    <button onclick="setLanguage('pl')">🇵🇱 Polski</button>
+    <button data-lang-choice="en" onclick="setLanguage('en')">🇬🇧 English</button>
+    <button data-lang-choice="fr" onclick="setLanguage('fr')">🇫🇷 Français</button>
+    <button data-lang-choice="es" onclick="setLanguage('es')">🇪🇸 Español</button>
+    <button data-lang-choice="zh" onclick="setLanguage('zh')">🇨🇳 繁體中文</button>
+    <button data-lang-choice="ar" onclick="setLanguage('ar')">🇸🇦 العربية</button>
+    <button data-lang-choice="de" onclick="setLanguage('de')">🇩🇪 Deutsch</button>
+    <button data-lang-choice="it" onclick="setLanguage('it')">🇮🇹 Italiano</button>
+    <button data-lang-choice="ru" onclick="setLanguage('ru')">🇷🇺 Русский</button>
+    <button data-lang-choice="pl" onclick="setLanguage('pl')">🇵🇱 Polski</button>
   </div>
 </section>
  <section id="quotes" class="page">
@@ -3344,10 +3344,11 @@ input,select,textarea,button{max-width:100%}
         <div>
           <label>Début précis du trade</label>
           <input id="adminScheduledFor" class="input" type="datetime-local" step="1">
+          <div class="muted" style="margin-top:5px;font-size:11px">Fuseau local : <span id="adminTimeZoneInfo"></span></div>
         </div>
         <div>
           <label>Fenêtre d’utilisation du code</label>
-          <div class="input" style="display:flex;align-items:center;font-weight:800">60 secondes avant le début</div>
+          <div class="input" style="display:flex;align-items:center;font-weight:800">Dès sa création jusqu’au début du trade</div>
         </div>
       </div>
 
@@ -3632,7 +3633,6 @@ The handling fee is 10 USDT within 100 USDT, and 10% will be charged for more th
           <h2>Deposit submitted</h2>
           <p>Your  deposit has been marked as sent.</p>
           <p class="deposit-confirm-time">30 minutes to 1 hour maximum</p>
-          <p>The simulated deposit will appear after confirmation.</p>
 
           <div class="deposit-confirm-summary">
             <div class="row"><span>Amount</span><span id="depositConfirmAmount"></span></div>
@@ -4014,13 +4014,14 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,{
 
 let currentUser=null, profile=null, trades=[], isCurrentUserAdmin=false, isCurrentUserSuperAdmin=false;
 let adminUsers=[], adminCodes=[], adminTrades=[], adminFunding=[], adminRoleRows=[];
+let adminAssetBalances={};
 let btcPrice=112840.00, ethPrice=4410.00, settlingTrades=new Set();
 
-const SUPPORTED_ASSETS=["USDT","BTC","ETH","SOL"];
-let assetBalances={USDT:0,BTC:0,ETH:0,SOL:0};
+const SUPPORTED_ASSETS=["USDT","BTC","ETH","SOL","USDC","DAI"];
+let assetBalances={USDT:0,BTC:0,ETH:0,SOL:0,USDC:0,DAI:0};
 
 function assetDecimals(currency){
-  return {USDT:2,BTC:8,ETH:6,SOL:6}[String(currency||"").toUpperCase()] ?? 6;
+  return {USDT:2,BTC:8,ETH:6,SOL:6,USDC:2,DAI:2}[String(currency||"").toUpperCase()] ?? 6;
 }
 function assetAmount(currency,value){
   const n=Number(value||0);
@@ -4028,7 +4029,7 @@ function assetAmount(currency,value){
 }
 function assetUsdPrice(currency){
   const c=String(currency||"").toUpperCase();
-  if(c==="USDT")return 1;
+  if(["USDT","USDC","DAI"].includes(c))return 1;
   if(c==="BTC")return Number(LIVE_MARKET?.BTCUSDT?.price||btcPrice||0);
   if(c==="ETH")return Number(LIVE_MARKET?.ETHUSDT?.price||ethPrice||0);
   if(c==="SOL")return Number(LIVE_MARKET?.SOLUSDT?.price||0);
@@ -4050,7 +4051,41 @@ function money(n){
   return value.toFixed(2);
 }
 function price(n){return Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
-function formatDate(d){if(!d)return"-";return new Intl.DateTimeFormat("fr-CA",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date(d))}
+const APP_TIME_ZONE=Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC";
+function formatDate(d){
+  if(!d)return"-";
+  const date=new Date(d);
+  if(!Number.isFinite(date.getTime()))return"-";
+  return new Intl.DateTimeFormat("fr-CA",{
+    timeZone:APP_TIME_ZONE,
+    day:"2-digit",month:"2-digit",year:"numeric",
+    hour:"2-digit",minute:"2-digit",second:"2-digit",
+    hour12:false
+  }).format(date);
+}
+function localDateTimeInputValue(date){
+  const d=new Date(date);
+  const p=n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+function parseLocalDateTimeInput(value){
+  const m=String(value||"").match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/);
+  if(!m)return new Date(NaN);
+  return new Date(
+    Number(m[1]),Number(m[2])-1,Number(m[3]),
+    Number(m[4]),Number(m[5]),Number(m[6]||0),0
+  );
+}
+function appTimezoneOffsetLabel(){
+  const minutes=-new Date().getTimezoneOffset();
+  const sign=minutes>=0?"+":"-";
+  const abs=Math.abs(minutes);
+  return `UTC${sign}${String(Math.floor(abs/60)).padStart(2,"0")}:${String(abs%60).padStart(2,"0")}`;
+}
+function updateAdminTimezoneInfo(){
+  const el=document.getElementById("adminTimeZoneInfo");
+  if(el)el.textContent=`${APP_TIME_ZONE} · ${appTimezoneOffsetLabel()}`;
+}
 function showMessage(id,text,type){const e=document.getElementById(id);e.className="message "+type;e.textContent=text}
 function clearMessage(id){const e=document.getElementById(id);e.className="message";e.textContent=""}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
@@ -4523,9 +4558,9 @@ async function loadAssetBalances(){
   if(error){
     console.warn("asset_balances:",error.message||error);
     // Compatibility fallback until the SQL patch is installed.
-    assetBalances={USDT:Number(profile?.balance||0),BTC:0,ETH:0,SOL:0};
+    assetBalances={USDT:Number(profile?.balance||0),BTC:0,ETH:0,SOL:0,USDC:0,DAI:0};
   }else{
-    const next={USDT:0,BTC:0,ETH:0,SOL:0};
+    const next={USDT:0,BTC:0,ETH:0,SOL:0,USDC:0,DAI:0};
     (data||[]).forEach(row=>{
       const c=String(row.currency||"").toUpperCase();
       if(c in next)next[c]=Number(row.balance||0);
@@ -5378,7 +5413,11 @@ async function recognizeFollowCode(){
   if(!btcPrice||btcPrice<=0)return alert("Le prix BTC  n’est pas disponible.");
 
   const {data,error}=await sb.rpc("use_demo_code",{p_code:code,p_open_price:btcPrice});
-  if(error)return alert(error.message);
+  if(error){
+    const message=String(error.message||"Erreur de validation")
+      .replace(/\bcode\s+DEMO\b/gi,"");
+    return alert(message);
+  }
 
   if(input)input.value="";
   const trade=Array.isArray(data)?data[0]:data;
@@ -5743,12 +5782,12 @@ function renderHistory(){
 }
 
 function initAdminScheduleDefaults(){
+  updateAdminTimezoneInfo();
   const el=document.getElementById("adminScheduledFor");
   if(!el||el.value)return;
   const d=new Date(Date.now()+5*60000);
   d.setSeconds(0,0);
-  const local=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,19);
-  el.value=local;
+  el.value=localDateTimeInputValue(d);
 }
 async function generateCode(){
   if(!isCurrentUserAdmin)return;
@@ -5758,7 +5797,7 @@ async function generateCode(){
   const scheduledRaw=document.getElementById("adminScheduledFor")?.value;
   if(!scheduledRaw)return alert("Choisis l’heure précise de la position.");
 
-  const scheduled=new Date(scheduledRaw);
+  const scheduled=parseLocalDateTimeInput(scheduledRaw);
   if(!Number.isFinite(scheduled.getTime()))return alert("Heure invalide.");
 
   const baseParams={
@@ -5793,11 +5832,20 @@ async function generateCode(){
   if(!r?.generated_code)return alert("Supabase n’a retourné aucun code.");
 
   const scheduledFor=r.generated_scheduled_for||scheduled.toISOString();
-  const validFrom=r.generated_valid_from||new Date(new Date(scheduledFor).getTime()-60000).toISOString();
+  const validFrom=new Date().toISOString();
+
+  const validUpdate=await sb.from("demo_codes")
+    .update({valid_from:validFrom})
+    .eq("code",r.generated_code);
+
+  if(validUpdate.error){
+    console.warn("Code validity update:",validUpdate.error);
+    return alert("Le code a été généré, mais le patch SQL permettant son utilisation immédiate n’est pas encore installé.");
+  }
 
   generatedBox.classList.remove("hidden");
   generatedCode.textContent=r.generated_code;
-  generatedDetails.textContent=`${r.generated_direction} · +${Number(r.generated_yield).toFixed(2)}%  · code valide ${formatDate(validFrom)} → ${formatDate(scheduledFor)} · trade ${formatDate(scheduledFor)} → ${formatDate(new Date(new Date(scheduledFor).getTime()+60000))} · usage unique`;
+  generatedDetails.textContent=`${r.generated_direction} · +${Number(r.generated_yield).toFixed(2)}% · utilisable maintenant jusqu’à ${formatDate(scheduledFor)} · trade ${formatDate(scheduledFor)} → ${formatDate(new Date(new Date(scheduledFor).getTime()+60000))} · usage unique`;
   await loadAdminAll();
 }
 
@@ -5918,11 +5966,53 @@ async function loadAdminAll(){
 }
 
 async function loadAdminUsers(){
-  const {data,error}=await sb.from("profiles").select("user_id,email,display_name,account_id,referral_code,balance,suspended,identity_status,created_at").order("created_at",{ascending:false});
-  if(error){console.error(error);return}
-  adminUsers=data||[];
+  const [profilesResult,assetsResult]=await Promise.all([
+    sb.from("profiles").select("user_id,email,display_name,account_id,referral_code,balance,suspended,identity_status,created_at").order("created_at",{ascending:false}),
+    sb.from("asset_balances").select("user_id,currency,balance")
+  ]);
+
+  if(profilesResult.error){console.error(profilesResult.error);return}
+  adminUsers=profilesResult.data||[];
+
+  adminAssetBalances={};
+  if(!assetsResult.error){
+    (assetsResult.data||[]).forEach(row=>{
+      const uid=String(row.user_id);
+      if(!adminAssetBalances[uid])adminAssetBalances[uid]={};
+      adminAssetBalances[uid][String(row.currency||"").toUpperCase()]=Number(row.balance||0);
+    });
+  }
+
+  adminUsers.forEach(u=>{
+    const uid=String(u.user_id);
+    if(!adminAssetBalances[uid])adminAssetBalances[uid]={};
+    adminAssetBalances[uid].USDT=Number(u.balance||0);
+  });
+
   renderAdminUsers();
   renderAdminVerificationRequests();
+}
+
+function adminBalanceFor(user,currency){
+  const c=String(currency||"USDT").toUpperCase();
+  if(c==="USDT")return Number(user?.balance||0);
+  return Number(adminAssetBalances[String(user?.user_id)]?.[c]||0);
+}
+function adminBalanceText(user,currency){
+  return assetAmount(currency,adminBalanceFor(user,currency));
+}
+function updateAdminAssetControl(userId){
+  const user=adminUsers.find(u=>String(u.user_id)===String(userId));
+  if(!user)return;
+  const select=document.getElementById("asset-"+userId);
+  const currency=String(select?.value||"USDT").toUpperCase();
+  const display=document.getElementById("admin-balance-"+userId);
+  const input=document.getElementById("adjust-"+userId);
+  if(display)display.textContent=`${adminBalanceText(user,currency)} ${currency}`;
+  if(input){
+    input.step=currency==="BTC"?"0.00000001":(["ETH","SOL"].includes(currency)?"0.000001":"0.01");
+    input.value=currency==="BTC"?"0.001":(["ETH","SOL"].includes(currency)?"0.01":"100");
+  }
 }
 
 function renderAdminVerificationRequests(){
@@ -5971,10 +6061,15 @@ function renderAdminUsers(){
         </div>
         <span class="status ${u.suspended?"off":"on"}">${u.suspended?"BLOCKED":"ACTIVE"}</span>
       </div>
-      <div class="muted" style="margin-top:7px">Balance </div>
-      <strong>${money(u.balance)} USDT</strong>
+      <div class="muted" style="margin-top:7px">Balance</div>
+      <div class="inline" style="margin-top:8px">
+        <select id="asset-${u.user_id}" class="input" onchange="updateAdminAssetControl('${u.user_id}')">
+          ${SUPPORTED_ASSETS.map(c=>`<option value="${c}">${c}</option>`).join("")}
+        </select>
+        <strong id="admin-balance-${u.user_id}">${adminBalanceText(u,"USDT")} USDT</strong>
+      </div>
       <div class="inline" style="margin-top:10px">
-        <input id="adjust-${u.user_id}" class="input" type="number" min="0" step="100" value="1000">
+        <input id="adjust-${u.user_id}" class="input" type="number" min="0" step="0.01" value="100">
         <button class="mini" onclick="adjustBalance('${u.user_id}',1)">+ Ajouter</button>
         <button class="mini redbtn" onclick="adjustBalance('${u.user_id}',-1)">− Retirer</button>
       </div>
@@ -5991,19 +6086,52 @@ function renderAdminUsers(){
 }
 
 async function adjustBalance(userId,sign){
-  const n=Number(document.getElementById("adjust-"+userId).value);
-  if(!n||n<=0)return;
-  const {error}=await sb.rpc("admin_adjust_balance",{p_user_id:userId,p_delta:n*sign});
-  if(error)return alert(error.message);
-  await loadAdminAll(); if(currentUser.id===userId)await loadProfile();
+  const user=adminUsers.find(u=>String(u.user_id)===String(userId));
+  const currency=String(document.getElementById("asset-"+userId)?.value||"USDT").toUpperCase();
+  const n=Number(document.getElementById("adjust-"+userId)?.value);
+  if(!user||!SUPPORTED_ASSETS.includes(currency)||!Number.isFinite(n)||n<=0)return;
+
+  if(currency==="USDT"){
+    const {error}=await sb.rpc("admin_adjust_balance",{p_user_id:userId,p_delta:n*sign});
+    if(error)return alert(error.message);
+  }else{
+    const current=adminBalanceFor(user,currency);
+    const next=current+n*sign;
+    if(next<0)return alert(`Solde ${currency} insuffisant.`);
+    const {error}=await sb.from("asset_balances").upsert({
+      user_id:userId,
+      currency,
+      balance:next,
+      updated_at:new Date().toISOString()
+    },{onConflict:"user_id,currency"});
+    if(error)return alert(error.message);
+  }
+
+  await loadAdminAll();
+  if(currentUser.id===userId)await loadProfile();
 }
 
 async function setExactBalance(userId){
-  const n=Number(document.getElementById("adjust-"+userId).value);
-  if(Number.isNaN(n)||n<0)return;
-  const {error}=await sb.rpc("admin_set_balance",{p_user_id:userId,p_balance:n});
-  if(error)return alert(error.message);
-  await loadAdminAll(); if(currentUser.id===userId)await loadProfile();
+  const user=adminUsers.find(u=>String(u.user_id)===String(userId));
+  const currency=String(document.getElementById("asset-"+userId)?.value||"USDT").toUpperCase();
+  const n=Number(document.getElementById("adjust-"+userId)?.value);
+  if(!user||!SUPPORTED_ASSETS.includes(currency)||!Number.isFinite(n)||n<0)return;
+
+  if(currency==="USDT"){
+    const {error}=await sb.rpc("admin_set_balance",{p_user_id:userId,p_balance:n});
+    if(error)return alert(error.message);
+  }else{
+    const {error}=await sb.from("asset_balances").upsert({
+      user_id:userId,
+      currency,
+      balance:n,
+      updated_at:new Date().toISOString()
+    },{onConflict:"user_id,currency"});
+    if(error)return alert(error.message);
+  }
+
+  await loadAdminAll();
+  if(currentUser.id===userId)await loadProfile();
 }
 
 async function toggleSuspend(userId,suspended){
@@ -6124,7 +6252,7 @@ function renderAdminCodes(){
     return `<div class="admin-code">
       <div class="row-between"><strong style="letter-spacing:2px">${esc(c.code)}</strong><span class="status ${live?"on":"off"}">${used?"USED":expired?"EXPIRED":c.active?"ACTIVE":"OFF"}</span></div>
       <div class="muted">${esc(c.direction)} · +${money(c.yield_pct)}%  · usage unique</div>
-      <div class="code-schedule">Code valide: ${formatDate(c.valid_from||new Date(new Date(c.scheduled_for).getTime()-60000))} → ${formatDate(c.scheduled_for)}<br>Début du trade: ${formatDate(c.scheduled_for)} · Durée: 60 s${used?`<br>Utilisé: ${formatDate(c.used_at)}`:""}</div>
+      <div class="code-schedule">Code utilisable: ${formatDate(c.valid_from||c.created_at)} → ${formatDate(c.scheduled_for)}<br>Début du trade: ${formatDate(c.scheduled_for)} · Durée: 60 s${used?`<br>Utilisé: ${formatDate(c.used_at)}`:""}</div>
       <div class="inline" style="margin-top:9px">
         ${!used?`<button class="mini gray" onclick="toggleCode(${c.id},${!c.active})">${c.active?"Disable":"Enable"}</button>`:""}
         ${!used?`<button class="mini redbtn" onclick="deleteCode(${c.id})">Delete</button>`:""}
@@ -7272,9 +7400,8 @@ Object.assign(SITE_I18N,{
   "Show deposit address":{"en":"Show deposit address","fr":"Afficher l’adresse de dépôt","es":"Mostrar dirección de depósito","zh":"显示存款地址","ar":"إظهار عنوان الإيداع","de":"Einzahlungsadresse anzeigen","it":"Mostra indirizzo di deposito","ru":"Показать адрес депозита","pl":"Pokaż adres wpłaty"},
   "I have sent it":{"en":"I have sent it","fr":"J’ai envoyé","es":"Ya lo envié","zh":"我已发送","ar":"لقد أرسلته","de":"Ich habe es gesendet","it":"Ho inviato","ru":"Я отправил","pl":"Wysłano"},
   "Deposit submitted":{"en":"Deposit submitted","fr":"Dépôt envoyé","es":"Depósito enviado","zh":"存款已提交","ar":"تم إرسال الإيداع","de":"Einzahlung gesendet","it":"Deposito inviato","ru":"Депозит отправлен","pl":"Wpłata wysłana"},
-  "Your  deposit has been marked as sent.":{"en":"Your  deposit has been marked as sent.","fr":"Votre dépôt  a été marqué comme envoyé.","es":"Tu depósito  se marcó como enviado.","zh":"您的演示存款已标记为已发送。","ar":"تم وضع علامة على إيداع  بأنه مُرسل.","de":"Ihre -Einzahlung wurde als gesendet markiert.","it":"Il deposito  è stato contrassegnato come inviato.","ru":"Демо-депозит отмечен как отправленный.","pl":"Depozyt  oznaczono jako wysłany."},
+  "Your  deposit has been marked as sent.":{"en":"Your deposit has been marked as sent.","fr":"Votre dépôt a été marqué comme envoyé.","es":"Tu depósito se marcó como enviado.","zh":"您的存款已标记为已发送。","ar":"تم وضع علامة على الإيداع بأنه مُرسل.","de":"Ihre Einzahlung wurde als gesendet markiert.","it":"Il deposito è stato contrassegnato come inviato.","ru":"Депозит отмечен как отправленный.","pl":"Wpłata została oznaczona jako wysłana."},
   "30 minutes to 1 hour maximum":{"en":"30 minutes to 1 hour maximum","fr":"30 minutes à 1 heure maximum","es":"De 30 minutos a 1 hora como máximo","zh":"最多 30 分钟至 1 小时","ar":"من 30 دقيقة إلى ساعة واحدة كحد أقصى","de":"30 Minuten bis maximal 1 Stunde","it":"Da 30 minuti a massimo 1 ora","ru":"От 30 минут до максимум 1 часа","pl":"Od 30 minut do maksymalnie 1 godziny"},
-  "The simulated deposit will appear after confirmation.":{"en":"The simulated deposit will appear after confirmation.","fr":"Le dépôt simulé apparaîtra après confirmation.","es":"El depósito simulado aparecerá tras la confirmación.","zh":"模拟存款将在确认后显示。","ar":"سيظهر الإيداع المحاكى بعد التأكيد.","de":"Die simulierte Einzahlung erscheint nach der Bestätigung.","it":"Il deposito simulato apparirà dopo la conferma.","ru":"Смоделированный депозит появится после подтверждения.","pl":"Symulowana wpłata pojawi się po potwierdzeniu."},
   "Pending confirmation":{"en":"Pending confirmation","fr":"En attente de confirmation","es":"Pendiente de confirmación","zh":"等待确认","ar":"في انتظار التأكيد","de":"Bestätigung ausstehend","it":"In attesa di conferma","ru":"Ожидает подтверждения","pl":"Oczekuje na potwierdzenie"},
   "Minimum deposit:":{"en":"Minimum deposit:","fr":"Dépôt minimum :","es":"Depósito mínimo:","zh":"最低存款：","ar":"الحد الأدنى للإيداع:","de":"Mindesteinzahlung:","it":"Deposito minimo:","ru":"Минимальный депозит:","pl":"Minimalna wpłata:"}
 });
@@ -7288,6 +7415,38 @@ function tSite(key,lang=(localStorage.getItem('nexaLanguage')||'en')){const k=SI
 function translateTextNodeI18n(node,lang){if(!node||node.nodeType!==Node.TEXT_NODE)return;const p=node.parentElement;if(!p||/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/i.test(p.tagName)||p.closest('[data-no-i18n]'))return;let k=SITE_I18N_TEXT_KEYS.get(node);if(!k){k=canonicalI18nKey(node.nodeValue);if(!k)return;SITE_I18N_TEXT_KEYS.set(node,k)}const raw=node.nodeValue,lead=(raw.match(/^\s*/)||[''])[0],trail=(raw.match(/\s*$/)||[''])[0],next=lead+tSite(k,lang)+trail;if(raw!==next)node.nodeValue=next}
 function translateAttrI18n(el,attr,lang){if(!el||!el.getAttribute)return;const ds='i18n'+attr.replace(/(^.|-.)/g,m=>m.replace('-','').toUpperCase())+'Key';let k=el.dataset?.[ds];if(!k){k=canonicalI18nKey(el.getAttribute(attr));if(!k)return;if(el.dataset)el.dataset[ds]=k}const next=tSite(k,lang);if(el.getAttribute(attr)!==next)el.setAttribute(attr,next)}
 function translateTreeI18n(root=document,lang=(localStorage.getItem('nexaLanguage')||'en')){if(root.nodeType===Node.TEXT_NODE){translateTextNodeI18n(root,lang);return}if(root.matches?.('[data-no-i18n]'))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];while(w.nextNode())nodes.push(w.currentNode);nodes.forEach(n=>translateTextNodeI18n(n,lang));const els=[];if(root.nodeType===Node.ELEMENT_NODE)els.push(root);if(root.querySelectorAll)els.push(...root.querySelectorAll('[placeholder],[title],[aria-label]'));els.forEach(el=>['placeholder','title','aria-label'].forEach(a=>{if(el.hasAttribute?.(a))translateAttrI18n(el,a,lang)}))}
+
+const HOME_I18N={
+  digitalCurrency:{en:"Digital Currency",fr:"Monnaie numérique",es:"Moneda digital",zh:"數位貨幣",ar:"العملة الرقمية",de:"Digitale Währung",it:"Valuta digitale",ru:"Цифровая валюта",pl:"Waluta cyfrowa"},
+  newsFlash:{en:"News Flash",fr:"Actualités",es:"Noticias",zh:"快訊",ar:"أخبار عاجلة",de:"Aktuelles",it:"Notizie",ru:"Новости",pl:"Aktualności"},
+  newsText:{en:"AI Service for You More Comprehensive Trading Products.",fr:"Service IA pour vous. Des produits de trading plus complets.",es:"Servicio de IA para ti. Productos de trading más completos.",zh:"為你提供 AI 服務與更完整的交易產品。",ar:"خدمة ذكاء اصطناعي لك ومنتجات تداول أكثر شمولاً.",de:"KI-Service für dich. Umfassendere Trading-Produkte.",it:"Servizio IA per te. Prodotti di trading più completi.",ru:"ИИ-сервис для вас. Более комплексные торговые продукты.",pl:"Usługa AI dla Ciebie. Bardziej kompleksowe produkty tradingowe."},
+  cryptocurrency:{en:"Cryptocurrency",fr:"Cryptomonnaies",es:"Criptomonedas",zh:"加密貨幣",ar:"العملات المشفرة",de:"Kryptowährungen",it:"Criptovalute",ru:"Криптовалюты",pl:"Kryptowaluty"},
+  service:{en:"service",fr:"services",es:"servicios",zh:"服務",ar:"الخدمات",de:"Services",it:"servizi",ru:"сервисы",pl:"usługi"},
+  aiService:{en:"AI Service for You<br>More Comprehensive Trading Products",fr:"Service IA pour vous<br>Des produits de trading plus complets",es:"Servicio de IA para ti<br>Productos de trading más completos",zh:"為你提供 AI 服務<br>更完整的交易產品",ar:"خدمة ذكاء اصطناعي لك<br>منتجات تداول أكثر شمولاً",de:"KI-Service für dich<br>Umfassendere Trading-Produkte",it:"Servizio IA per te<br>Prodotti di trading più completi",ru:"ИИ-сервис для вас<br>Более комплексные торговые продукты",pl:"Usługa AI dla Ciebie<br>Bardziej kompleksowe produkty tradingowe"},
+  purchase:{en:"Purchase",fr:"Achat",es:"Compra",zh:"購買",ar:"شراء",de:"Kaufen",it:"Acquisto",ru:"Покупка",pl:"Zakup"},
+  purchaseText:{en:"Buy Your Favorite Cryptocurrency with Credit Card.",fr:"Achetez votre cryptomonnaie préférée par carte de crédit.",es:"Compra tu criptomoneda favorita con tarjeta de crédito.",zh:"使用信用卡購買你喜歡的加密貨幣。",ar:"اشترِ عملتك المشفرة المفضلة ببطاقة الائتمان.",de:"Kaufe deine bevorzugte Kryptowährung mit Kreditkarte.",it:"Acquista la tua criptovaluta preferita con carta di credito.",ru:"Покупайте любимую криптовалюту банковской картой.",pl:"Kup ulubioną kryptowalutę kartą kredytową."},
+  security:{en:"Security",fr:"Sécurité",es:"Seguridad",zh:"安全",ar:"الأمان",de:"Sicherheit",it:"Sicurezza",ru:"Безопасность",pl:"Bezpieczeństwo"},
+  securityText:{en:"Provide a More Secure Trading Environment with Technical Service Architecture.",fr:"Une architecture technique conçue pour un environnement de trading plus sécurisé.",es:"Una arquitectura técnica para un entorno de trading más seguro.",zh:"以技術服務架構提供更安全的交易環境。",ar:"بنية تقنية لتوفير بيئة تداول أكثر أماناً.",de:"Technische Architektur für eine sicherere Trading-Umgebung.",it:"Architettura tecnica per un ambiente di trading più sicuro.",ru:"Техническая архитектура для более безопасной торговой среды.",pl:"Architektura techniczna zapewniająca bezpieczniejsze środowisko tradingowe."},
+  trading:{en:"Trading",fr:"Trading",es:"Trading",zh:"交易",ar:"التداول",de:"Trading",it:"Trading",ru:"Трейдинг",pl:"Trading"},
+  tradingText:{en:"Forex Precious Metals Energy Cryptocurrency Trading Pairs.",fr:"Paires de trading Forex, métaux précieux, énergie et cryptomonnaies.",es:"Pares de trading de Forex, metales preciosos, energía y criptomonedas.",zh:"外匯、貴金屬、能源與加密貨幣交易對。",ar:"أزواج تداول الفوركس والمعادن الثمينة والطاقة والعملات المشفرة.",de:"Trading-Paare für Forex, Edelmetalle, Energie und Kryptowährungen.",it:"Coppie Forex, metalli preziosi, energia e criptovalute.",ru:"Торговые пары Forex, драгоценных металлов, энергетики и криптовалют.",pl:"Pary Forex, metali szlachetnych, energii i kryptowalut."},
+  rate:{en:"Rate",fr:"Tarif",es:"Tasa",zh:"費率",ar:"السعر",de:"Rate",it:"Tasso",ru:"Ставка",pl:"Stawka"},
+  rateText:{en:"Lower Fees for Easier Transactions.",fr:"Des frais réduits pour des transactions plus simples.",es:"Comisiones más bajas para transacciones más sencillas.",zh:"更低費用，交易更簡單。",ar:"رسوم أقل لمعاملات أسهل.",de:"Niedrigere Gebühren für einfachere Transaktionen.",it:"Commissioni più basse per transazioni più semplici.",ru:"Более низкие комиссии для простых операций.",pl:"Niższe opłaty dla prostszych transakcji."},
+  advantages:{en:"Advantages",fr:"Avantages",es:"Ventajas",zh:"優勢",ar:"المزايا",de:"Vorteile",it:"Vantaggi",ru:"Преимущества",pl:"Zalety"},
+  experience:{en:"AI digital asset investment experience",fr:"Expérience d’investissement numérique assistée par IA",es:"Experiencia de inversión digital asistida por IA",zh:"AI 數位資產投資體驗",ar:"تجربة استثمار في الأصول الرقمية مدعومة بالذكاء الاصطناعي",de:"KI-gestützte Erfahrung für digitale Anlagen",it:"Esperienza di investimento digitale assistita dall’IA",ru:"Опыт инвестирования в цифровые активы с ИИ",pl:"Doświadczenie inwestycyjne w aktywa cyfrowe wspierane przez AI"},
+  experienceText:{en:"Low entry barriers allow you to enjoy one-stop investment services including derivatives and wealth management, based on spot trading.",fr:"Une entrée simplifiée vers plusieurs services d’investissement, dont les produits dérivés et la gestion d’actifs.",es:"Acceso simplificado a varios servicios de inversión, incluidos derivados y gestión de activos.",zh:"較低門檻可使用包含衍生品與資產管理在內的一站式投資服務。",ar:"دخول مبسط إلى خدمات استثمار متعددة تشمل المشتقات وإدارة الأصول.",de:"Einfacher Zugang zu verschiedenen Investmentdiensten einschließlich Derivaten und Vermögensverwaltung.",it:"Accesso semplificato a diversi servizi d’investimento, inclusi derivati e gestione patrimoniale.",ru:"Упрощённый доступ к различным инвестиционным сервисам, включая деривативы и управление активами.",pl:"Uproszczony dostęp do różnych usług inwestycyjnych, w tym instrumentów pochodnych i zarządzania aktywami."},
+  buy:{en:"Buy",fr:"Acheter",es:"Comprar",zh:"購買",ar:"شراء",de:"Kaufen",it:"Compra",ru:"Купить",pl:"Kup"},
+  buyText:{en:"Choose your favorite cryptocurrency.",fr:"Choisissez votre cryptomonnaie préférée.",es:"Elige tu criptomoneda favorita.",zh:"選擇你喜歡的加密貨幣。",ar:"اختر عملتك المشفرة المفضلة.",de:"Wähle deine bevorzugte Kryptowährung.",it:"Scegli la tua criptovaluta preferita.",ru:"Выберите любимую криптовалюту.",pl:"Wybierz ulubioną kryptowalutę."},
+  safety:{en:"Safety",fr:"Sécurité",es:"Seguridad",zh:"安全性",ar:"السلامة",de:"Sicherheit",it:"Sicurezza",ru:"Безопасность",pl:"Bezpieczeństwo"},
+  safetyText:{en:"Provide users with a safer trading environment technical service architecture",fr:"Une architecture technique pensée pour offrir un environnement de trading plus sécurisé.",es:"Una arquitectura técnica pensada para un entorno de trading más seguro.",zh:"為使用者提供更安全的交易技術架構。",ar:"بنية تقنية لتوفير بيئة تداول أكثر أماناً للمستخدمين.",de:"Technische Architektur für eine sicherere Trading-Umgebung.",it:"Architettura tecnica per un ambiente di trading più sicuro.",ru:"Техническая архитектура для более безопасной торговой среды.",pl:"Architektura techniczna zapewniająca bezpieczniejsze środowisko tradingowe."}
+};
+function applyHomeLanguage(lang){
+  document.querySelectorAll("#home [data-i18n]").forEach(el=>{
+    const row=HOME_I18N[el.dataset.i18n];
+    if(!row)return;
+    el.innerHTML=row[lang]||row.en||"";
+  });
+}
+
 function closeLanguageMenu(){
   document.getElementById('languageMenu')?.classList.add('hidden');
   document.getElementById('languageBackdrop')?.classList.add('hidden');
@@ -7300,7 +7459,7 @@ function toggleLanguageMenu(){
   menu.classList.toggle('hidden',!opening);
   backdrop?.classList.toggle('hidden',!opening);
 }
-function setLanguage(lang){const supported=["en", "fr", "es", "zh", "ar", "de", "it", "ru", "pl"];if(!supported.includes(lang))lang='en';localStorage.setItem('nexaLanguage',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';translateTreeI18n(document,lang);document.querySelectorAll('[data-lang-choice]').forEach(b=>b.classList.toggle('selected',b.dataset.langChoice===lang));closeLanguageMenu();window.dispatchEvent(new CustomEvent('nexa:languagechange',{detail:{lang}}))}
+function setLanguage(lang){const supported=["en", "fr", "es", "zh", "ar", "de", "it", "ru", "pl"];if(!supported.includes(lang))lang='en';localStorage.setItem('nexaLanguage',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';translateTreeI18n(document,lang);applyHomeLanguage(lang);document.querySelectorAll('[data-lang-choice]').forEach(b=>b.classList.toggle('selected',b.dataset.langChoice===lang));closeLanguageMenu();window.dispatchEvent(new CustomEvent('nexa:languagechange',{detail:{lang}}))}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLanguageMenu()});
 const NEXA_I18N_OBSERVER=new MutationObserver(ms=>{const lang=localStorage.getItem('nexaLanguage')||'en';for(const m of ms){if(m.type==='characterData')translateTextNodeI18n(m.target,lang);if(m.type==='childList')m.addedNodes.forEach(n=>translateTreeI18n(n,lang));if(m.type==='attributes'&&['placeholder','title','aria-label'].includes(m.attributeName))translateAttrI18n(m.target,m.attributeName,lang)}});
 document.addEventListener('DOMContentLoaded',()=>{setLanguage(localStorage.getItem('nexaLanguage')||'en');NEXA_I18N_OBSERVER.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']})});
